@@ -1,0 +1,34 @@
+exportPattern("^[[:alpha:]]+")
+
+
+importFrom(dplyr,filter,rename,mutate,distinct,select,left_join,bind_rows,"%>%",arrange,
+           group_by,n_distinct,select_,do,summarize,ungroup,contains,mutate_,
+           inner_join,one_of,summarise,bind_cols,everything,as_tibble)
+importFrom(tidyr,gather,spread_,spread)
+importFrom(parallel,makeCluster,stopCluster,clusterExport,detectCores,
+           parLapply,parSapply,clusterEvalQ)
+importFrom(ggplot2, aes, aes_string, element_text, facet_grid,element_blank,
+           facet_wrap, geom_bar, geom_errorbar, geom_histogram,element_rect,
+           geom_line, geom_point, geom_text, geom_vline, ggplot,stat_ellipse,
+           ggplot_build, qplot, scale_fill_hue, scale_x_continuous,geom_hline,
+           scale_y_continuous, theme, theme_bw,xlab,ylab,ggtitle,geom_path,
+           scale_fill_discrete,scale_fill_gradient,annotate,geom_smooth,
+           xlim,scale_colour_manual,stat_function,scale_x_discrete,aes_,
+           scale_y_log10,geom_density2d,scale_shape_manual,guide_legend,
+           coord_cartesian,scale_shape_discrete,geom_jitter,position_jitter,
+           geom_density,coord_flip,labs,expand_limits,geom_boxplot,guides,
+           scale_color_manual,ylim,geom_violin)
+importFrom(stringr,str_replace_all)
+importFrom(readr,read_tsv)
+importFrom(UpSetR,upset,fromList)
+importFrom(rmarkdown,render)
+importFrom(formattable,color_bar)
+importFrom(kableExtra,cell_spec,spec_font_size)
+importFrom(kBET,pcRegression,batch_sil,kBET)
+importFrom(metaX, filterPeaks,removeSample,metaXpipe,reSetPeaksData,
+           checkSampleList,makeDirectory,hasQC,printCV,plotPeakNumber,
+           plotCV,plotMissValue,plotIntDistr,plotCorHeatmap,plotPeakSumDist,
+           plotPeakMeanDist,missingValueImpute,transformation,
+           preProcess,plotPCA,plotHeatMap,peakStat)
+
+

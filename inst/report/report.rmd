@@ -1,0 +1,284 @@
+---
+title: "Omics datasets evaluation report" 
+date: "`r Sys.Date()`"
+
+output:
+  BiocStyle::html_document:
+    toc_float: true
+params:
+  input: ""
+
+vignette: >
+  %\VignetteIndexEntry{OmicsEV report}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteKeywords{Mass Spectrometry, Proteomics, omics, eveluation }
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+library(OmicsEV)
+library(knitr)
+library(png)
+library(kableExtra)
+library(formattable)
+#library(DT)
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r Import data, echo=FALSE}
+final_res <- readRDS(params$input)
+basic_metrics <- final_res$basic_metrics
+network_table <- final_res$network_table
+protein_rna <- final_res$protein_rna
+```
+
+
+# Introduction
+
+In this evaluation, there are total **`r final_res$input_parameters$n_datasets`** datasets. We used the evaluation metrics implemented in **OmicsEV** package to evaluate these datasets. The sample and class information for each dataset are shown in the table below.
+
+```{r echo=FALSE}
+class_samples_table <- get_sample_data(final_res$input_parameters$datasets)
+kable(class_samples_table, "html") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+    
+```
+
+The detailed sample information is shown below.
+
+```{r echo=FALSE}
+kable(final_res$input_parameters$sample_list, "html") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  scroll_box(height = "400px",width = "100%")
+   
+```
+
+
+```{r Seperate, echo=FALSE}
+
+dataset_names <- names(basic_metrics$datasets)
+
+```
+
+
+# Descriptive
+
+## Protein/gene identification and quantification
+
+The table below shows the number of identified proteins or genes for each dataset. We take the proteins or genes filtered by 50% missing value as quantified proteins or genes.
+
+```{r echo=FALSE}
+#save(final_res,file="a.rda")
+id_table <- get_identification_summary_table(final_res) 
+kable(id_table,"html",escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) #%>%
+    #row_spec(which.max(id_table[,3]), bold = T, color = "red")
+```
+
+Upset chart below showing overlap in proteins or genes identified in each dataset. Numbers of identified proteins or genes shared between different datasets are indicated in the top bar chart and the specific datasets in each set are indicated with solid points below the bar chart. Total identifications for each dataset are indicated on the left as ‘Set size’.
+
+```{r echo=FALSE}
+knitr::include_graphics(final_res$basic_metrics$datasets_id_overlap %>% normalizePath)
+```
+
+## Protein/gene number distribution
+
+The figures below show the number of proteins or genes identified in each sample. The samples from different batches are coded in different shapes and the samples from different classes are coded in different colors.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "features_number_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+```
+
+# Normalization and batch effect
+
+## Protein or gene expression distribution
+
+The boxplots show the protein or gene expression distribution across samples. X axis is sample ordered by input order. Y axis is log2 transformed protein or gene expression. The samples from different classes are coded in different colors.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "features_quant_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+The density plots show the protein or gene expression distribution across samples. X axis is log2 transformed protein or gene expression. Y axis is density.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+knitr::include_graphics(final_res$basic_metrics$density_plot %>% normalizePath)
+```
+
+
+## Batch effect (Heatmap ordered by batches)
+
+In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "sample_wise_cor_heatmap")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+## Batch effect evaluation using kBET
+
+In this section, we used k-nearest neighbour batch effect test (kBET) for quantification of batch effects. First, the algorithm creates k-nearest neighbour matrix and choses 10% of the samples to check the batch label distribution in its neighbourhood. If the local batch label distribution is sufficiently similar to the global batch label distribution, the $\chi^2$-test does not reject the null hypothesis (that is "all batches are well-mixed"). Finally, the result of kBET is the average test rejection rate. The lower the test result, the less bias is introduced by the batch effect.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+kbet_res <- final_res$batch_effect_metrics$kbet
+kable(kbet_res$table, "html",digits = 3,escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+
+```
+
+## Batch effect evaluation using silhouette width
+
+The silhouette width s(i) ranges from –1 to 1, with s(i) -> 1 if two clusters
+are separate and s(i) -> −1 if two clusters overlap but have dissimilar variance.
+If s(i) -> 0, both clusters have roughly the same structure. Thus, we use the
+absolute value |s| as an indicator for the presence or absence of batch effects.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+sil_res <- final_res$batch_effect_metrics$sil
+kable(data.frame(dataSet=names(sil_res),silhouette_width=sil_res), "html",digits = 3,escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+
+```
+
+## Batch effect evaluation based on principal components 
+
+For each PC, we calculate Pearson's correlation coefficient with batch covariate b:
+
+<p style="text-align: center;">r<sub>i</sub> = corr(PC<sub>i</sub>,b)</p>
+
+In a linear model with a single dependent, as is the case here for the PCs correlated to batch covariate, the
+coefficient of determination R<sup>2</sup> is the squared Pearson's correlation coefficient:
+
+<p style="text-align: center;">R<sup>2</sup>(PC<sub>i</sub>,b) = r<sub>i</sub><sup>2</sup></p>
+
+Then we estimate the significance of the correlation coefficient either with a t-test or a one-way ANOVA. The R<sup>2</sup> value highlighted with red is significant (p-value <= 0.05).
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+pcr_res <- final_res$batch_effect_metrics$pcr
+kable(pcr_res$table, "html",digits = 3,escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+
+```
+
+## Batch effect evaluation using pca score plot
+
+In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+fig <- final_res$pca_batch_plot$fig
+knitr::include_graphics(fig %>% normalizePath)
+```
+
+
+## Protein or gene coefficient of variation (CV) distribution
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cv_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+## Missing value distribution
+
+The missing value distribution can give an overview of the percent of missing values of all proteins or genes in both the QC and experiment samples.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "missing_value_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+```
+
+# Unsupervised analysis of samples
+
+## PCA
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "pca_with_batch")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+```
+
+## Cluster analysis
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cluster_heatmap")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+# Correlation between proteins 
+
+## Within vs between protein complexes
+
+```{r echo=FALSE}
+include_graphics(final_res$network_table$network_boxplot %>% normalizePath)
+```
+
+The table showing below is a summary of the evaluation. "diff" is Cor(intra) - Cor(inter). "ks" is the statistic value of Kolmogorov-Smirnov test.
+
+```{r echo=FALSE}
+kable(final_res$network_table$cor, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)%>%
+    row_spec(which(final_res$network_table$cor$ks >= sort(final_res$network_table$cor$ks,decreasing = TRUE)[3]), bold = T, color = "red")
+```
+
+# Correlation between mRNA and protein
+
+## Gene-wise correlation
+
+```{r, echo=FALSE}
+kable(final_res$protein_rna$feature_wise_cor_table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+    row_spec(which(final_res$protein_rna$feature_wise_cor_table$median_cor >= sort(final_res$protein_rna$feature_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
+```
+
+## Sample-wise correlation
+
+```{r, echo=FALSE}
+kable(final_res$protein_rna$sample_wise_cor_table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)%>%
+    row_spec(which(final_res$protein_rna$sample_wise_cor_table$median_cor >= sort(final_res$protein_rna$sample_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
+```
+
+```{r, echo=FALSE}
+include_graphics(final_res$protein_rna$sample_wise_cor_fig %>% normalizePath)
+```
+

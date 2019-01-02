@@ -1,0 +1,162 @@
+---
+title: "OmicsEV: A tool for large scale omics datasets evaluation"
+author: "Bo Wen"
+date: "`r Sys.Date()`"
+bibliography: OmicsEV.bib
+output: 
+  prettydoc::html_pretty:
+    toc: true
+    theme: cayman
+    highlight: github
+vignette: >
+  %\VignetteIndexEntry{00 OmicsEV introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+```{r style, echo=FALSE, results="asis", message=FALSE}
+knitr::opts_chunk$set(tidy = FALSE,message = FALSE)
+```
+
+
+
+```{r echo=FALSE, results="hide"}
+library("BiocStyle")
+BiocStyle::markdown()
+```
+
+
+
+
+```{r echo=FALSE,warning=FALSE}
+suppressPackageStartupMessages(library("OmicsEV"))
+suppressPackageStartupMessages(library("R.utils"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("kableExtra"))
+suppressPackageStartupMessages(library("formattable"))
+```
+
+
+# Introduction
+
+High-throughput technologies such as RNA-Seq and mass spectrometry-based 
+proteomics are increasingly being applied to large sample cohorts, which 
+creates vast amount of quantitative data for genes and proteins. Many algorithms, 
+software, and pipelines have been developed to analyze these data. However, 
+how to select optimal algorithms, software, and parameters for analyzing a 
+specific omics dataset remains a significant challenge. To address this 
+challenge, we have developed an R package named `OmicsEV`, which is dedicated to 
+compare and evaluate different data matrices generated from the same omics 
+dataset using different tools, algorithms, or parameter settings. In `OmicsEV`,
+we have implemented more than 20 evaluation metrics and all the evaluation 
+results are included in an HTML-report for intuitive browsing. OmicsEV is easy 
+to install and use. Only one function is needed to perform the whole evaluation 
+process. A GUI based on R shiny is also implemented.
+
+# Example data
+
+An example data can be downloaded at https://github.com/bzhanglab/OmicsEV. This
+example contains 6 data matrices generated from the same proteomics dataset 
+using different normalization methods. In addition, an RNA-Seq data matrix and a
+sample list are also included.
+
+# Running OmicsEV
+
+### Preparing inputs
+
+### Running evaluation process
+
+In `OmicsEV`, Only one function (**run_omics_evaluation**) is needed to 
+perform the whole evaluation process. An example is showing below:
+
+```{r eval=FALSE, echo=TRUE}
+run_omics_evaluation(data_dir = "datasets/",
+                     sample_list = "sample_list.tsv",
+                     data_type = "protein",
+                     x2 = "rna_gene_quantification.tsv",
+                     class_color="class_color.tsv",
+                     use_class=c("tumor"),
+                     cpu=0)
+```
+
+In general, only a few parameters have to be set:
+
+* **data_dir**: a folder contains the datasets in tsv format to be evaluated. All 
+datasets must be the same format. In these files, the first column must be gene
+ID or protein ID. The expression value of gene or protein must be in non-log 
+scale. An example input dataset looks like below:
+
+```{r eval=TRUE, echo=FALSE, results='asis'}
+example_data <- read.delim(system.file("extdata/example_input_datasets.tsv",
+                                       package = "OmicsEV"),
+                           stringsAsFactors = FALSE)
+kable(example_data,digits = 3,caption="An example of input dataset") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+```
+
+* **sample_list**: a file in tsv format contains sample class, batch and order 
+information. This file must contain sample ID, sample class, batch and order 
+information. An example sample list file looks like below:
+
+```{r eval=TRUE, echo=FALSE, results='asis'}
+example_data <- read.delim(system.file("extdata/example_sample_list.tsv",
+                                       package = "OmicsEV"),
+                           stringsAsFactors = FALSE)
+kable(example_data,digits = 3,caption="An example of sample list") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+```
+
+* **data_type**: the quantification data type in folder data_dir: protein, 
+gene. Default is protein.
+
+All other parameters are optional. When input datasets for parameter 
+**data_dir** are protein expression data and users also have gene expression 
+data for the same samples, users can set parameter **x2** as a file contains 
+the gene expression data in tsv format, and vice versa. If parameter **x2** is 
+not NULL, sample wise and gene wise correlation analysis will be performed. See `?run_omics_evaluation` for a more in-depth description of all its arguments. 
+
+When the function is finished successfully, an HTML-based report that contains 
+different evaluation metrics will be generated. An example report is available 
+at https://github.com/bzhanglab/OmicsEV.
+
+# Evaluation metrics implemented in OmicsEV
+
+So far, more than 20 evaluation metrics have been implemented in `OmicsEV`.
+
+1. Identified proteins/genes;
+2. Quantified proteins/genes;
+3. Overlap genes/proteins of all datasets;
+4. Protein/gene number distribution across samples;
+5. Protein or gene expression distribution: boxplot;
+6. Protein or gene expression distribution: density plot;
+7. Sample correlation heatmap;
+8. Batch effect evaluation using kBET [@buttner2018test];
+9. Batch effect evaluation using silhouette width;
+10. Batch effect evaluation based on PCA regression;
+11. Batch effect evaluation using pca score plot
+12. Protein or gene coefficient of variation (CV) distribution;
+13. Missing value distribution;
+14. Unsupervised analysis of samples: PCA;
+15. Unsupervised analysis of samples: cluster analysis;
+16. Correlation based on complexes;
+17. Correlation between mRNA and protein: gene wise;
+18. Correlation between mRNA and protein: sample wise;
+19. Phenotype prediction;
+20. Co-expression network based function prediction.
+
+# OmicsEV evaluation report
+
+A few example evaluation reports are available at 
+https://github.com/bzhanglab/OmicsEV.
+
+# Session information
+
+All software and respective versions used to produce this document are listed below.
+
+```{r echo=FALSE}
+sessionInfo()
+```
+
+# References
+
+

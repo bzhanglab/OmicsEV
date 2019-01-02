@@ -1,0 +1,19 @@
+Package: OmicsEV
+Type: Package
+Title: A tool for large scale omics datasets evaluation
+Version: 0.99
+Date: 2018-12-31
+Author: Bo Wen <wenbostar@gmail.com>
+Maintainer: Bo Wen <wenbostar@gmail.com>
+Description: A tool for large scale omics datasets evaluation
+Depends:
+    R (>= 3.2.0)
+Imports:
+    dplyr,ggplot2,tidyr,parallel,UpSetR,rmarkdown,formattable,kableExtra,
+    kBET,metaX
+License: LGPL-2
+URL: https://github.com/bzhanglab/OmicsEV
+BugReports: https://github.com/bzhanglab/OmicsEV/issues
+VignetteBuilder: knitr
+biocViews: RNA-Seq, MassSpectrometry, Proteomics
+RoxygenNote: 6.1.1
