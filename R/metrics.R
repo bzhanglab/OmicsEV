@@ -1024,3 +1024,92 @@ plot_density=function(x,out_dir="./",prefix="test",filter_by_quantile=0){
     return(fig)
 }
 
+
+calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
+                         missing_value_cutoff=0.5, valueID="value",cpu=0){
+
+    if(missing_value_cutoff > 0){
+        x <- lapply(x, filterPeaks, ratio=missing_value_cutoff)
+    }
+
+    if(use_all==FALSE){
+        ## use common genes/proteins
+        for(i in 1:length(x)){
+            if(i == 1){
+                common_ids <- x[[1]]@peaksData$ID
+            }else{
+                common_ids <- intersect(common_ids,x[[i]]@peaksData$ID)
+            }
+        }
+        common_ids <- unique(common_ids)
+        cat("Common IDs:", length(common_ids),"\n")
+
+        x <- lapply(x, function(y){
+            y@peaksData <- y@peaksData %>% filter(ID %in% common_ids)
+            return(y)
+        })
+
+    }
+
+    if(!is.null(sample_list)){
+        sam <- read.delim(sample_list,stringsAsFactors = FALSE) %>%
+            dplyr::select(sample,class)
+        x <- lapply(x, function(y){
+            y@sampleList <- read.delim(sample_list,stringsAsFactors = FALSE)
+            y@peaksData$class<- NULL
+            y@peaksData <- merge(y@peaksData,sam,by="sample")
+            return(y)
+        })
+
+        class_group <- sam$class %>% unique()
+    }else{
+        if(!is.null(sample_class)){
+            class_group <- sample_class
+        }else{
+            class_group <- x[[1]]@peaksData$class %>% unique()
+        }
+    }
+
+    cat("Use class:",paste(class_group,collapse = ","),"\n")
+
+    res <- lapply(x, function(y){
+
+        if(cpu==0){
+            library(doMC)
+            cpu = detectCores()
+            registerDoMC(cores = cpu)
+        }else if(cpu>=2){
+            library(doMC)
+            registerDoMC(cores = cpu)
+        }
+        dat <- featureSelection(y,group=class_group,method = "rf",
+                                valueID = valueID, fold = 5,
+                                resampling_method = "LOOCV",
+                                repeats = 10,
+                                plot_roc = FALSE,
+                                ratio = 2/3, k = 100,
+                                metric = "ROC",
+                                sizes = length(unique(y@peaksData$ID)),
+                                plotCICurve = FALSE,verbose=TRUE)
+        return(dat)
+    })
+
+    name_datasets <- names(res)
+
+    for(i in 1:length(res)){
+        res[[i]]$results$dataSet <- name_datasets[i]
+    }
+
+    ftable <- lapply(res,function(x){x$results %>% select(dataSet,everything())}) %>%
+        bind_rows()
+
+    fres <- list(data=res,table=ftable,class_group=class_group)
+
+    return(fres)
+}
+
+
+
+
+
+

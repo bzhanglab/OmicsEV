@@ -12,6 +12,8 @@
 ##' protein, gene. Default is protein.
 ##' @param use_class The class of samples which will be used to perform
 ##' correlation analysis
+##' @param ml_class The class of samples which will be used for phenotype
+##' prediction
 ##' @param class_color The color for class.
 ##' @param out_dir Output folder
 ##' @param cpu The number of CPUs. Default is 0 and all available CPUs will be
@@ -22,6 +24,7 @@
 ##' @author Bo Wen \email{wenbostar@@gmail.com}
 run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="protein",
                               use_class=NULL,
+                              ml_class=NULL,
                               class_color=NULL,out_dir="./",cpu=0,
                               missing_value_cutoff=0.5){
     res <- list()
@@ -93,6 +96,15 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
         res$protein_rna <- protein_rna_res
         saveRDS(protein_rna_res,file = paste(out_dir,"/protein_rna_res.rda",sep=""))
     }
+
+    if(!is.null(ml_class) && file.exists(ml_class)){
+        ml_res <- calc_ml_metrics(x1,sample_list=ml_class,cpu=cpu)
+    }else{
+        ml_res <- calc_ml_metrics(x1,sample_class=ml_class,cpu=cpu)
+    }
+
+    res$ml <- ml_res
+
     ##
     rfile <- paste(out_dir,"/final_res.rds",sep="")
     saveRDS(res,file = rfile)

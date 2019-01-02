@@ -282,3 +282,14 @@ kable(final_res$protein_rna$sample_wise_cor_table, "html",digits = 3) %>%
 include_graphics(final_res$protein_rna$sample_wise_cor_fig %>% normalizePath)
 ```
 
+# Phenotype prediction
+
+```{r, echo=FALSE}
+kable(final_res$ml$table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+```
+
+# Co-expression network based function prediction
+
+
+
