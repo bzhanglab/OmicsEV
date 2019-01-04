@@ -298,7 +298,5 @@ kable(final_res$fun_pred$table, "html",digits = 3) %>%
 ```
 
 
-# Co-expression network based function prediction
-
 
 
