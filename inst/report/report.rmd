@@ -291,5 +291,14 @@ kable(final_res$ml$table, "html",digits = 3) %>%
 
 # Co-expression network based function prediction
 
+```{r, echo=FALSE}
+kable(final_res$fun_pred$table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  scroll_box(height = "400px",width = "100%")
+```
+
+
+# Co-expression network based function prediction
+
 
 

@@ -28,7 +28,8 @@ importFrom(kBET,pcRegression,batch_sil,kBET)
 importFrom(metaX, filterPeaks,removeSample,metaXpipe,reSetPeaksData,
            checkSampleList,makeDirectory,hasQC,printCV,plotPeakNumber,
            plotCV,plotMissValue,plotIntDistr,plotCorHeatmap,plotPeakSumDist,
-           plotPeakMeanDist,missingValueImpute,transformation,
-           preProcess,plotPCA,plotHeatMap,peakStat)
+           plotPeakMeanDist,missingValueImpute,transformation,getTable,
+           preProcess,plotPCA,plotHeatMap,peakStat,featureSelection)
+importFrom(NetSAM,MatNet)
 
 

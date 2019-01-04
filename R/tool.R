@@ -97,14 +97,18 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
         saveRDS(protein_rna_res,file = paste(out_dir,"/protein_rna_res.rda",sep=""))
     }
 
+    ## phenotype prediction
     if(!is.null(ml_class) && file.exists(ml_class)){
         ml_res <- calc_ml_metrics(x1,sample_list=ml_class,cpu=cpu)
     }else{
         ml_res <- calc_ml_metrics(x1,sample_class=ml_class,cpu=cpu)
     }
-
     res$ml <- ml_res
 
+    ## function prediction
+    fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
+                                     cpu=cpu)
+    res$fun_pred <- fp_res
     ##
     rfile <- paste(out_dir,"/final_res.rds",sep="")
     saveRDS(res,file = rfile)
