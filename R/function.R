@@ -4,6 +4,8 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
                                           sample_list=NULL,
                                           sample_class=NULL,
                                           cpu=0,
+                                          out_dir="./",
+                                          prefix="test",
                                           min_auc=0.8){
     if(missing_value_cutoff > 0){
         x <- lapply(x, filterPeaks, ratio=missing_value_cutoff)
@@ -90,11 +92,18 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     f_table$AUC[is.na(f_table$AUC)] <- 0
 
     f_table$AUC <- sprintf("%.3f",f_table$AUC) %>% as.numeric()
-    max4term <- f_table[,-c(1,2)] %>% apply(1, max,na.rm = TRUE)
-    f_table <- f_table[max4term>=min_auc,]
+    # max4term <- f_table[,-c(1,2)] %>% apply(1, max,na.rm = TRUE)
+    #f_table <- f_table[max4term>=min_auc,]
 
     f_table_format <- f_table %>% dplyr::select(dataSet,term,AUC,db_num) %>%
         spread(key=dataSet,value=AUC)
+
+    max4term <- f_table_format[,-c(1,2)] %>% apply(1,max)
+    f_table_format <- f_table_format[max4term>=min_auc,]
+
+    ## generate boxplot
+    fig <- plot_fun_boxplot(f_table_format[,-c(1,2)],out_dir = out_dir,
+                            prefix = prefix)
 
     f_table_format2 <- f_table_format %>% mutate(db_num=NULL)
     row.names(f_table_format2) <- f_table_format2$term
@@ -114,7 +123,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
 
     final_table <- t(final_table)
 
-    return(list(data=fres,table=final_table))
+    return(list(data=fres,table=final_table,fig=fig))
 
 }
 
@@ -352,6 +361,32 @@ function_predict=function(net_data,min_n=10,kfold=5,ranNum=1000,r=0.5,cpu=0){
 }
 
 
+plot_fun_boxplot=function(x, out_dir="./",prefix="test"){
 
+    rank_x <- apply(x, 1, function(y){rank(-y,ties.method = "min")}) %>% t
+    ## median or mean
+    sort_name <- names(sort(apply(rank_x, 2, mean)))
+    x <- x[,sort_name]
+    rank_x <- rank_x[,sort_name]
+
+    box_data <- gather(as.data.frame(rank_x),"Method","Rank")
+    box_data$Method <- factor(box_data$Method,levels = unique(box_data$Method))
+
+    fig <- paste(out_dir,"/",prefix,"-fun_boxplot.png",sep="")
+    png(fig,width = 800,height = 400,res=120)
+    gg <- ggplot(box_data,aes(x=Method,y=Rank))+
+        geom_boxplot()+
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+        stat_summary(fun.y=mean, colour="darkred", geom="point",
+                     shape=18, size=3, show.legend = FALSE) +
+        geom_text(data = box_data %>% group_by(Method) %>%
+                      dplyr::summarise(mean_rank=mean(Rank)) %>%
+                      mutate(mean_rank_label=sprintf("%.3f",mean_rank) ),
+                  aes(label = mean_rank_label, y = mean_rank + 0.5),colour="darkred")
+    print(gg)
+    dev.off()
+    return(fig)
+
+}
 
 

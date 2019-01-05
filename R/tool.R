@@ -107,7 +107,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
 
     ## function prediction
     fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
-                                     cpu=cpu)
+                                     cpu=cpu,out_dir=out_dir,prefix="omicsev")
     res$fun_pred <- fp_res
     ##
     rfile <- paste(out_dir,"/final_res.rds",sep="")

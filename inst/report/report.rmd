@@ -284,6 +284,8 @@ include_graphics(final_res$protein_rna$sample_wise_cor_fig %>% normalizePath)
 
 # Phenotype prediction
 
+Build model for prediction: ***`r paste(final_res$ml$class_group,collapse = ",")`***.
+
 ```{r, echo=FALSE}
 kable(final_res$ml$table, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
@@ -291,12 +293,26 @@ kable(final_res$ml$table, "html",digits = 3) %>%
 
 # Co-expression network based function prediction
 
+In this evaluation, each dataset was used to build co-expression network. 
+For a selected network and a selected function term (such as GO or KEGG), 
+proteins/genes annotated to the term and also included in the network were 
+defined as a positive protein/gene set and other proteins/genes in the network 
+constituted the negative protein/gene set for the term. For a selected function 
+term, we use some of the proteins/genes as the seed protein/gene, then we use 
+random walk algorithm to calculate scores for other proteins/genes. A higher s
+core of a protein/gene represents a closer relationship between the 
+protein/gene and the seed proteins/genes. Finally, for each selected function 
+term, we calculate an AUROC to evaluate the prediction performance.
+
+
 ```{r, echo=FALSE}
-kable(final_res$fun_pred$table, "html",digits = 3) %>%
+kable(final_res$fun_pred$table, "html",digits = 3,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) %>%
   scroll_box(height = "400px",width = "100%")
 ```
 
-
+```{r, echo=FALSE}
+include_graphics(final_res$fun_pred$fig %>% normalizePath)
+```
 
 
