@@ -119,6 +119,17 @@ When the function is finished successfully, an HTML-based report that contains
 different evaluation metrics will be generated. An example report is available 
 at https://github.com/bzhanglab/OmicsEV.
 
+Users can also perform the evaluation analysis through the shiny-based GUI 
+implemented in `OmicsEV`. The GUI can be lauched using the following function:
+
+```{r eval=FALSE, echo=TRUE}
+launch_gui()
+```
+
+```{r echo=FALSE}
+knitr::include_graphics("./gui.png" %>% normalizePath)
+```
+
 # Evaluation metrics implemented in OmicsEV
 
 So far, more than 20 evaluation metrics have been implemented in `OmicsEV`.
