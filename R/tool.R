@@ -160,5 +160,9 @@ run_reporter=function(x,out_file="test.html"){
 }
 
 
+launch_gui=function(){
+    runApp(appDir = system.file("app",package = "OmicsEV"))
+}
+
 
 
