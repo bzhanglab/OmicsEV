@@ -136,7 +136,9 @@ import_data=function(file,sample_list=NULL,ratio_pair = NULL,
     para@dataType <- data_type
     cat("Data type:",para@dataType,"\n")
 
-    para@missValueImputeMethod <- "none"
+
+    #para@missValueImputeMethod <- "none"
+    para@missValueImputeMethod <- "knn"
     n_features <- para@peaksData$ID %>% unique() %>% length
     para_m <- metaX::filterPeaks(para,ratio = missing_value_cutoff)
     n_features_m <- para_m@peaksData$ID %>% unique() %>% length
