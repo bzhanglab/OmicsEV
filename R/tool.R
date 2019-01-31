@@ -121,7 +121,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
 import_data=function(file,sample_list=NULL,ratio_pair = NULL,
                      missing_value_cutoff=0.5,
                      data_type="protein"){
-    x <- read.delim(file,stringsAsFactors = FALSE,check.names = TRUE)
+    x <- read.delim(file,stringsAsFactors = FALSE,check.names = FALSE)
     dat <- x %>% rename(name=ID)
     para <- new("metaXpara")
     para@rawPeaks <- dat

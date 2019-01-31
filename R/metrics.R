@@ -477,6 +477,7 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
 
 
         res <- parLapply(cl,xx,fun = run_basic_metrics,plist=plist,out_dir=out_dir)
+        stopCluster(cl)
     }else{
         res <- lapply(xx,run_basic_metrics,plist=plist,out_dir=out_dir)
     }
@@ -487,7 +488,7 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
     fres$density_plot <- density_fig
     fres$datasets <- res
 
-    stopCluster(cl)
+
     return(fres)
 }
 
