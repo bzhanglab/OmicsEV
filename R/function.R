@@ -54,6 +54,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     if(cpu==0){
         cpu <- detectCores()
     }
+    input_cpu <- cpu
     if(cpu > length(x)){
         cpu <- length(x)
     }
@@ -77,7 +78,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
 
 
     fun_res <- lapply(net_res, function(y){
-        pres <- function_predict(y)
+        pres <- function_predict(y,cpu=input_cpu)
     })
 
     dat_name <- names(fun_res)
