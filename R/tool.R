@@ -66,6 +66,12 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     }
 
     ## run basic metrics
+    if(is.null(class_color)){
+        class_names <- res$input_parameters$sample_list$class %>% unique
+        class_color_data <- data.frame(class = class_names, col=rainbow(length(class_names)))
+        class_color <- paste(out_dir,"/class_color.tsv",sep="")
+        write_tsv(class_color_data,path=class_color)
+    }
     basic_metrics_res <- calc_basic_metrics(x1,class_color=class_color,out_dir=out_dir,cpu=cpu)
     saveRDS(basic_metrics_res,file = paste(out_dir,"/basic_metrics_res.rds",sep=""))
     res$basic_metrics <- basic_metrics_res

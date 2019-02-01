@@ -19,7 +19,7 @@ importFrom(ggplot2, aes, aes_string, element_text, facet_grid,element_blank,
            geom_density,coord_flip,labs,expand_limits,geom_boxplot,guides,
            scale_color_manual,ylim,geom_violin,stat_summary)
 importFrom(stringr,str_replace_all)
-importFrom(readr,read_tsv)
+importFrom(readr,read_tsv,write_tsv)
 importFrom(UpSetR,upset,fromList)
 importFrom(rmarkdown,render)
 importFrom(formattable,color_bar)
