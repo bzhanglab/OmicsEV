@@ -14,6 +14,8 @@
 ##' correlation analysis
 ##' @param ml_class The class of samples which will be used for phenotype
 ##' prediction
+##' @use_common_features_for_func_pred whether or not to use common
+##' protien/genes for function prediction. Default is TRUE.
 ##' @param class_color The color for class.
 ##' @param out_dir Output folder
 ##' @param cpu The number of CPUs. Default is 0 and all available CPUs will be
@@ -25,6 +27,7 @@
 run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="protein",
                               use_class=NULL,
                               ml_class=NULL,
+                              use_common_features_for_func_pred=TRUE,
                               class_color=NULL,out_dir="./",cpu=0,
                               missing_value_cutoff=0.5){
     res <- list()
@@ -114,7 +117,8 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     ## function prediction
     save(x1,missing_value_cutoff,cpu,out_dir,file = "data_for_function_prediction.rda")
     fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
-                                     cpu=cpu,out_dir=out_dir,prefix="omicsev")
+                                               use_all=!use_common_features_for_func_pred,
+                                               cpu=cpu,out_dir=out_dir,prefix="omicsev")
     res$fun_pred <- fp_res
     ##
     rfile <- paste(out_dir,"/final_res.rds",sep="")
