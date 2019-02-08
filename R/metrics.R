@@ -835,7 +835,7 @@ run_kbet=function(x,out_dir="./",prefix="test"){
 
         if(nrow(xx) <= 10){
             dat <- kBET(df=xx[,-c(1:4)],batch = xx$batch,plot = TRUE,
-                        heuristic = FALSE)
+                        heuristic = FALSE,k0 = 3)
         }else{
             dat <- kBET(df=xx[,-c(1:4)],batch = xx$batch,plot = TRUE)
         }
