@@ -832,7 +832,13 @@ run_kbet=function(x,out_dir="./",prefix="test"){
     res <- lapply(x, function(y){
         xx <- metaX:::getPeaksTable(y,value="value")
         png(paste(y@ID,".png",sep=""))
-        dat <- kBET(df=xx[,-c(1:4)],batch = xx$batch,plot = TRUE)
+
+        if(nrow(xx) <= 10){
+            dat <- kBET(df=xx[,-c(1:4)],batch = xx$batch,plot = TRUE,
+                        heuristic = FALSE)
+        }else{
+            dat <- kBET(df=xx[,-c(1:4)],batch = xx$batch,plot = TRUE)
+        }
         ff <- list(kbet=dat,name=y@ID)
         dev.off()
         return(ff)
