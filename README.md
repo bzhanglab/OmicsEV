@@ -1,6 +1,8 @@
 ## OmicsEV
 A tool for large scale omics datasets evaluation
 
+[<img src="https://github.com/bzhanglab/OmicsEV/blob/gh-pages/data/OmicsEV_overview.png" width=500 class="center">](https://bzhanglab.github.io/OmicsEV/)
+
 ## Installation
 
 ``` r
