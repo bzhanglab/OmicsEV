@@ -7,6 +7,11 @@ A tool for large scale omics datasets evaluation
 # Install the development version from GitHub:
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
+install.packages("remotes")
+BiocManager::install("theislab/kBET")
+BiocManager::install("wenbostar/metaX")
+BiocManager::install("bzhanglab/NetSAM")
+BiocManager::install("AnalytixWare/ShinySky")
 BiocManager::install("bzhanglab/OmicsEV")
 ```
 
