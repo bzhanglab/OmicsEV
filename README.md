@@ -5,6 +5,9 @@ A tool for large scale omics datasets evaluation
 
 ## Installation
 
+#### Method 1:
+
+Install OmicsEV into the installed R library:
 ``` r
 # Install the development version from GitHub:
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -16,6 +19,9 @@ BiocManager::install("bzhanglab/NetSAM")
 BiocManager::install("AnalytixWare/ShinySky")
 BiocManager::install("bzhanglab/OmicsEV")
 ```
+#### Method 2:
+Install OmicsEV using Docker:
+
 
 ## Usage
 
