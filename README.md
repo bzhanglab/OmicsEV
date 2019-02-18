@@ -20,3 +20,11 @@ BiocManager::install("bzhanglab/OmicsEV")
 ## Usage
 
 Please follow the instruction in website *[https://bzhanglab.github.io/OmicsEV/](https://bzhanglab.github.io/OmicsEV/)*
+
+## Example data
+
+Please download an example dataset here: [RNA_seq_6_datasets.tar.gz](https://github.com/bzhanglab/OmicsEV/raw/gh-pages/data/RNA_seq_6_datasets.tar.gz)
+
+## Example report
+
+The HTML-based report for the example data: [OmicsEV report](https://bzhanglab.github.io/OmicsEV/data/example_report.html)
