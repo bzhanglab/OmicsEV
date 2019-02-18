@@ -7,7 +7,7 @@ Author: Bo Wen <wenbostar@gmail.com>
 Maintainer: Bo Wen <wenbostar@gmail.com>
 Description: A tool for large scale omics datasets evaluation
 Depends:
-    R (>= 3.2.0)
+    R (>= 3.5.1)
 Imports:
     dplyr,ggplot2,tidyr,parallel,UpSetR,rmarkdown,formattable,kableExtra,
     kBET,metaX,NetSAM,shiny,shinydashboard,bsplus,shinysky
