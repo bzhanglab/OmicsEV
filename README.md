@@ -1,4 +1,7 @@
 ## OmicsEV
+
+[![HitCount](http://hits.dwyl.io/bzhanglab/OmicsEV.svg)](http://hits.dwyl.io/bzhanglab/OmicsEV)
+
 A tool for large scale omics datasets evaluation
 
 [<img src="https://github.com/bzhanglab/OmicsEV/blob/gh-pages/data/OmicsEV_overview.png" width=500 class="center">](https://bzhanglab.github.io/OmicsEV/)
