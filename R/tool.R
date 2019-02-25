@@ -124,7 +124,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     rfile <- paste(out_dir,"/final_res.rds",sep="")
     saveRDS(res,file = rfile)
     report_file <- paste(out_dir %>% normalizePath(),"/final_evaluation_report.html",sep="")
-    run_reporter(rfile,report_file)
+    run_reporter(rfile,report_file,x2=x2)
     return(report_file)
 }
 
@@ -163,8 +163,12 @@ get_metrics=function(x, metric = "total_features"){
 }
 
 
-run_reporter=function(x,out_file="test.html"){
-    rmd <- system.file("report/report.rmd",package = "OmicsEV")
+run_reporter=function(x,out_file="test.html",x2=NULL){
+    if(is.null(x2)){
+        rmd <- system.file("report/report_noX2.rmd",package = "OmicsEV")
+    }else{
+        rmd <- system.file("report/report.rmd",package = "OmicsEV")
+    }
     x <- normalizePath(x)
     work_dir <- dirname(x)
     cat("Input file:",x,"\n")
