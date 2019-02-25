@@ -97,7 +97,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     res$network_result <- network_raw_res
     res$network_table <- network_table_res
 
-    if((data_type == "protein" || data_type == "gene") && is.null()){
+    if((data_type == "protein" || data_type == "gene") && is.null(x2)){
         ## rna protein
         protein_rna_res <- calc_protein_rna_corr(x1,dat2,sample_class = use_class,
                                                  out_dir = out_dir,cpu = cpu,
