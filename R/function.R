@@ -438,7 +438,7 @@ do_function_pred=function(data_dir,sample_list=NULL,
     x1 <- list()
     for(i in 1:length(input_data_files)){
         x1[[i]] <- import_data(input_data_files[i],sample_list = sample_list,
-                               data_type=data_type,
+                               data_type="gene",
                                missing_value_cutoff = missing_value_cutoff)
         x1[[i]]@ID <- dataset_names[i]
     }
