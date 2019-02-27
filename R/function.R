@@ -421,3 +421,37 @@ get_func_pred_table=function(x, min_auc=0.8){
 }
 
 
+do_function_pred=function(x,missing_value_cutoff=0.5,
+                          use_common_features_for_func_pred=FALSE,
+                          cpu=0,
+                          out_dir="./",
+                          prefix="omicsev"){
+    ## import data
+    input_data_files <- list.files(path = data_dir,pattern = ".tsv",
+                                   full.names = TRUE,include.dirs = TRUE)
+
+    ## the number of datasets
+    dataset_names <- basename(input_data_files) %>%
+        str_replace_all(pattern = ".tsv",replacement = "")
+
+    x1 <- list()
+    for(i in 1:length(input_data_files)){
+        x1[[i]] <- import_data(input_data_files[i],sample_list = sample_list,
+                               data_type=data_type,
+                               missing_value_cutoff = missing_value_cutoff)
+        x1[[i]]@ID <- dataset_names[i]
+    }
+    names(x1) <- dataset_names
+    fp_res <- calc_function_prediction_metrics(x1,
+                                               missing_value_cutoff=missing_value_cutoff,
+                                               use_all=!use_common_features_for_func_pred,
+                                               cpu=cpu,
+                                               out_dir=out_dir,
+                                               prefix=prefix)
+    saveRDS(fp_res,file = paste(out_dir,"/res.rds",sep=""))
+    return(fp_res)
+}
+
+
+
+
