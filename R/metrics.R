@@ -936,6 +936,23 @@ calc_pca_batch_regression=function(x,transform_method="3",scale_method="pareto",
     return(list(pcr=res,table=fres))
 }
 
+get_pcr_table=function(x,top_pc=10){
+    fres <- lapply(x, function(a){
+        r2 <- as.data.frame(a$pcr$r2)
+        r2 <- r2[1:min(top_pc,nrow(r2)),]
+        #r2$R.squared <- cell_spec(r2$R.squared, bold = T,
+        #                          color = ifelse(r2$p.value.lm <= 0.05, "red", "black"),
+        #                          font_size = spec_font_size(r2$R.squared))
+        #r2$R.squared <- cell_spec(r2$R.squared, )
+        r2$PC <- row.names(r2)
+        r2$dataSet <- a$name
+        return(r2)
+    })
+
+    fres <- bind_rows(fres)
+    return(fres)
+}
+
 
 calc_batch_effect_metrics=function(x,out_dir="./",prefix="test"){
 
@@ -1115,6 +1132,69 @@ calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
     return(fres)
 }
 
+
+generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
+    ## generate an overview table which contains different metrics
+    ## input: x =>
+
+    dat <- get_identification_summary_table(x,format = FALSE)
+
+    if(!is.null(x$batch_effect_metrics)){
+
+        # kBET
+        dat <- merge(dat,x$batch_effect_metrics$kbet$table %>%
+                         select(dataSet,kBET.observed))
+
+        # Silhouette width
+        sil <- data.frame(dataSet=names(x$batch_effect_metrics$sil),
+                          silhouette_width=x$batch_effect_metrics$sil)
+        dat <- merge(dat,sil)
+
+        # PCR
+        pcr <- get_pcr_table(x$batch_effect_metrics$pcr$pcr)
+        sig_pc <- pcr %>% dplyr::filter(p.value.lm<=0.05) %>%
+            dplyr::select(PC) %>%
+            dplyr::distinct()
+        pcr <- pcr %>% dplyr::filter(PC %in% sig_pc$PC) %>%
+            dplyr::select(dataSet,PC,R.squared) %>%
+            dplyr::mutate(PC=paste("batch_effect_",PC,sep="")) %>%
+            tidyr::spread(key = PC,value = R.squared)
+
+        dat <- merge(dat,pcr)
+    }
+
+    if(!is.null(x$network_table)){
+        dat <- merge(dat,x$network_table$cor %>% dplyr::select(dataSet,ks) %>%
+                         dplyr::rename(complex_ks=ks))
+    }
+
+
+
+
+    if(!is.null(x$input_parameters$x2)){
+        dat <- merge(dat,x$protein_rna$feature_wise_cor_table %>%
+                         dplyr::select(dataSet,median_cor) %>%
+                         dplyr::rename(gene_wise_cor=median_cor))
+
+        dat <- merge(dat,x$protein_rna$sample_wise_cor_table %>%
+                         dplyr::select(dataSet,median_cor) %>%
+                         dplyr::rename(sample_wise_cor=median_cor))
+    }
+
+    if(!is.null(x$ml)){
+        dat <- merge(dat,x$ml$table %>%
+                         dplyr::select(dataSet,ROC) %>%
+                         dplyr::rename(AUROC=ROC))
+    }
+
+    if(!is.null(x$fun_pred)){
+        f_res <- get_func_pred_table(x$fun_pred$data,min_auc = min_auc)
+        dat <- merge(dat,f_res)
+    }
+
+    return(dat)
+
+}
 
 
 

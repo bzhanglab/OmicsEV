@@ -61,6 +61,16 @@ dataset_names <- names(basic_metrics$datasets)
 
 ```
 
+# Overview
+
+```{r echo=FALSE}
+#save(final_res,file="a.rda")
+ov_table <- generate_overview_table(final_res) 
+kable(ov_table,"html",escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+    scroll_box(height = "400px",width = "100%")
+```
+
 
 # Descriptive
 

@@ -40,6 +40,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     res$input_parameters$data_type <- data_type
     res$input_parameters$use_class <- use_class
     res$input_parameters$missing_value_cutoff <- missing_value_cutoff
+    res$input_parameters$x2 <- x2
 
     ## import data
     input_data_files <- list.files(path = data_dir,pattern = ".tsv",
@@ -180,6 +181,8 @@ run_reporter=function(x,out_file="test.html",x2=NULL){
 launch_gui=function(){
     runApp(appDir = system.file("app",package = "OmicsEV"))
 }
+
+
 
 
 

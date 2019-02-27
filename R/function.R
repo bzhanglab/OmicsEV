@@ -390,4 +390,34 @@ plot_fun_boxplot=function(x, out_dir="./",prefix="test"){
 
 }
 
+get_func_pred_table=function(x, min_auc=0.8){
+    f_table <- x
+    f_table$AUC[is.na(f_table$AUC)] <- 0
+
+    f_table$AUC <- sprintf("%.3f",f_table$AUC) %>% as.numeric()
+    # max4term <- f_table[,-c(1,2)] %>% apply(1, max,na.rm = TRUE)
+    #f_table <- f_table[max4term>=min_auc,]
+
+    f_table_format <- f_table %>% dplyr::select(dataSet,term,AUC,db_num) %>%
+        tidyr::spread(key=dataSet,value=AUC)
+
+    max4term <- f_table_format[,-c(1,2)] %>% apply(1,max)
+    f_table_format <- f_table_format[max4term>=min_auc,]
+
+    auc_data <- f_table_format[,-c(1,2)]
+    rank_x <- apply(auc_data, 1, function(y){rank(-y,ties.method = "min")}) %>% t
+    ## median or mean
+    sort_name <- names(sort(apply(rank_x, 2, mean)))
+    auc_data <- auc_data[,sort_name]
+    rank_x <- rank_x[,sort_name]
+
+    box_data <- tidyr::gather(as.data.frame(rank_x),"Method","Rank")
+    box_data$Method <- factor(box_data$Method,levels = unique(box_data$Method))
+
+    res <- box_data %>% group_by(Method) %>%
+        summarise(fun_rank=mean(Rank)) %>%
+        rename(dataSet=Method) %>% ungroup()
+    return(res)
+}
+
 
