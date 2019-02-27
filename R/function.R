@@ -421,7 +421,8 @@ get_func_pred_table=function(x, min_auc=0.8){
 }
 
 
-do_function_pred=function(x,missing_value_cutoff=0.5,
+do_function_pred=function(data_dir,sample_list=NULL,
+                          missing_value_cutoff=0.5,
                           use_common_features_for_func_pred=FALSE,
                           cpu=0,
                           out_dir="./",
