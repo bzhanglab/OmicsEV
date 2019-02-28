@@ -69,6 +69,8 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
                             missing_value_cutoff = missing_value_cutoff)
     }
 
+    save(x,file = paste(out_dir,"/input_x.rda",sep=""))
+
     ## run basic metrics
     if(is.null(class_color)){
         class_names <- res$input_parameters$sample_list$class %>% unique
