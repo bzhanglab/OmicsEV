@@ -633,7 +633,7 @@ run_basic_metrics=function(x,plist,out_dir="./"){
     #fig2 <- paste("data/",basename(fig$highfig),sep="")
 
     ticTable <- para@peaksData %>% group_by(sample,batch,class) %>%
-        dplyr::summarise(tic=sum(value)) %>%
+        dplyr::summarise(tic=sum(value,na.rm = TRUE)) %>%
         group_by(batch) %>%
         dplyr::summarise(n00=quantile(tic)[1],
                          n25=quantile(tic)[2],
