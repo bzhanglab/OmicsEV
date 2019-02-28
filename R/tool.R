@@ -69,7 +69,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
                             missing_value_cutoff = missing_value_cutoff)
     }
 
-    save(x,file = paste(out_dir,"/input_x.rda",sep=""))
+    save(x1,file = paste(out_dir,"/input_x.rda",sep=""))
 
     ## run basic metrics
     if(is.null(class_color)){
