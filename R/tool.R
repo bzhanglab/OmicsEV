@@ -81,10 +81,13 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     res$basic_metrics <- basic_metrics_res
 
     ## batch effect evaluation
-    res$batch_effect_metrics <- calc_batch_effect_metrics(x1)
-
-    ##
-    res$pca_batch_plot <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view")
+    n_batch <- res$input_parameters$sample_list$batch %>% unique() %>% length
+    cat("Batch number:",n_batch,"\n")
+    if(n_batch >= 2){
+        res$batch_effect_metrics <- calc_batch_effect_metrics(x1)
+        ##
+        res$pca_batch_plot <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view")
+    }
 
     ## complex
     network_data <- import_network_data(type = data_type)
@@ -164,11 +167,19 @@ get_metrics=function(x, metric = "total_features"){
 }
 
 
-run_reporter=function(x,out_file="test.html",x2=NULL){
+run_reporter=function(x,out_file="test.html",x2=NULL,n_batch=0){
     if(is.null(x2)){
-        rmd <- system.file("report/report_noX2.rmd",package = "OmicsEV")
+        if(n_batch >= 2){
+            rmd <- system.file("report/report_noX2.rmd",package = "OmicsEV")
+        }else{
+            rmd <- system.file("report/report_noX2_nobatch.rmd",package = "OmicsEV")
+        }
     }else{
-        rmd <- system.file("report/report.rmd",package = "OmicsEV")
+        if(n_batch >= 2){
+            rmd <- system.file("report/report.rmd",package = "OmicsEV")
+        }else{
+            rmd <- system.file("report/report_nobatch.rmd",package = "OmicsEV")
+        }
     }
     x <- normalizePath(x)
     work_dir <- dirname(x)

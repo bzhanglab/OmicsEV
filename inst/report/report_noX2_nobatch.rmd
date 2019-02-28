@@ -1,0 +1,241 @@
+---
+title: "Omics datasets evaluation report" 
+date: "`r Sys.Date()`"
+
+output:
+  BiocStyle::html_document:
+    toc_float: true
+params:
+  input: ""
+
+vignette: >
+  %\VignetteIndexEntry{OmicsEV report}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteKeywords{Mass Spectrometry, Proteomics, omics, eveluation }
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+library(OmicsEV)
+library(knitr)
+library(png)
+library(kableExtra)
+library(formattable)
+#library(DT)
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r Import data, echo=FALSE}
+final_res <- readRDS(params$input)
+basic_metrics <- final_res$basic_metrics
+network_table <- final_res$network_table
+protein_rna <- final_res$protein_rna
+```
+
+
+# Introduction
+
+In this evaluation, there are total **`r final_res$input_parameters$n_datasets`** datasets. We used the evaluation metrics implemented in **OmicsEV** package to evaluate these datasets. The sample and class information for each dataset are shown in the table below.
+
+```{r echo=FALSE}
+class_samples_table <- get_sample_data(final_res$input_parameters$datasets)
+kable(class_samples_table, "html") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+    
+```
+
+The detailed sample information is shown below.
+
+```{r echo=FALSE}
+kable(final_res$input_parameters$sample_list, "html") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  scroll_box(height = "400px",width = "100%")
+   
+```
+
+
+```{r Seperate, echo=FALSE}
+
+dataset_names <- names(basic_metrics$datasets)
+
+```
+
+
+# Descriptive
+
+## Protein/gene identification and quantification
+
+The table below shows the number of identified proteins or genes for each dataset. We take the proteins or genes filtered by 50% missing value as quantified proteins or genes.
+
+```{r echo=FALSE}
+#save(final_res,file="a.rda")
+id_table <- get_identification_summary_table(final_res) 
+kable(id_table,"html",escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) #%>%
+    #row_spec(which.max(id_table[,3]), bold = T, color = "red")
+```
+
+Upset chart below showing overlap in proteins or genes identified in each dataset. Numbers of identified proteins or genes shared between different datasets are indicated in the top bar chart and the specific datasets in each set are indicated with solid points below the bar chart. Total identifications for each dataset are indicated on the left as ‘Set size’.
+
+```{r echo=FALSE}
+knitr::include_graphics(final_res$basic_metrics$datasets_id_overlap %>% normalizePath)
+```
+
+## Protein/gene number distribution
+
+The figures below show the number of proteins or genes identified in each sample. The samples from different batches are coded in different shapes and the samples from different classes are coded in different colors.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "features_number_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+```
+
+# Normalization and batch effect
+
+## Protein or gene expression distribution
+
+The boxplots show the protein or gene expression distribution across samples. X axis is sample ordered by input order. Y axis is log2 transformed protein or gene expression. The samples from different classes are coded in different colors.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "features_quant_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+The density plots show the protein or gene expression distribution across samples. X axis is log2 transformed protein or gene expression. Y axis is density.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+knitr::include_graphics(final_res$basic_metrics$density_plot %>% normalizePath)
+```
+
+
+## Batch effect (Heatmap ordered by batches)
+
+In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "sample_wise_cor_heatmap")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+## Protein or gene coefficient of variation (CV) distribution
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cv_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+## Missing value distribution
+
+The missing value distribution can give an overview of the percent of missing values of all proteins or genes in both the QC and experiment samples.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "missing_value_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+```
+
+# Unsupervised analysis of samples
+
+## PCA
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "pca_with_batch")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+```
+
+## Cluster analysis
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cluster_heatmap")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+# Correlation between proteins 
+
+## Within vs between protein complexes
+
+```{r echo=FALSE}
+include_graphics(final_res$network_table$network_boxplot %>% normalizePath)
+```
+
+The table showing below is a summary of the evaluation. "diff" is Cor(intra) - Cor(inter). "ks" is the statistic value of Kolmogorov-Smirnov test.
+
+```{r echo=FALSE}
+kable(final_res$network_table$cor, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)%>%
+    row_spec(which(final_res$network_table$cor$ks >= sort(final_res$network_table$cor$ks,decreasing = TRUE)[3]), bold = T, color = "red")
+```
+
+# Phenotype prediction
+
+Build model for prediction: ***`r paste(final_res$ml$class_group,collapse = ",")`***.
+
+```{r, echo=FALSE}
+kable(final_res$ml$table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+```
+
+# Co-expression network based function prediction
+
+In this evaluation, each dataset was used to build co-expression network. 
+For a selected network and a selected function term (such as GO or KEGG), 
+proteins/genes annotated to the term and also included in the network were 
+defined as a positive protein/gene set and other proteins/genes in the network 
+constituted the negative protein/gene set for the term. For a selected function 
+term, we use some of the proteins/genes as the seed protein/gene, then we use 
+random walk algorithm to calculate scores for other proteins/genes. A higher s
+core of a protein/gene represents a closer relationship between the 
+protein/gene and the seed proteins/genes. Finally, for each selected function 
+term, we calculate an AUROC to evaluate the prediction performance.
+
+
+```{r, echo=FALSE}
+kable(final_res$fun_pred$table, "html",digits = 3,escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  scroll_box(height = "400px",width = "100%")
+```
+
+```{r, echo=FALSE}
+include_graphics(final_res$fun_pred$fig %>% normalizePath)
+```
+
+
