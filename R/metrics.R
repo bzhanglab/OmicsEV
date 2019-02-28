@@ -1106,6 +1106,7 @@ calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
             library(doMC)
             registerDoMC(cores = cpu)
         }
+        y <- metaX::missingValueImpute(y)
         dat <- featureSelection(y,group=class_group,method = "rf",
                                 valueID = valueID, fold = 5,
                                 resampling_method = "LOOCV",
