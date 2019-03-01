@@ -10,10 +10,12 @@
 ##' order information.
 ##' @param data_type The quantification data type in folder data_dir:
 ##' protein, gene. Default is protein.
-##' @param use_class The class of samples which will be used to perform
-##' correlation analysis
-##' @param ml_class The class of samples which will be used for phenotype
-##' prediction
+##' @param class_for_cor The class of samples which will be used to perform
+##' correlation analysis. A charactar vector.
+##' @param class_for_fun The class of samples which will be used for function
+##' prediction. A charactar vector.
+##' @param class_for_ml The class of samples which will be used for phenotype
+##' prediction. A sample list file or a charactar vector.
 ##' @use_common_features_for_func_pred whether or not to use common
 ##' protien/genes for function prediction. Default is TRUE.
 ##' @param class_color The color for class.
@@ -25,8 +27,9 @@
 ##' @return The path of HTML report.
 ##' @author Bo Wen \email{wenbostar@@gmail.com}
 run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="protein",
-                              use_class=NULL,
-                              ml_class=NULL,
+                              class_for_cor=NULL,
+                              class_for_fun=NULL,
+                              class_for_ml=NULL,
                               use_common_features_for_func_pred=TRUE,
                               class_color=NULL,out_dir="./",cpu=0,
                               missing_value_cutoff=0.5){
@@ -93,7 +96,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
 
     ## complex
     network_data <- import_network_data(type = data_type)
-    network_raw_res <- calc_network_corr(x1,network_data,sample_class=use_class,
+    network_raw_res <- calc_network_corr(x1,network_data,sample_class=class_for_cor,
                                      missing_value_ratio=0.00001,cpu=cpu)
     network_table_res <- plot_network_cor(network_raw_res$result,out_dir = out_dir,
                                           prefix = "network")
@@ -105,7 +108,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
 
     if((data_type == "protein" || data_type == "gene") && !is.null(x2)){
         ## rna protein
-        protein_rna_res <- calc_protein_rna_corr(x1,dat2,sample_class = use_class,
+        protein_rna_res <- calc_protein_rna_corr(x1,dat2,sample_class = class_for_cor,
                                                  out_dir = out_dir,cpu = cpu,
                                                  missing_value_ratio=missing_value_cutoff)
         res$protein_rna <- protein_rna_res
@@ -114,15 +117,16 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
 
     ## phenotype prediction
     if(!is.null(ml_class) && file.exists(ml_class)){
-        ml_res <- calc_ml_metrics(x1,sample_list=ml_class,cpu=cpu)
+        ml_res <- calc_ml_metrics(x1,sample_list=class_for_ml,cpu=cpu)
     }else{
-        ml_res <- calc_ml_metrics(x1,sample_class=ml_class,cpu=cpu)
+        ml_res <- calc_ml_metrics(x1,sample_class=class_for_ml,cpu=cpu)
     }
     res$ml <- ml_res
 
     ## function prediction
     save(x1,missing_value_cutoff,cpu,out_dir,file = "data_for_function_prediction.rda")
     fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
+                                               sample_class=class_for_fun,
                                                use_all=!use_common_features_for_func_pred,
                                                cpu=cpu,out_dir=out_dir,prefix="omicsev")
     res$fun_pred <- fp_res

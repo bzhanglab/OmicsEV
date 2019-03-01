@@ -51,6 +51,8 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
 
     cat("Use class:",paste(class_group,collapse = ","),"\n")
 
+
+
     if(cpu==0){
         cpu <- detectCores()
     }
@@ -65,6 +67,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     #save(x,file="x.rda")
 
     net_res <- parLapply(cl,x,function(y){
+        y@peaksData <- y@peaksData %>% dplyr::filter(class %in% class_group)
         dat <- getTable(y,valueID="value")
         row.names(dat) <- dat$ID
         dat$ID <- NULL
