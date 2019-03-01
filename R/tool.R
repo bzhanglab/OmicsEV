@@ -41,7 +41,9 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     res$input_parameters$sample_list <- read.delim(sample_list,stringsAsFactors = FALSE)
     res$input_parameters$data_dir <- data_dir
     res$input_parameters$data_type <- data_type
-    res$input_parameters$use_class <- use_class
+    res$input_parameters$class_for_cor <- class_for_cor
+    res$input_parameters$class_for_fun <- class_for_fun
+    res$input_parameters$class_for_ml <- class_for_ml
     res$input_parameters$missing_value_cutoff <- missing_value_cutoff
     res$input_parameters$x2 <- x2
 
