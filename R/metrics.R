@@ -956,6 +956,11 @@ get_pcr_table=function(x,top_pc=10){
 
 calc_batch_effect_metrics=function(x,out_dir="./",prefix="test"){
 
+    cat("Missing value imputation ...\n")
+    x <- lapply(x, function(y){
+        y <- missingValueImpute(y)
+        return(y)
+    })
     kbet_res <- run_kbet(x)
     sil_res <- calc_silhouette_width(x)
     pcr_res <- calc_pca_batch_regression(x)
@@ -1145,6 +1150,10 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         # kBET
         dat <- merge(dat,x$batch_effect_metrics$kbet$table %>%
                          select(dataSet,kBET.observed))
+
+        #dat$kBET.observed <- cell_spec(dat$kBET.observed,
+        #                               color = ifelse(y >= max(y), "red", "black"))
+
 
         # Silhouette width
         sil <- data.frame(dataSet=names(x$batch_effect_metrics$sil),
