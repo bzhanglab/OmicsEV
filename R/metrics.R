@@ -443,6 +443,9 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
     }
     names(xx) <- dataset_name
 
+    ## output
+    fres <- list()
+
     plist <- list()
     plist$scale <- "pareto"
     plist$t <- 3
@@ -459,7 +462,10 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
     plist$legendRowBatch <- 4
     plist$legendRowClass <- 4
 
-    fig <- plot_upset(x,out_dir = out_dir, prefix = "total_identification_upset")
+    if(length(dataset_name) >=2){
+        fig <- plot_upset(x,out_dir = out_dir, prefix = "total_identification_upset")
+        fres$datasets_id_overlap <- fig
+    }
     density_fig <- plot_density(x,out_dir = out_dir, prefix = "sample_wise_density")
 
 
@@ -482,9 +488,8 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
         res <- lapply(xx,run_basic_metrics,plist=plist,out_dir=out_dir)
     }
 
-    fres <- list()
+
     fres$parameters <- plist
-    fres$datasets_id_overlap <- fig
     fres$density_plot <- density_fig
     fres$datasets <- res
 
