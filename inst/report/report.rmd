@@ -108,7 +108,7 @@ for(i in 1:length(figs)){
 }
 ```
 
-# Normalization and batch effect
+# Data visualization
 
 ## Protein or gene expression distribution
 
@@ -147,51 +147,6 @@ for(i in 1:length(figs)){
 
 ```
 
-```{r results="asis",fig.align='center'}
-if(n_batch >= 2){
-  cat("## Batch effect evaluation using kBET\n")
-  cat("In this section, we used k-nearest neighbour batch effect test (kBET) for quantification of batch effects. First, the algorithm creates k-nearest neighbour matrix and choses 10% of the samples to check the batch label distribution in its neighbourhood. If the local batch label distribution is sufficiently similar to the global batch label distribution, the $\\chi^2$-test does not reject the null hypothesis (that is 'all batches are well-mixed'). Finally, the result of kBET is the average test rejection rate. The lower the test result, the less bias is introduced by the batch effect.\n")
-  kbet_res <- final_res$batch_effect_metrics$kbet
-  kable(kbet_res$table, "html",digits = 3,escape = FALSE) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
-}
-```
-
-```{r results="asis",fig.align='center'}
-if(n_batch >= 2){  
-  cat("## Batch effect evaluation using silhouette width\n")
-  cat("The silhouette width s(i) ranges from –1 to 1, with s(i) -> 1 if two clusters
-are separate and s(i) -> −1 if two clusters overlap but have dissimilar variance.
-If s(i) -> 0, both clusters have roughly the same structure. Thus, we use the
-absolute value |s| as an indicator for the presence or absence of batch effects.\n")
-  sil_res <- final_res$batch_effect_metrics$sil
-  kable(data.frame(dataSet=names(sil_res),silhouette_width=sil_res), "html",digits = 3,escape = FALSE) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
-}
-```
-```{r results="asis",fig.align='center'}
-if(n_batch >= 2){
-  cat("## Batch effect evaluation based on principal components\n")
-  cat("For each PC, we calculate Pearson's correlation coefficient with batch covariate b:\n")
-  cat("<p style='text-align: center;'>r<sub>i</sub> =corr(PC<sub>i</sub>,b)</p>\n")
-  cat("In a linear model with a single dependent, as is the case here for the PCs correlated to batch covariate, the coefficient of determination R<sup>2</sup> is the squared Pearson's correlation coefficient:\n")
-  cat("<p style='text-align: center;'>R<sup>2</sup>(PC<sub>i</sub>,b) = r<sub>i</sub><sup>2</sup></p>\n")
-  cat("Then we estimate the significance of the correlation coefficient either with a t-test or a one-way ANOVA. The R<sup>2</sup> value highlighted with red is significant (p-value <= 0.05).\n")
-  pcr_res <- final_res$batch_effect_metrics$pcr
-  kable(pcr_res$table, "html",digits = 3,escape = FALSE) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
-}
-```
-
-```{r results="asis",fig.align='center'}
-if(n_batch >= 2){
-  cat("## Batch effect evaluation using pca score plot\n")
-  cat("In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.\n")
-  fig <- final_res$pca_batch_plot$fig
-knitr::include_graphics(fig %>% normalizePath)
-  
-}
-```
 
 ## Protein or gene coefficient of variation (CV) distribution
 
@@ -220,9 +175,7 @@ for(i in 1:length(figs)){
 }
 ```
 
-# Unsupervised analysis of samples
-
-## PCA
+## Unsupervised analysis of samples: PCA
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "pca_with_batch")
@@ -234,7 +187,7 @@ for(i in 1:length(figs)){
 }
 ```
 
-## Cluster analysis
+## Unsupervised analysis of samples: Cluster analysis
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cluster_heatmap")
@@ -247,9 +200,60 @@ for(i in 1:length(figs)){
 
 ```
 
-# Correlation between proteins 
 
-## Within vs between protein complexes
+# Quantitative evaluation
+
+```{r results="asis",fig.align='center'}
+if(n_batch >= 2){
+  cat("## Batch effect evaluation using kBET\n\n")
+  cat("In this section, we used k-nearest neighbour batch effect test (kBET) for quantification of batch effects. First, the algorithm creates k-nearest neighbour matrix and choses 10% of the samples to check the batch label distribution in its neighbourhood. If the local batch label distribution is sufficiently similar to the global batch label distribution, the $\\chi^2$-test does not reject the null hypothesis (that is 'all batches are well-mixed'). Finally, the result of kBET is the average test rejection rate. The lower the test result, the less bias is introduced by the batch effect.\n")
+  kbet_res <- final_res$batch_effect_metrics$kbet
+  kable(kbet_res$table, "html",digits = 3,escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+}
+```
+
+
+```{r results="asis",fig.align='center'}
+if(n_batch >= 2){  
+  cat("## Batch effect evaluation using silhouette width\n\n")
+  cat("The silhouette width s(i) ranges from –1 to 1, with s(i) -> 1 if two clusters
+are separate and s(i) -> −1 if two clusters overlap but have dissimilar variance.
+If s(i) -> 0, both clusters have roughly the same structure. Thus, we use the
+absolute value |s| as an indicator for the presence or absence of batch effects.\n")
+  sil_res <- final_res$batch_effect_metrics$sil
+  kable(data.frame(dataSet=names(sil_res),silhouette_width=sil_res), "html",digits = 3,escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+}
+```
+
+
+```{r results="asis",fig.align='center'}
+if(n_batch >= 2){
+  cat("## Batch effect evaluation based on principal components\n\n")
+  cat("For each PC, we calculate Pearson's correlation coefficient with batch covariate b:\n")
+  cat("<p style='text-align: center;'>r<sub>i</sub> =corr(PC<sub>i</sub>,b)</p>\n")
+  cat("In a linear model with a single dependent, as is the case here for the PCs correlated to batch covariate, the coefficient of determination R<sup>2</sup> is the squared Pearson's correlation coefficient:\n")
+  cat("<p style='text-align: center;'>R<sup>2</sup>(PC<sub>i</sub>,b) = r<sub>i</sub><sup>2</sup></p>\n")
+  cat("Then we estimate the significance of the correlation coefficient either with a t-test or a one-way ANOVA. The R<sup>2</sup> value highlighted with red is significant (p-value <= 0.05).\n")
+  pcr_res <- final_res$batch_effect_metrics$pcr
+  kable(pcr_res$table, "html",digits = 3,escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+}
+```
+
+```{r results="asis",fig.align='center'}
+if(n_batch >= 2){
+  cat("## Batch effect evaluation using pca score plot\n\n")
+  cat("In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.\n")
+  fig <- final_res$pca_batch_plot$fig
+knitr::include_graphics(fig %>% normalizePath)
+  
+}
+```
+
+
+## Correlation between proteins: within vs between protein complexes
 
 ```{r echo=FALSE}
 include_graphics(final_res$network_table$network_boxplot %>% normalizePath)
@@ -266,13 +270,12 @@ kable(final_res$network_table$cor, "html",digits = 3) %>%
 
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$input_parameters$x2)){
-  cat("# Correlation between mRNA and protein\n")
-  cat("## Gene-wise correlation\n")
+  cat("## Correlation between mRNA and protein: gene-wise correlation\n")
   kable(final_res$protein_rna$feature_wise_cor_table, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) %>%
     row_spec(which(final_res$protein_rna$feature_wise_cor_table$median_cor >= sort(final_res$protein_rna$feature_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
   
-  cat("## Sample-wise correlation\n")
+  cat("## Correlation between mRNA and protein: sample-wise correlation\n")
   kable(final_res$protein_rna$sample_wise_cor_table, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
     row_spec(which(final_res$protein_rna$sample_wise_cor_table$median_cor >= sort(final_res$protein_rna$sample_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
@@ -282,7 +285,7 @@ if(!is.null(final_res$input_parameters$x2)){
 ```
 
 
-# Phenotype prediction
+## Phenotype prediction
 
 Build model for prediction: ***`r paste(final_res$ml$class_group,collapse = ",")`***.
 
@@ -291,7 +294,7 @@ kable(final_res$ml$table, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
 ```
 
-# Co-expression network based function prediction
+## Co-expression network based function prediction
 
 In this evaluation, each dataset was used to build co-expression network. 
 For a selected network and a selected function term (such as GO or KEGG), 

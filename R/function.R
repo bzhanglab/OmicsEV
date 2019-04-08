@@ -92,6 +92,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
 
     fres <- bind_rows(fun_res)
 
+
     f_table <- fres
     f_table$AUC[is.na(f_table$AUC)] <- 0
 
@@ -101,6 +102,8 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
 
     f_table_format <- f_table %>% dplyr::select(dataSet,term,AUC,db_num) %>%
         spread(key=dataSet,value=AUC)
+
+    save(fres,f_table_format,file = "fres.rda")
 
     max4term <- f_table_format[,-c(1,2)] %>% apply(1,max)
     f_table_format <- f_table_format[max4term>=min_auc,]
