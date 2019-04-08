@@ -206,7 +206,7 @@ for(i in 1:length(figs)){
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
   cat("## Batch effect evaluation using kBET\n\n")
-  cat("In this section, we used k-nearest neighbour batch effect test (kBET) for quantification of batch effects. First, the algorithm creates k-nearest neighbour matrix and choses 10% of the samples to check the batch label distribution in its neighbourhood. If the local batch label distribution is sufficiently similar to the global batch label distribution, the $\\chi^2$-test does not reject the null hypothesis (that is 'all batches are well-mixed'). Finally, the result of kBET is the average test rejection rate. The lower the test result, the less bias is introduced by the batch effect.\n")
+  cat("<p>In this section, we used k-nearest neighbour batch effect test (kBET) for quantification of batch effects. First, the algorithm creates k-nearest neighbour matrix and choses 10% of the samples to check the batch label distribution in its neighbourhood. If the local batch label distribution is sufficiently similar to the global batch label distribution, the $\\chi^2$-test does not reject the null hypothesis (that is 'all batches are well-mixed'). Finally, the result of kBET is the average test rejection rate. The lower the test result, the less bias is introduced by the batch effect.</p>\n")
   kbet_res <- final_res$batch_effect_metrics$kbet
   kable(kbet_res$table, "html",digits = 3,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
@@ -217,10 +217,10 @@ if(n_batch >= 2){
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){  
   cat("## Batch effect evaluation using silhouette width\n\n")
-  cat("The silhouette width s(i) ranges from –1 to 1, with s(i) -> 1 if two clusters
+  cat("<p>The silhouette width s(i) ranges from –1 to 1, with s(i) -> 1 if two clusters
 are separate and s(i) -> −1 if two clusters overlap but have dissimilar variance.
 If s(i) -> 0, both clusters have roughly the same structure. Thus, we use the
-absolute value |s| as an indicator for the presence or absence of batch effects.\n")
+absolute value |s| as an indicator for the presence or absence of batch effects.</p>\n")
   sil_res <- final_res$batch_effect_metrics$sil
   kable(data.frame(dataSet=names(sil_res),silhouette_width=sil_res), "html",digits = 3,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
@@ -231,11 +231,11 @@ absolute value |s| as an indicator for the presence or absence of batch effects.
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
   cat("## Batch effect evaluation based on principal components\n\n")
-  cat("For each PC, we calculate Pearson's correlation coefficient with batch covariate b:\n")
+  cat("<p>For each PC, we calculate Pearson's correlation coefficient with batch covariate b:</p>\n")
   cat("<p style='text-align: center;'>r<sub>i</sub> =corr(PC<sub>i</sub>,b)</p>\n")
-  cat("In a linear model with a single dependent, as is the case here for the PCs correlated to batch covariate, the coefficient of determination R<sup>2</sup> is the squared Pearson's correlation coefficient:\n")
+  cat("<p>In a linear model with a single dependent, as is the case here for the PCs correlated to batch covariate, the coefficient of determination R<sup>2</sup> is the squared Pearson's correlation coefficient:</p>\n")
   cat("<p style='text-align: center;'>R<sup>2</sup>(PC<sub>i</sub>,b) = r<sub>i</sub><sup>2</sup></p>\n")
-  cat("Then we estimate the significance of the correlation coefficient either with a t-test or a one-way ANOVA. The R<sup>2</sup> value highlighted with red is significant (p-value <= 0.05).\n")
+  cat("<p>Then we estimate the significance of the correlation coefficient either with a t-test or a one-way ANOVA. The R<sup>2</sup> value highlighted with red is significant (p-value <= 0.05).</p>\n")
   pcr_res <- final_res$batch_effect_metrics$pcr
   kable(pcr_res$table, "html",digits = 3,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)

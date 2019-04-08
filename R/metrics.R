@@ -914,6 +914,7 @@ calc_pca_batch_regression=function(x,transform_method="3",scale_method="pareto",
         #batch: vector or factor with batch label of each cell
         pca.data <- prcomp(xx[,-c(1:4)], center=FALSE) #compute PCA representation of the data
         yy <- pcRegression(pca.data,batch = xx$batch,n_top = top_pc)
+        save(pca.data,yy,xx,top_pc,file = "pca_batch_reg.rda")
         return(list(pcr=yy,name=y@ID))
         return(yy)
     })
