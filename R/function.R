@@ -109,9 +109,12 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     f_table_format <- f_table_format[max4term>=min_auc,]
 
     ## generate boxplot
-    fig <- plot_fun_boxplot(f_table_format[,-c(1,2),drop=FALSE],out_dir = out_dir,
+    if(length(x) >=2){
+        fig <- plot_fun_boxplot(f_table_format[,-c(1,2),drop=FALSE],out_dir = out_dir,
                             prefix = prefix)
-
+    }else{
+        fig <- NULL
+    }
     f_table_format2 <- f_table_format %>% mutate(db_num=NULL)
     row.names(f_table_format2) <- f_table_format2$term
     f_table_format2$term <- NULL

@@ -315,7 +315,9 @@ kable(final_res$fun_pred$table, "html",digits = 3,escape = FALSE) %>%
 ```
 
 ```{r, echo=FALSE}
-include_graphics(final_res$fun_pred$fig %>% normalizePath)
+if(!is.null(final_res$fun_pred$fig)){
+  include_graphics(final_res$fun_pred$fig %>% normalizePath)
+}
 ```
 
 
