@@ -105,11 +105,11 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
 
     # save(fres,f_table_format,file = "fres.rda")
 
-    max4term <- f_table_format[,-c(1,2)] %>% apply(1,max)
+    max4term <- f_table_format[,-c(1,2),drop=FALSE] %>% apply(1,max)
     f_table_format <- f_table_format[max4term>=min_auc,]
 
     ## generate boxplot
-    fig <- plot_fun_boxplot(f_table_format[,-c(1,2)],out_dir = out_dir,
+    fig <- plot_fun_boxplot(f_table_format[,-c(1,2),drop=FALSE],out_dir = out_dir,
                             prefix = prefix)
 
     f_table_format2 <- f_table_format %>% mutate(db_num=NULL)
@@ -410,7 +410,7 @@ get_func_pred_table=function(x, min_auc=0.8){
     max4term <- f_table_format[,-c(1,2),drop=FALSE] %>% apply(1,max)
     f_table_format <- f_table_format[max4term>=min_auc,]
 
-    auc_data <- f_table_format[,-c(1,2)]
+    auc_data <- f_table_format[,-c(1,2),drop=FALSE]
     rank_x <- apply(auc_data, 1, function(y){rank(-y,ties.method = "min")}) %>% t
     ## median or mean
     sort_name <- names(sort(apply(rank_x, 2, mean)))
