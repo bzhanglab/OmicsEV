@@ -417,8 +417,8 @@ get_func_pred_table=function(x, min_auc=0.8){
     rank_x <- apply(auc_data, 1, function(y){rank(-y,ties.method = "min")}) %>% t
     ## median or mean
     sort_name <- names(sort(apply(rank_x, 2, mean)))
-    auc_data <- auc_data[,sort_name]
-    rank_x <- rank_x[,sort_name]
+    auc_data <- auc_data[,sort_name,drop=FALSE]
+    rank_x <- rank_x[,sort_name,drop=FALSE]
 
     box_data <- tidyr::gather(as.data.frame(rank_x),"Method","Rank")
     box_data$Method <- factor(box_data$Method,levels = unique(box_data$Method))
