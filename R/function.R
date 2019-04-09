@@ -414,7 +414,12 @@ get_func_pred_table=function(x, min_auc=0.8){
     f_table_format <- f_table_format[max4term>=min_auc,]
 
     auc_data <- f_table_format[,-c(1,2),drop=FALSE]
-    rank_x <- apply(auc_data, 1, function(y){rank(-y,ties.method = "min")}) %>% t
+    if(ncol(auc_data) >= 2){
+        rank_x <- apply(auc_data, 1, function(y){rank(-y,ties.method = "min")}) %>% t
+    }else{
+        rank_x <- data.frame(a=rep(1,nrow(auc_data)))
+        names(rank_x) <- names(auc_data)
+    }
     ## median or mean
     sort_name <- names(sort(apply(rank_x, 2, mean)))
     auc_data <- auc_data[,sort_name,drop=FALSE]
