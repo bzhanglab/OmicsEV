@@ -240,11 +240,15 @@ if(n_batch >= 2){
   kable(pcr_res$table, "html",digits = 3,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
   
+}
+```
+
+```{r results="asis",fig.align='center'}
+if(n_batch >= 2){
   cat("<p>The fraction of variance explained for each PC:</p>\n")
   kable(pcr_res$explained_var, "html",escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
-  
-}
+  }
 ```
 
 ```{r results="asis",fig.align='center'}
