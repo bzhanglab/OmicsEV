@@ -929,6 +929,7 @@ calc_pca_batch_regression=function(x,transform_method="3",scale_method="pareto",
         #                          font_size = spec_font_size(r2$R.squared))
         #r2$R.squared <- cell_spec(r2$R.squared, )
         r2$PC <- row.names(r2)
+        r2$PC <- as.integer(str_replace_all(r2$PC,pattern = "PC",replacement = ""))
         r2$dataSet <- a$name
         return(r2)
     })
