@@ -899,7 +899,7 @@ calc_silhouette_width=function(x,transform_method="3",scale_method="pareto",
 }
 
 
-calc_pca_batch_regression=function(x,transform_method="3",scale_method="pareto",
+calc_pca_batch_regression=function(x,transform_method=3,scale_method="pareto",
                                center=TRUE,missing_value_ratio=0.5,format=FALSE,
                                top_pc=10){
     res <- lapply(x, function(y){
@@ -909,7 +909,7 @@ calc_pca_batch_regression=function(x,transform_method="3",scale_method="pareto",
         ppca <- metaX::transformation(y,method = transform_method,valueID = "value")
         ppca <- metaX::preProcess(ppca,scale = scale_method,center = center,
                                   valueID = "value")
-        xx <- metaX:::getPeaksTable(y,value="value")
+        xx <- metaX:::getPeaksTable(ppca,value="value")
         #data: a matrix (rows: samples, columns: features (genes))
         #batch: vector or factor with batch label of each cell
         pca.data <- prcomp(xx[,-c(1:4)], center=FALSE) #compute PCA representation of the data
@@ -931,6 +931,7 @@ calc_pca_batch_regression=function(x,transform_method="3",scale_method="pareto",
         r2$PC <- row.names(r2)
         r2$PC <- as.integer(str_replace_all(r2$PC,pattern = "PC",replacement = ""))
         r2$dataSet <- a$name
+        r2$ExplainedVar <- a$pcr$ExplainedVar[1:nrow(r2)]
         return(r2)
     })
 
@@ -940,7 +941,10 @@ calc_pca_batch_regression=function(x,transform_method="3",scale_method="pareto",
                               color = ifelse(fres$p.value.lm <= 0.05, "red", "black"),
                               font_size = spec_font_size(fres$R.squared))
     fres <- fres %>% select(PC,R.squared,dataSet) %>% spread(key=dataSet,value=R.squared)
-    return(list(pcr=res,table=fres))
+
+    ## explained_var
+    explained_var <- fres %>% select(PC,ExplainedVar,dataSet) %>% spread(key=dataSet,value=ExplainedVar)
+    return(list(pcr=res,table=fres,explained_var=explained_var))
 }
 
 get_pcr_table=function(x,top_pc=10){
