@@ -982,22 +982,39 @@ calc_batch_effect_metrics=function(x,out_dir="./",prefix="test"){
 
 plot_pca=function(x,out_dir="./",prefix="test",pointSize=0.8,labelSize=4,
                   legendRowBatch = 10,
-                  legendRowClass = NULL,show_class=FALSE){
+                  legendRowClass = NULL,show_class=FALSE,
+                  pc="12"){
+    # pc = "12" or "13"
 
     plotData <- lapply(x,function(y){y$pca_plot_data}) %>% bind_rows()
 
-    ggobj <- ggplot(data = plotData,aes(x=x,y=y,color=batch))
-    ggobj <- ggobj + geom_hline(yintercept=0,colour="gray")+
-        geom_vline(xintercept=0,colour="gray")+
-        #geom_point()+
-        #xlab(paste("PC1"," (",sprintf("%.2f%%",100*pca.res@R2[1]),") ",sep=""))+
-        #ylab(paste("PC2"," (",sprintf("%.2f%%",100*pca.res@R2[2]),") ",sep=""))+
-        xlab("PC1")+
-        ylab("PC2")+
-        theme_bw()+
-        theme(#legend.position = legendPosition,
-            panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank())
+    if(pc == "12"){
+        ggobj <- ggplot(data = plotData,aes(x=x,y=y,color=batch))
+        ggobj <- ggobj + geom_hline(yintercept=0,colour="gray")+
+            geom_vline(xintercept=0,colour="gray")+
+            #geom_point()+
+            #xlab(paste("PC1"," (",sprintf("%.2f%%",100*pca.res@R2[1]),") ",sep=""))+
+            #ylab(paste("PC2"," (",sprintf("%.2f%%",100*pca.res@R2[2]),") ",sep=""))+
+            xlab("PC1")+
+            ylab("PC2")+
+            theme_bw()+
+            theme(#legend.position = legendPosition,
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank())
+    }else{
+        ggobj <- ggplot(data = plotData,aes(x=x,y=z,color=batch))
+        ggobj <- ggobj + geom_hline(yintercept=0,colour="gray")+
+            geom_vline(xintercept=0,colour="gray")+
+            #geom_point()+
+            #xlab(paste("PC1"," (",sprintf("%.2f%%",100*pca.res@R2[1]),") ",sep=""))+
+            #ylab(paste("PC2"," (",sprintf("%.2f%%",100*pca.res@R2[2]),") ",sep=""))+
+            xlab("PC1")+
+            ylab("PC3")+
+            theme_bw()+
+            theme(#legend.position = legendPosition,
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank())
+    }
     ggobj <- ggobj + stat_ellipse(aes(),geom = "path")
     if(show_class==FALSE){
         ggobj <- ggobj + geom_point(size=pointSize)

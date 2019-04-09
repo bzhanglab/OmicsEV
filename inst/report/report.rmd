@@ -261,6 +261,16 @@ knitr::include_graphics(fig %>% normalizePath)
 }
 ```
 
+```{r results="asis",fig.align='center'}
+if(n_batch >= 2){
+  if(!is.null(final_res$pca_batch_plot_13)){
+  fig <- final_res$pca_batch_plot_13$fig
+  knitr::include_graphics(fig %>% normalizePath)
+}
+  
+}
+```
+
 
 ## Correlation between proteins: within vs between protein complexes
 
