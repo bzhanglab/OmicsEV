@@ -940,11 +940,11 @@ calc_pca_batch_regression=function(x,transform_method=3,scale_method="pareto",
     fres$R.squared <- cell_spec(fres$R.squared, bold = T,
                               color = ifelse(fres$p.value.lm <= 0.05, "red", "black"),
                               font_size = spec_font_size(fres$R.squared))
-    fres <- fres %>% select(PC,R.squared,dataSet) %>% spread(key=dataSet,value=R.squared)
+    fres2 <- fres %>% select(PC,R.squared,dataSet) %>% spread(key=dataSet,value=R.squared)
 
     ## explained_var
     explained_var <- fres %>% select(PC,ExplainedVar,dataSet) %>% spread(key=dataSet,value=ExplainedVar)
-    return(list(pcr=res,table=fres,explained_var=explained_var))
+    return(list(pcr=res,table=fres2,explained_var=explained_var))
 }
 
 get_pcr_table=function(x,top_pc=10){
