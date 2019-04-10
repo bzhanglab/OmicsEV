@@ -103,7 +103,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     ## complex
     ## function prediction
     if(species %in% c("human","drosophila")){
-        network_data <- import_network_data(type = data_type,species==species)
+        network_data <- import_network_data(type = data_type,species=species)
         network_raw_res <- calc_network_corr(x1,network_data,sample_class=class_for_cor,
                                          missing_value_ratio=0.00001,cpu=cpu)
         network_table_res <- plot_network_cor(network_raw_res$result,out_dir = out_dir,
