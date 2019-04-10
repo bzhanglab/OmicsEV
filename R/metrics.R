@@ -1,10 +1,20 @@
 
 #
-import_network_data=function(file=NULL,type="protein"){
-    if((type=="gene" || type=="protein") && is.null(file)){
-        x <- readRDS(system.file("extdata/corum.rds",package = "OmicsEV"))
-    }else if(type=="phosphopeptide"){
-        x <- readRDS(system.file("extdata/psp.rds",package = "OmicsEV"))
+import_network_data=function(file=NULL,type="protein",species="human"){
+    if(species=="human"){
+        if((type=="gene" || type=="protein") && is.null(file)){
+            x <- readRDS(system.file("extdata/corum.rds",package = "OmicsEV"))
+        }else if(type=="phosphopeptide"){
+            x <- readRDS(system.file("extdata/psp.rds",package = "OmicsEV"))
+        }
+    }else if(species=="drosophila"){
+        if((type=="gene" || type=="protein") && is.null(file)){
+            x <- readRDS(system.file("extdata/flybase_ppi.rds",package = "OmicsEV"))
+        }
+    }else{
+        cat("species:",species,"\n")
+        stop("The species is not supported!")
+        x <- NULL
     }
     return(x)
 }
@@ -42,6 +52,37 @@ import_data_from_corum=function(file){
         combn(m=2) %>%
         t %>%
         dplyr::as_data_frame()
+
+    yyy <- paste(res$complex$V1,res$complex$V2,sep="|")
+    rnd_p <- paste(rnd$V1,rnd$V2,sep="|")
+    rnd <- rnd[ !(rnd_p %in% yyy), ]
+    res$rnd_complex <- rnd
+    return(res)
+}
+
+# wget http://www.droidb.org/data/DroID_v2018_08/flybase_ppi.txt
+# file = "inst/extdata/flybase_ppi.txt"
+# import_data_from_flybase_ppi(file)
+import_data_from_flybase_ppi=function(file){
+
+    a <- read.delim(file,stringsAsFactors = FALSE)
+    x <- a %>% select(SYMBOL1,SYMBOL2)
+    names(x) <- c("V1","V2")
+    x <- x %>% filter(V1!=V2) %>% distinct() %>%
+        apply(1,function(y) {sort(y)}) %>%
+        t %>%
+        as.data.frame(stringsAsFactors=FALSE) %>%
+        distinct()
+    all_genes <- sort(unique(c(x$V1,x$V2)))
+
+    res <- list()
+    res$complex <- x
+
+    ## random complex
+    rnd <- sort(all_genes) %>%
+        combn(m=2) %>%
+        t %>%
+        as.data.frame(stringsAsFactors=FALSE)
 
     yyy <- paste(res$complex$V1,res$complex$V2,sep="|")
     rnd_p <- paste(rnd$V1,rnd$V2,sep="|")
