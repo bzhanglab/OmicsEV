@@ -205,11 +205,13 @@ for(i in 1:length(figs)){
 
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
-  cat("## Batch effect evaluation using kBET\n\n")
-  cat("<p>In this section, we used k-nearest neighbour batch effect test (kBET) for quantification of batch effects. First, the algorithm creates k-nearest neighbour matrix and choses 10% of the samples to check the batch label distribution in its neighbourhood. If the local batch label distribution is sufficiently similar to the global batch label distribution, the $\\chi^2$-test does not reject the null hypothesis (that is 'all batches are well-mixed'). Finally, the result of kBET is the average test rejection rate. The lower the test result, the less bias is introduced by the batch effect.</p>\n")
-  kbet_res <- final_res$batch_effect_metrics$kbet
-  kable(kbet_res$table, "html",digits = 3,escape = FALSE) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
+  if(!is.null(final_res$batch_effect_metrics$kbet)){
+    cat("## Batch effect evaluation using kBET\n\n")
+    cat("<p>In this section, we used k-nearest neighbour batch effect test (kBET) for quantification of batch effects. First, the algorithm creates k-nearest neighbour matrix and choses 10% of the samples to check the batch label distribution in its neighbourhood. If the local batch label distribution is sufficiently similar to the global batch label distribution, the $\\chi^2$-test does not reject the null hypothesis (that is 'all batches are well-mixed'). Finally, the result of kBET is the average test rejection rate. The lower the test result, the less bias is introduced by the batch effect.</p>\n")
+    kbet_res <- final_res$batch_effect_metrics$kbet
+    kable(kbet_res$table, "html",digits = 3,escape = FALSE) %>%
+    kable_styling(bootstrap_options = "striped", full_width = F)
+  }
 }
 ```
 
@@ -293,7 +295,11 @@ if(!is.null(final_res$input_parameters$x2)){
   kable(final_res$protein_rna$feature_wise_cor_table, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) %>%
     row_spec(which(final_res$protein_rna$feature_wise_cor_table$median_cor >= sort(final_res$protein_rna$feature_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
-  
+}
+```  
+
+```{r results="asis",fig.align='center'}
+if(!is.null(final_res$input_parameters$x2)){
   cat("## Correlation between mRNA and protein: sample-wise correlation\n")
   kable(final_res$protein_rna$sample_wise_cor_table, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
