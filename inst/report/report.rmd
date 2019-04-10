@@ -310,38 +310,36 @@ if(!is.null(final_res$input_parameters$x2)){
 ```
 
 
-## Phenotype prediction
+```{r results="asis",fig.align='center'}
 
-Build model for prediction: ***`r paste(final_res$ml$class_group,collapse = ",")`***.
-
-```{r, echo=FALSE}
-kable(final_res$ml$table, "html",digits = 3) %>%
+if(!is.null(final_res$ml)){
+  cat("## Phenotype prediction\n")
+  cat("<p>Build model for prediction:",paste(final_res$ml$class_group,collapse = ","),".</p>\n")
+  kable(final_res$ml$table, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
+}
+
 ```
 
-## Co-expression network based function prediction
 
-In this evaluation, each dataset was used to build co-expression network. 
-For a selected network and a selected function term (such as GO or KEGG), 
-proteins/genes annotated to the term and also included in the network were 
-defined as a positive protein/gene set and other proteins/genes in the network 
-constituted the negative protein/gene set for the term. For a selected function 
-term, we use some of the proteins/genes as the seed protein/gene, then we use 
-random walk algorithm to calculate scores for other proteins/genes. A higher s
-core of a protein/gene represents a closer relationship between the 
-protein/gene and the seed proteins/genes. Finally, for each selected function 
-term, we calculate an AUROC to evaluate the prediction performance.
+```{r results="asis",fig.align='center'}
 
-
-```{r, echo=FALSE}
-kable(final_res$fun_pred$table, "html",digits = 3,escape = FALSE) %>%
+if(!is.null(final_res$fun_pred)){
+  cat("## Co-expression network based function prediction\n")
+  cat("<p>In this evaluation, each dataset was used to build co-expression network. For a selected network and a selected function term (such as GO or KEGG), proteins/genes annotated to the term and also included in the network were defined as a positive protein/gene set and other proteins/genes in the network constituted the negative protein/gene set for the term. For a selected function term, we use some of the proteins/genes as the seed protein/gene, then we use random walk algorithm to calculate scores for other proteins/genes. A higher score of a protein/gene represents a closer relationship between the protein/gene and the seed proteins/genes. Finally, for each selected function term, we calculate an AUROC to evaluate the prediction performance.</p>\n")
+  kable(final_res$fun_pred$table, "html",digits = 3,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) %>%
   scroll_box(height = "400px",width = "100%")
+}
+
 ```
 
+
 ```{r, echo=FALSE}
-if(!is.null(final_res$fun_pred$fig)){
-  include_graphics(final_res$fun_pred$fig %>% normalizePath)
+if(!is.null(final_res$fun_pred)){
+  if(!is.null(final_res$fun_pred$fig)){
+    include_graphics(final_res$fun_pred$fig %>% normalizePath)
+  }
 }
 ```
 

@@ -24,6 +24,7 @@
 ##' used.
 ##' @param missing_value_cutoff The cutoff of missing value filtering. Default
 ##' is 0.5.
+##' @param species Default is human.
 ##' @return The path of HTML report.
 ##' @author Bo Wen \email{wenbostar@@gmail.com}
 run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="protein",
@@ -32,7 +33,8 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
                               class_for_ml=NULL,
                               use_common_features_for_func_pred=TRUE,
                               class_color=NULL,out_dir="./",cpu=0,
-                              missing_value_cutoff=0.5){
+                              missing_value_cutoff=0.5,
+                              species="human"){
     res <- list()
 
     ## input parameters
@@ -119,20 +121,24 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     }
 
     ## phenotype prediction
-    if(!is.null(class_for_ml) && file.exists(class_for_ml)){
-        ml_res <- calc_ml_metrics(x1,sample_list=class_for_ml,cpu=cpu)
-    }else{
-        ml_res <- calc_ml_metrics(x1,sample_class=class_for_ml,cpu=cpu)
+    if(!is.null(class_for_ml)){
+        if(!is.null(class_for_ml) && file.exists(class_for_ml)){
+            ml_res <- calc_ml_metrics(x1,sample_list=class_for_ml,cpu=cpu)
+        }else{
+            ml_res <- calc_ml_metrics(x1,sample_class=class_for_ml,cpu=cpu)
+        }
+        res$ml <- ml_res
     }
-    res$ml <- ml_res
 
     ## function prediction
-    save(x1,missing_value_cutoff,cpu,out_dir,file = "data_for_function_prediction.rda")
-    fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
+    if(species=="human"){
+        save(x1,missing_value_cutoff,cpu,out_dir,file = "data_for_function_prediction.rda")
+        fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
                                                sample_class=class_for_fun,
                                                use_all=!use_common_features_for_func_pred,
                                                cpu=cpu,out_dir=out_dir,prefix="omicsev")
-    res$fun_pred <- fp_res
+        res$fun_pred <- fp_res
+    }
     ##
     rfile <- paste(out_dir,"/final_res.rds",sep="")
     saveRDS(res,file = rfile)
