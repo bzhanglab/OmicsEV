@@ -266,26 +266,29 @@ knitr::include_graphics(fig %>% normalizePath)
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
   if(!is.null(final_res$pca_batch_plot_13)){
-  fig <- final_res$pca_batch_plot_13$fig
-  knitr::include_graphics(fig %>% normalizePath)
+    fig <- final_res$pca_batch_plot_13$fig
+    knitr::include_graphics(fig %>% normalizePath)
+  }
 }
-  
-}
+
 ```
 
+```{r results="asis",fig.align='center'}
+if(!is.null(final_res$network_table)){
+  cat("## Correlation between proteins: within vs between protein complexes\n")
+  include_graphics(final_res$network_table$network_boxplot %>% normalizePath)
+}
 
-## Correlation between proteins: within vs between protein complexes
-
-```{r echo=FALSE}
-include_graphics(final_res$network_table$network_boxplot %>% normalizePath)
 ```
 
-The table showing below is a summary of the evaluation. "diff" is Cor(intra) - Cor(inter). "ks" is the statistic value of Kolmogorov-Smirnov test.
-
-```{r echo=FALSE}
-kable(final_res$network_table$cor, "html",digits = 3) %>%
+```{r results="asis",fig.align='center'}
+if(!is.null(final_res$network_table)){
+  cat("<p>The table showing below is a summary of the evaluation. 'diff' is Cor(intra) - Cor(inter). 'ks' is the statistic value of Kolmogorov-Smirnov test.</p>\n")
+  kable(final_res$network_table$cor, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
     row_spec(which(final_res$network_table$cor$ks >= sort(final_res$network_table$cor$ks,decreasing = TRUE)[3]), bold = T, color = "red")
+}
+
 ```
 
 

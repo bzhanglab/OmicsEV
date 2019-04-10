@@ -100,16 +100,19 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     }
 
     ## complex
-    network_data <- import_network_data(type = data_type)
-    network_raw_res <- calc_network_corr(x1,network_data,sample_class=class_for_cor,
-                                     missing_value_ratio=0.00001,cpu=cpu)
-    network_table_res <- plot_network_cor(network_raw_res$result,out_dir = out_dir,
-                                          prefix = "network")
-    saveRDS(network_raw_res,file = paste(out_dir,"/network_raw_res.rds",sep=""))
-    saveRDS(network_table_res,file = paste(out_dir,"/network_table_res.rds",sep=""))
+    ## function prediction
+    if(species=="human"){
+        network_data <- import_network_data(type = data_type)
+        network_raw_res <- calc_network_corr(x1,network_data,sample_class=class_for_cor,
+                                         missing_value_ratio=0.00001,cpu=cpu)
+        network_table_res <- plot_network_cor(network_raw_res$result,out_dir = out_dir,
+                                              prefix = "network")
+        saveRDS(network_raw_res,file = paste(out_dir,"/network_raw_res.rds",sep=""))
+        saveRDS(network_table_res,file = paste(out_dir,"/network_table_res.rds",sep=""))
 
-    res$network_result <- network_raw_res
-    res$network_table <- network_table_res
+        res$network_result <- network_raw_res
+        res$network_table <- network_table_res
+    }
 
     if((data_type == "protein" || data_type == "gene") && !is.null(x2)){
         ## rna protein
