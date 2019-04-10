@@ -76,7 +76,7 @@ import_data_from_flybase_ppi=function(file){
     all_genes <- sort(unique(c(x$V1,x$V2)))
 
     res <- list()
-    res$complex <- x
+    res$network <- x
 
     ## random complex
     rnd <- sort(all_genes) %>%
@@ -84,10 +84,10 @@ import_data_from_flybase_ppi=function(file){
         t %>%
         as.data.frame(stringsAsFactors=FALSE)
 
-    yyy <- paste(res$complex$V1,res$complex$V2,sep="|")
+    yyy <- paste(res$network$V1,res$network$V2,sep="|")
     rnd_p <- paste(rnd$V1,rnd$V2,sep="|")
     rnd <- rnd[ !(rnd_p %in% yyy), ]
-    res$rnd_complex <- rnd
+    res$rnd_network <- rnd
     return(res)
 }
 
