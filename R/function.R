@@ -434,6 +434,23 @@ get_func_pred_table=function(x, min_auc=0.8){
     return(res)
 }
 
+get_func_pred_meanAUC=function(x, min_auc=0.8){
+    f_table <- x
+    f_table$AUC[is.na(f_table$AUC)] <- 0
+
+    f_table_format <- f_table %>% dplyr::select(dataSet,term,AUC,db_num) %>%
+        tidyr::spread(key=dataSet,value=AUC)
+
+    max4term <- f_table_format[,-c(1,2),drop=FALSE] %>% apply(1,max)
+    f_table_format <- f_table_format[max4term>=min_auc,]
+
+    auc_data <- f_table_format[,-c(1,2),drop=FALSE]
+
+    dd <- auc_data %>% apply(2, median)
+    res <- data.frame(dataSet=names(dd),func_auc=dd)
+    return(res)
+}
+
 
 do_function_pred=function(data_dir,sample_list=NULL,
                           missing_value_cutoff=0.5,
@@ -465,6 +482,12 @@ do_function_pred=function(data_dir,sample_list=NULL,
                                                prefix=prefix)
     saveRDS(fp_res,file = paste(out_dir,"/res.rds",sep=""))
     return(fp_res)
+}
+
+##
+plot_pair_point=function(x){
+    x <- x %>% select(term,AUC,dataSet) %>% spread(key = dataSet,value = AUC)
+    plot(x$rna,x$proteome,xlim=c(0.5,1),ylim=c(0.5,1),xlab="RNA",ylab="Protein");abline(a = 0,b=1)
 }
 
 

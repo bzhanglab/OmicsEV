@@ -32,5 +32,6 @@ importFrom(metaX, filterPeaks,removeSample,metaXpipe,reSetPeaksData,
            preProcess,plotPCA,plotHeatMap,peakStat,featureSelection)
 importFrom(NetSAM,MatNet)
 importFrom(shiny,runApp)
+importFrom(plotly,plot_ly,add_trace,layout)
 
 

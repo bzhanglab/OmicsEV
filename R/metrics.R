@@ -1221,7 +1221,7 @@ calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
     return(fres)
 }
 
-
+# generate overview table and overview radar figure
 generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     ## generate an overview table which contains different metrics
     ## input: x =>
@@ -1234,6 +1234,9 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         dat <- merge(dat,x$batch_effect_metrics$kbet$table %>%
                          select(dataSet,kBET.observed))
 
+        dat$kBET <- 1 - dat$kBET.observed
+        dat$kBET.observed <- NULL
+
         #dat$kBET.observed <- cell_spec(dat$kBET.observed,
         #                               color = ifelse(y >= max(y), "red", "black"))
 
@@ -1242,18 +1245,21 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         sil <- data.frame(dataSet=names(x$batch_effect_metrics$sil),
                           silhouette_width=x$batch_effect_metrics$sil)
         dat <- merge(dat,sil)
+        dat$silhouette_width <- abs(dat$silhouette_width)
 
         # PCR
-        pcr <- get_pcr_table(x$batch_effect_metrics$pcr$pcr)
-        sig_pc <- pcr %>% dplyr::filter(p.value.lm<=0.05) %>%
-            dplyr::select(PC) %>%
-            dplyr::distinct()
-        pcr <- pcr %>% dplyr::filter(PC %in% sig_pc$PC) %>%
-            dplyr::select(dataSet,PC,R.squared) %>%
-            dplyr::mutate(PC=paste("batch_effect_",PC,sep="")) %>%
-            tidyr::spread(key = PC,value = R.squared)
+        # pcr <- get_pcr_table(x$batch_effect_metrics$pcr$pcr)
+        # sig_pc <- pcr %>% dplyr::filter(p.value.lm<=0.05) %>%
+        #     dplyr::select(PC) %>%
+        #     dplyr::distinct()
+        # pcr <- pcr %>% dplyr::filter(PC %in% sig_pc$PC) %>%
+        #     dplyr::select(dataSet,PC,R.squared) %>%
+        #     dplyr::mutate(PC=paste("batch_effect_",PC,sep="")) %>%
+        #     tidyr::spread(key = PC,value = R.squared)
+        pcRegscale <- x$batch_effect_metrics$pcr$pcRegscale
+        pcRegscale$pcRegscale <- 1 - pcRegscale$pcRegscale
 
-        dat <- merge(dat,pcr)
+        dat <- merge(dat,pcRegscale)
     }
 
     if(!is.null(x$network_table)){
@@ -1281,7 +1287,7 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     }
 
     if(!is.null(x$fun_pred)){
-        f_res <- get_func_pred_table(x$fun_pred$data,min_auc = min_auc)
+        f_res <- get_func_pred_meanAUC(x$fun_pred$data,min_auc = min_auc)
         dat <- merge(dat,f_res)
     }
 
@@ -1289,6 +1295,36 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
 
 }
 
+
+
+plot_radar=function(x){
+
+    radar_dat <- x
+
+    p <- plot_ly(
+        type = 'scatterpolar',
+        fill = 'toself'
+    )
+    #
+    for(i in 1:nrow(radar_dat)){
+        p <- p %>% add_trace(
+            r = radar_dat[i,-1] %>% as.numeric(),
+            theta = names(radar_dat)[-1],
+            name = x$dataSet[i]
+        )
+    }
+    p <- p %>%
+        layout(
+            polar = list(
+                radialaxis = list(
+                    visible = T,
+                    range = c(0,1)
+                )
+            )
+        )
+
+    return(p)
+}
 
 
 
