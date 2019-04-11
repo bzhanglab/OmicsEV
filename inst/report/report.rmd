@@ -255,6 +255,15 @@ if(n_batch >= 2){
 
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
+  cat("<p>'Scaled PC regression', i.e. total variance of PCs which correlate significantly with batch covariate (FDR<0.05) scaled by the total variance of",pcr_res$top_pc,"PCs:</p>\n")
+  kable(pcr_res$pcRegscale, "html",escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+  }
+```
+
+
+```{r results="asis",fig.align='center'}
+if(n_batch >= 2){
   cat("## Batch effect evaluation using pca score plot\n\n")
   cat("In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.\n")
   fig <- final_res$pca_batch_plot$fig

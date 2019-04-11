@@ -985,7 +985,21 @@ calc_pca_batch_regression=function(x,transform_method=3,scale_method="pareto",
 
     ## explained_var
     explained_var <- fres %>% select(PC,ExplainedVar,dataSet) %>% spread(key=dataSet,value=ExplainedVar)
-    return(list(pcr=res,table=fres2,explained_var=explained_var))
+
+    ## pcRegscale
+    pcRegscale <- sapply(res, function(a){
+        return(a$pcr$pcRegscale)
+    })
+    pcRegscale <- data.frame(dataSet=names(pcRegscale),
+                             pcRegscale=pcRegscale,
+                             stringsAsFactors = FALSE)
+    row.names(pcRegscale) <- NULL
+
+    return(list(pcr=res,
+                table=fres2,
+                explained_var=explained_var,
+                pcRegscale=pcRegscale,
+                top_pc=top_pc))
 }
 
 get_pcr_table=function(x,top_pc=10){
