@@ -71,7 +71,7 @@ kable(ov_table,"html",escape = FALSE) %>%
     scroll_box(height = "400px",width = "100%")
 ```
 
-```{r echo=FALSE, fig.align='center'}
+```{r echo=FALSE, fig.align='center', warning=FALSE}
 #save(final_res,file="a.rda")
 plot_radar(ov_table[,-c(2,3)]) 
 ```
