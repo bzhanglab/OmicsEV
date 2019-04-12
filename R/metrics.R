@@ -1302,8 +1302,15 @@ plot_radar=function(x){
     radar_dat <- x
 
     p <- plot_ly(
-        type = 'scatterpolar',
-        fill = 'toself'
+        type = 'scatterpolargl',
+        #fill = 'toself',
+        #alpha = 0.1,
+        #line = list(smoothing = 1, shape = "spline"),
+        mode = 'lines+markers'#,
+        #marker = list(color = "white",
+        #              size = 4,
+        #              line = list(width = 2)),
+
     )
     #
     for(i in 1:nrow(radar_dat)){
@@ -1311,6 +1318,10 @@ plot_radar=function(x){
             r = radar_dat[i,-1] %>% as.numeric(),
             theta = names(radar_dat)[-1],
             name = x$dataSet[i]
+            #line = list(color = "#d3d3d3", dash = "3px")
+            #mode = "lines"
+
+
         )
     }
     p <- p %>%
