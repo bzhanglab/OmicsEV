@@ -12,13 +12,17 @@
 
 <meta name="author" content="Bo Wen" />
 
-<meta name="date" content="2019-02-18" />
+<meta name="date" content="2019-04-12" />
 
 <title>OmicsEV: A tool for large scale omics datasets evaluation</title>
 
 <script>$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();
-    $('[data-toggle="popover"]').popover();
+    if (typeof $('[data-toggle="tooltip"]').tooltip === 'function') {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+    if ($('[data-toggle="popover"]').popover === 'function') {
+        $('[data-toggle="popover"]').popover();
+    }
 });
 </script>
 
@@ -112,7 +116,7 @@ code > span.ot { color: #007020; }
 <section class="page-header">
 <h1 class="title toc-ignore project-name">OmicsEV: A tool for large scale omics datasets evaluation</h1>
 <h4 class="author project-author">Bo Wen</h4>
-<h4 class="date project-date">2019-01-09</h4>
+<h4 class="date project-date">2019-04-12</h4>
 </section>
 
 
@@ -148,13 +152,13 @@ code > span.ot { color: #007020; }
 <div id="running-evaluation-process" class="section level3">
 <h3>Running evaluation process</h3>
 <p>In <code>OmicsEV</code>, Only one function (<strong>run_omics_evaluation</strong>) is needed to perform the whole evaluation process. An example is showing below:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">run_omics_evaluation</span>(<span class="dt">data_dir =</span> <span class="st">&quot;datasets/&quot;</span>,</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">                     <span class="dt">sample_list =</span> <span class="st">&quot;sample_list.tsv&quot;</span>,</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">                     <span class="dt">data_type =</span> <span class="st">&quot;protein&quot;</span>,</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">                     <span class="dt">x2 =</span> <span class="st">&quot;rna_gene_quantification.tsv&quot;</span>,</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">                     <span class="dt">class_color=</span><span class="st">&quot;class_color.tsv&quot;</span>,</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">                     <span class="dt">use_class=</span><span class="kw">c</span>(<span class="st">&quot;tumor&quot;</span>),</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">                     <span class="dt">cpu=</span><span class="dv">0</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(OmicsEV)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">run_omics_evaluation</span>(<span class="dt">data_dir =</span> <span class="st">&quot;datasets/&quot;</span>,</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">                     <span class="dt">sample_list =</span> <span class="st">&quot;sample_list.tsv&quot;</span>,</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">                     <span class="dt">x2 =</span> <span class="st">&quot;protein.tsv&quot;</span>,</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">                     <span class="dt">cpu=</span><span class="dv">6</span>,</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">                     <span class="dt">data_type=</span><span class="st">&quot;gene&quot;</span>,</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">                     <span class="dt">class_for_ml=</span><span class="st">&quot;sample_ml.tsv&quot;</span>)</a></code></pre></div>
 <p>In general, only a few parameters have to be set:</p>
 <ul>
 <li><strong>data_dir</strong>: a folder contains the datasets in tsv format to be evaluated. All datasets must be the same format. In these files, the first column must be gene ID or protein ID. The expression value of gene or protein must be in non-log scale. An example input dataset looks like below:</li>
@@ -576,7 +580,7 @@ C
 <p>All software and respective versions used to produce this document are listed below.</p>
 <pre><code>## R version 3.5.1 (2018-07-02)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS  10.14.2
+## Running under: macOS  10.14.4
 ## 
 ## Matrix products: default
 ## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
@@ -590,81 +594,82 @@ C
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] formattable_0.2.0.1 kableExtra_0.9.0    dplyr_0.7.8        
-##  [4] R.utils_2.7.0       R.oo_1.22.0         R.methodsS3_1.7.1  
-##  [7] OmicsEV_0.99        xcms_3.4.1          MSnbase_2.8.2      
-## [10] ProtGenerics_1.14.0 S4Vectors_0.20.1    mzR_2.16.0         
-## [13] Rcpp_1.0.0          BiocParallel_1.16.2 Biobase_2.42.0     
+##  [1] formattable_0.2.1   kableExtra_1.1.0    dplyr_0.8.0.1      
+##  [4] R.utils_2.8.0       R.oo_1.22.0         R.methodsS3_1.7.1  
+##  [7] OmicsEV_0.99        xcms_3.4.4          MSnbase_2.8.3      
+## [10] ProtGenerics_1.14.0 S4Vectors_0.20.1    mzR_2.16.2         
+## [13] Rcpp_1.0.1          BiocParallel_1.16.6 Biobase_2.42.0     
 ## [16] BiocGenerics_0.28.0 BiocStyle_2.10.0   
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] prabclus_2.2-6         ModelMetrics_1.2.2     tidyr_0.8.2           
-##   [4] missForest_1.4         ggplot2_3.1.0          acepack_1.4.1         
-##   [7] bit64_0.9-7            knitr_1.21             data.table_1.11.8     
-##  [10] rpart_4.1-13           RCurl_1.95-4.11        doParallel_1.0.14     
+##   [1] prabclus_2.2-7         ModelMetrics_1.2.2     tidyr_0.8.3           
+##   [4] missForest_1.4         ggplot2_3.1.1          acepack_1.4.1         
+##   [7] bit64_0.9-7            knitr_1.22             data.table_1.12.2     
+##  [10] rpart_4.1-13           RCurl_1.95-4.12        doParallel_1.0.14     
 ##  [13] generics_0.0.2         preprocessCore_1.44.0  lambda.r_1.2.3        
-##  [16] RSQLite_2.1.1          mixOmics_6.6.0         RANN_2.6              
-##  [19] bit_1.1-14             xml2_1.2.0             lubridate_1.7.4       
-##  [22] assertthat_0.2.0       viridis_0.5.1          gower_0.1.2           
-##  [25] xfun_0.4               hms_0.4.2              evaluate_0.12         
-##  [28] TSP_1.1-6              progress_1.2.0         DEoptimR_1.0-8        
-##  [31] dendextend_1.9.0       caTools_1.17.1.1       igraph_1.2.2          
-##  [34] DBI_1.0.0              htmlwidgets_1.3        futile.logger_1.4.3   
-##  [37] rARPACK_0.11-0         purrr_0.2.5            RSpectra_0.13-1       
-##  [40] backports_1.1.3        trimcluster_0.1-2.1    annotate_1.60.0       
-##  [43] biomaRt_2.38.0         ROCR_1.0-7             prettydoc_0.2.1       
-##  [46] caret_6.0-81           withr_2.1.2            kBET_0.99.5           
-##  [49] itertools_0.1-3        robustbase_0.93-3      checkmate_1.8.5       
-##  [52] gclus_1.3.1            prettyunits_1.0.2      fdrtool_1.2.15        
-##  [55] mclust_5.4.2           ropls_1.14.0           softImpute_1.4        
-##  [58] cluster_2.0.7-1        ape_5.2                lazyeval_0.2.1        
-##  [61] crayon_1.3.4           ellipse_0.4.1          genefilter_1.64.0     
-##  [64] edgeR_3.24.2           recipes_0.1.4          pkgconfig_2.0.2       
-##  [67] nlme_3.1-137           seriation_1.2-3        nnet_7.3-12           
-##  [70] bindr_0.1.1            rlang_0.3.0.1          diptest_0.75-7        
-##  [73] pls_2.7-0              registry_0.5           DiscriMiner_0.1-29    
-##  [76] affyio_1.52.0          MassSpecWavelet_1.48.0 VennDiagram_1.6.20    
-##  [79] randomForest_4.6-14    matrixStats_0.54.0     graph_1.60.0          
-##  [82] Matrix_1.2-15          boot_1.3-20            base64enc_0.1-3       
-##  [85] whisker_0.3-2          GlobalOptions_0.1.0    pheatmap_1.0.10       
-##  [88] png_0.1-7              viridisLite_0.3.0      rjson_0.2.20          
-##  [91] bootstrap_2017.2       bitops_1.0-6           KernSmooth_2.23-15    
-##  [94] pROC_1.13.0            R2HTML_2.3.2           blob_1.1.1            
-##  [97] shape_1.4.4            stringr_1.3.1          qvalue_2.14.0         
-## [100] robust_0.4-18          readr_1.3.1            faahKO_1.22.0         
-## [103] scales_1.0.0           memoise_1.1.0          magrittr_1.5          
-## [106] plyr_1.8.4             gplots_3.0.1           gdata_2.18.0          
-## [109] zlibbioc_1.28.0        compiler_3.5.1         RColorBrewer_1.1-2    
-## [112] pcaMethods_1.74.0      rrcov_1.4-7            affy_1.60.0           
-## [115] htmlTable_1.12         formatR_1.5            Formula_1.2-3         
-## [118] WGCNA_1.66             MASS_7.3-51.1          mgcv_1.8-26           
-## [121] tidyselect_0.2.5       vsn_3.50.0             stringi_1.2.4         
-## [124] highr_0.7              yaml_2.2.0             locfit_1.5-9.1        
-## [127] NetSAM_2.0.5           latticeExtra_0.6-28    MALDIquant_1.18       
-## [130] grid_3.5.1             tools_3.5.1            circlize_0.4.5        
-## [133] rstudioapi_0.8         foreach_1.4.4          foreign_0.8-71        
-## [136] gridExtra_2.3          prodlim_2018.04.18     scatterplot3d_0.3-41  
-## [139] mzID_1.20.0            digest_0.6.18          BiocManager_1.30.4    
-## [142] FNN_1.1.2.2            lava_1.6.4             fpc_2.1-11.1          
-## [145] bindrcpp_0.2.2         ncdf4_1.16             httr_1.4.0            
-## [148] Nozzle.R1_1.1-1        AnnotationDbi_1.44.0   ComplexHeatmap_1.99.4 
-## [151] kernlab_0.9-27         colorspace_1.3-2       rvest_0.3.2           
-## [154] XML_3.98-1.16          IRanges_2.16.0         splines_3.5.1         
-## [157] RBGL_1.58.1            multtest_2.38.0        flexmix_2.3-14        
-## [160] fit.models_0.5-14      xtable_1.8-3           futile.options_1.0.1  
-## [163] BBmisc_1.11            dynamicTreeCut_1.63-1  corpcor_1.6.9         
-## [166] timeDate_3043.102      UpSetR_1.3.3           modeltools_0.2-22     
-## [169] ipred_0.9-8            R6_2.3.0               Hmisc_4.1-1           
-## [172] pillar_1.3.1           htmltools_0.3.6        glue_1.3.0            
-## [175] class_7.3-14           codetools_0.2-16       DiffCorr_0.4.1        
-## [178] pcaPP_1.9-73           mvtnorm_1.0-8          lattice_0.20-38       
-## [181] tibble_1.4.2           sva_3.30.0             SSPA_2.22.0           
-## [184] gtools_3.8.1           metaX_2.0.0            GO.db_3.7.0           
-## [187] CAMERA_1.38.0          survival_2.43-3        limma_3.38.3          
-## [190] rmarkdown_1.11         munsell_0.5.0          fastcluster_1.1.25    
-## [193] e1071_1.7-0            GetoptLong_0.1.7       iterators_1.0.10      
-## [196] impute_1.56.0          reshape2_1.4.3         gtable_0.2.0          
-## [199] coop_0.6-1</code></pre>
+##  [16] RSQLite_2.1.1          mixOmics_6.6.2         RANN_2.6.1            
+##  [19] bit_1.1-14             httpuv_1.5.1           webshot_0.5.1         
+##  [22] xml2_1.2.0             lubridate_1.7.4        assertthat_0.2.1      
+##  [25] viridis_0.5.1          gower_0.2.0            xfun_0.6              
+##  [28] hms_0.4.2              promises_1.0.1         evaluate_0.13         
+##  [31] TSP_1.1-6              progress_1.2.0         DEoptimR_1.0-8        
+##  [34] dendextend_1.10.0      caTools_1.17.1.2       igraph_1.2.4          
+##  [37] DBI_1.0.0              htmlwidgets_1.3        futile.logger_1.4.3   
+##  [40] rARPACK_0.11-0         purrr_0.3.2            RSpectra_0.14-0       
+##  [43] backports_1.1.3        trimcluster_0.1-2.1    annotate_1.60.1       
+##  [46] biomaRt_2.38.0         ROCR_1.0-7             prettydoc_0.2.1       
+##  [49] caret_6.0-82           withr_2.1.2            kBET_0.99.5           
+##  [52] itertools_0.1-3        robustbase_0.93-4      checkmate_1.9.1       
+##  [55] gclus_1.3.2            prettyunits_1.0.2      fdrtool_1.2.15        
+##  [58] mclust_5.4.3           ropls_1.14.1           softImpute_1.4        
+##  [61] cluster_2.0.8          ape_5.3                lazyeval_0.2.2        
+##  [64] crayon_1.3.4           ellipse_0.4.1          genefilter_1.64.0     
+##  [67] edgeR_3.24.3           recipes_0.1.5          pkgconfig_2.0.2       
+##  [70] nlme_3.1-139           seriation_1.2-3        nnet_7.3-12           
+##  [73] rlang_0.3.4            diptest_0.75-7         pls_2.7-1             
+##  [76] registry_0.5-1         DiscriMiner_0.1-29     affyio_1.52.0         
+##  [79] MassSpecWavelet_1.48.1 VennDiagram_1.6.20     randomForest_4.6-14   
+##  [82] matrixStats_0.54.0     graph_1.60.0           Matrix_1.2-17         
+##  [85] boot_1.3-20            base64enc_0.1-3        whisker_0.3-2         
+##  [88] GlobalOptions_0.1.0    pheatmap_1.0.12        png_0.1-7             
+##  [91] viridisLite_0.3.0      rjson_0.2.20           bootstrap_2017.2      
+##  [94] bitops_1.0-6           KernSmooth_2.23-15     pROC_1.14.0           
+##  [97] R2HTML_2.3.2           blob_1.1.1             shape_1.4.4           
+## [100] stringr_1.4.0          qvalue_2.14.1          robust_0.4-18         
+## [103] readr_1.3.1            faahKO_1.22.0          scales_1.0.0          
+## [106] memoise_1.1.0          magrittr_1.5           plyr_1.8.4            
+## [109] gplots_3.0.1.1         gdata_2.18.0           zlibbioc_1.28.0       
+## [112] compiler_3.5.1         RColorBrewer_1.1-2     pcaMethods_1.74.0     
+## [115] rrcov_1.4-7            affy_1.60.0            htmlTable_1.13.1      
+## [118] formatR_1.6            Formula_1.2-3          WGCNA_1.66            
+## [121] MASS_7.3-51.4          mgcv_1.8-28            tidyselect_0.2.5      
+## [124] vsn_3.50.0             stringi_1.4.3          highr_0.8             
+## [127] yaml_2.2.0             locfit_1.5-9.1         NetSAM_2.0.5          
+## [130] latticeExtra_0.6-28    MALDIquant_1.19.2      grid_3.5.1            
+## [133] tools_3.5.1            circlize_0.4.6         rstudioapi_0.10       
+## [136] foreach_1.4.4          foreign_0.8-71         gridExtra_2.3         
+## [139] prodlim_2018.04.18     scatterplot3d_0.3-41   mzID_1.20.1           
+## [142] digest_0.6.18          BiocManager_1.30.4     shiny_1.3.0           
+## [145] FNN_1.1.3              lava_1.6.5             fpc_2.1-11.1          
+## [148] later_0.8.0            ncdf4_1.16.1           httr_1.4.0            
+## [151] Nozzle.R1_1.1-1        AnnotationDbi_1.44.0   ComplexHeatmap_1.99.4 
+## [154] kernlab_0.9-27         colorspace_1.4-1       rvest_0.3.3           
+## [157] XML_3.98-1.19          IRanges_2.16.0         splines_3.5.1         
+## [160] RBGL_1.58.2            multtest_2.38.0        flexmix_2.3-15        
+## [163] fit.models_0.5-14      xtable_1.8-3           futile.options_1.0.1  
+## [166] BBmisc_1.11            dynamicTreeCut_1.63-1  corpcor_1.6.9         
+## [169] timeDate_3043.102      UpSetR_1.3.3           modeltools_0.2-22     
+## [172] ipred_0.9-8            R6_2.4.0               Hmisc_4.2-0           
+## [175] mime_0.6               pillar_1.3.1           htmltools_0.3.6       
+## [178] glue_1.3.1             class_7.3-15           codetools_0.2-16      
+## [181] DiffCorr_0.4.1         pcaPP_1.9-73           mvtnorm_1.0-10        
+## [184] lattice_0.20-38        tibble_2.1.1           sva_3.30.1            
+## [187] SSPA_2.22.1            gtools_3.8.1           metaX_2.0.0           
+## [190] GO.db_3.7.0            CAMERA_1.38.1          survival_2.44-1.1     
+## [193] limma_3.38.3           rmarkdown_1.12         munsell_0.5.0         
+## [196] fastcluster_1.1.25     e1071_1.7-1            GetoptLong_0.1.7      
+## [199] iterators_1.0.10       impute_1.56.0          reshape2_1.4.3        
+## [202] gtable_0.3.0           coop_0.6-1</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
