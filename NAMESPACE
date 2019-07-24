@@ -33,5 +33,7 @@ importFrom(metaX, filterPeaks,removeSample,metaXpipe,reSetPeaksData,
 importFrom(NetSAM,MatNet)
 importFrom(shiny,runApp)
 importFrom(plotly,plot_ly,add_trace,layout)
+importFrom(xgboost,xgb.cv)
+importFrom(pROC,roc)
 
 

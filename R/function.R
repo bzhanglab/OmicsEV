@@ -6,13 +6,14 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
                                           cpu=0,
                                           out_dir="./",
                                           prefix="test",
-                                          min_auc=0.8){
+                                          min_auc=0.6){
     if(missing_value_cutoff > 0){
         x <- lapply(x, filterPeaks, ratio=missing_value_cutoff)
     }
 
     if(use_all==FALSE){
         ## use common genes/proteins
+        cat("Use common proteins/genes for function prediction ...\n")
         for(i in 1:length(x)){
             if(i == 1){
                 common_ids <- x[[1]]@peaksData$ID
@@ -60,28 +61,31 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     if(cpu > length(x)){
         cpu <- length(x)
     }
-    cat("Used cpus:",cpu,"\n")
-    cl <- makeCluster(getOption("cl.cores", cpu))
-    clusterExport(cl, c("MatNet"),envir=environment())
-    clusterExport(cl, c("getTable"),envir=environment())
-    #save(x,file="x.rda")
 
-    net_res <- parLapply(cl,x,function(y){
-        y@peaksData <- y@peaksData %>% dplyr::filter(class %in% class_group)
-        dat <- getTable(y,valueID="value")
-        row.names(dat) <- dat$ID
-        dat$ID <- NULL
-        dat <- as.matrix(dat)
-        net_data <- MatNet(dat)
-        return(net_data)
-    })
+    #cat("Used cpus:",cpu,"\n")
+    #cl <- makeCluster(getOption("cl.cores", cpu))
+    #clusterExport(cl, c("MatNet"),envir=environment())
+    #clusterExport(cl, c("getTable"),envir=environment())
+    #save(x,file="x_fun.rda")
 
-    stopCluster(cl)
+    #net_res <- parLapply(cl,x,function(y){
+    #    y@peaksData <- y@peaksData %>% dplyr::filter(class %in% class_group)
+    #    dat <- getTable(y,valueID="value")
+    #    row.names(dat) <- dat$ID
+    #    dat$ID <- NULL
+    #    dat <- as.matrix(dat)
+    #    net_data <- MatNet(dat)
+    #    return(net_data)
+    #})
+
+    #stopCluster(cl)
     #save(net_res,file="net_res.rda")
 
 
-    fun_res <- lapply(net_res, function(y){
-        pres <- function_predict(y,cpu=input_cpu)
+    fun_res <- lapply(x, function(y){
+        # pres <- function_predict(y,cpu=input_cpu)
+        y <- metaX::getTable(y,valueID = "value")
+        pres <- function_predict_xgb(y,cpu=input_cpu)
     })
 
     dat_name <- names(fun_res)
@@ -100,7 +104,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     # max4term <- f_table[,-c(1,2)] %>% apply(1, max,na.rm = TRUE)
     #f_table <- f_table[max4term>=min_auc,]
 
-    f_table_format <- f_table %>% dplyr::select(dataSet,term,AUC,db_num) %>%
+    f_table_format <- f_table %>% dplyr::select(dataSet,term,AUC,ID_db_num) %>%
         spread(key=dataSet,value=AUC)
 
     # save(fres,f_table_format,file = "fres.rda")
@@ -115,7 +119,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     }else{
         fig <- NULL
     }
-    f_table_format2 <- f_table_format %>% mutate(db_num=NULL)
+    f_table_format2 <- f_table_format %>% mutate(ID_db_num=NULL)
     row.names(f_table_format2) <- f_table_format2$term
     f_table_format2$term <- NULL
     f_table_format2 <- t(f_table_format2)
@@ -179,6 +183,7 @@ function_predict=function(net_data,min_n=10,kfold=5,ranNum=1000,r=0.5,cpu=0){
         n_ID1 <- length(ann)
         ann_use <- intersect(ann,V(net_data)$name)
         n_ID2 <- length(ann_use)
+        ann_use_str <- paste(sort(ann_use),collapse = ";",sep = ";")
 
         if(n_ID2 >= min_n){
 
@@ -206,10 +211,101 @@ function_predict=function(net_data,min_n=10,kfold=5,ranNum=1000,r=0.5,cpu=0){
 
             fauc <- mean(aucR)
 
-            dd <- data.frame(db_num=n_ID1,ID_num=n_ID2,AUC=fauc,ID=y,
+            dd <- data.frame(ID_db_num=n_ID1,ID_num=n_ID2,AUC=fauc,ID_db=y,
+                             ID=ann_use_str,
                              stringsAsFactors = FALSE)
         }else{
-            dd <- data.frame(db_num=n_ID1,ID_num=n_ID2,AUC=NA,ID=y,
+            dd <- data.frame(ID_db_num=n_ID1,ID_num=n_ID2,AUC=NA,ID_db=y,
+                             ID=ann_use_str,
+                             stringsAsFactors = FALSE)
+        }
+        return(dd)
+
+    })
+    stopCluster(cl)
+
+    dat_name <- names(pres)
+    for(i in 1:length(dat_name)){
+        pres[[i]]$term <- dat_name[i]
+
+    }
+
+    fres <- bind_rows(pres)
+
+    return(fres)
+
+}
+
+
+function_predict_xgb=function(x,min_n=10,kfold=5,niter=50,cpu=0){
+
+    # x is a data matrix, row is protein/gene ID and column is sample
+
+    fundb <- readRDS(system.file("extdata/kegg.rds",package = "OmicsEV"))
+    #fundb <- fundb %>% dplyr::filter(n>=min_n)
+
+    fundb_list <- list()
+    for(i in 1:nrow(fundb)){
+        fundb_list[[i]] <- fundb$ID[i]
+    }
+    names(fundb_list) <- fundb$fun
+
+    if(cpu==0){
+        cpu <- detectCores()
+    }
+    if(cpu > length(fundb_list)){
+        cpu <- length(fundb_list)
+    }
+    cat("Used cpus:",cpu,"\n")
+    cl <- makeCluster(getOption("cl.cores", cpu))
+    #clusterExport(cl, c("xgb.cv"),envir=environment())
+    clusterExport(cl, c("niter"),envir=environment())
+    clusterExport(cl, c("roc"),envir=environment())
+    clusterExport(cl, c("min_n"),envir=environment())
+    #clusterExport(cl, c("net_data"),envir=environment())
+    clusterEvalQ(cl,library("xgboost"))
+
+    #save(fundb_list,net_data,file="test.rda")
+    pres <- parLapply(cl,fundb_list,function(y){
+        ann <- strsplit(x = y,split = ";") %>% unlist()
+        n_ID1 <- length(ann)
+
+        ann_use <- intersect(ann,x$ID)
+        n_ID2 <- length(ann_use)
+        ann_use_str <- paste(sort(ann_use),collapse = ";",sep = ";")
+
+        if(n_ID2 >= min_n){
+
+            # randomly select the same number of protein/genes from the dataset
+            x_rt <- x %>% filter(!(ID %in% ann_use))
+            pos_data <- x %>% filter(ID %in% ann_use) %>% dplyr::select(-ID)
+            ## repeat niter times
+            all_roc <- sapply(1:niter, function(i){
+                ann_use_rd <- sample(x_rt$ID,size = n_ID2,replace = FALSE)
+                neg_data <- x_rt %>% filter(ID %in% ann_use_rd) %>% dplyr::select(-ID)
+                y_label <- c(rep(1,n_ID2),rep(0,n_ID2))
+                train_data <- rbind(pos_data,neg_data) %>% as.matrix()
+                dtrain <- xgb.DMatrix(train_data,label=y_label)
+                cv_res <- xgb.cv(data = train_data, label = y_label, nrounds = 3,
+                                 #nthread = 1,
+                                 nfold = kfold,
+                                 metrics = list("error"),
+                                 objective = "binary:logistic",
+                                 verbose=FALSE,
+                                 stratified=TRUE,
+                                 prediction = TRUE)
+                auroc_val <- roc(y_label,cv_res$pred,quiet = TRUE)$auc
+
+            })
+
+            fauc <- mean(all_roc)
+
+            dd <- data.frame(ID_db_num=n_ID1,ID_num=n_ID2,AUC=fauc,ID_db=y,
+                             ID=ann_use_str,
+                             stringsAsFactors = FALSE)
+        }else{
+            dd <- data.frame(ID_db_num=n_ID1,ID_num=n_ID2,AUC=NA,ID_db=y,
+                             ID=ann_use_str,
                              stringsAsFactors = FALSE)
         }
         return(dd)
@@ -399,7 +495,7 @@ plot_fun_boxplot=function(x, out_dir="./",prefix="test"){
 
 }
 
-get_func_pred_table=function(x, min_auc=0.8){
+get_func_pred_table=function(x, min_auc=0.6){
     f_table <- x
     f_table$AUC[is.na(f_table$AUC)] <- 0
 
@@ -407,7 +503,7 @@ get_func_pred_table=function(x, min_auc=0.8){
     # max4term <- f_table[,-c(1,2)] %>% apply(1, max,na.rm = TRUE)
     #f_table <- f_table[max4term>=min_auc,]
 
-    f_table_format <- f_table %>% dplyr::select(dataSet,term,AUC,db_num) %>%
+    f_table_format <- f_table %>% dplyr::select(dataSet,term,AUC,ID_db_num) %>%
         tidyr::spread(key=dataSet,value=AUC)
 
     max4term <- f_table_format[,-c(1,2),drop=FALSE] %>% apply(1,max)
@@ -438,7 +534,7 @@ get_func_pred_meanAUC=function(x, min_auc=0.8){
     f_table <- x
     f_table$AUC[is.na(f_table$AUC)] <- 0
 
-    f_table_format <- f_table %>% dplyr::select(dataSet,term,AUC,db_num) %>%
+    f_table_format <- f_table %>% dplyr::select(dataSet,term,AUC,ID_db_num) %>%
         tidyr::spread(key=dataSet,value=AUC)
 
     max4term <- f_table_format[,-c(1,2),drop=FALSE] %>% apply(1,max)
