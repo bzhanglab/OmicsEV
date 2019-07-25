@@ -6,7 +6,8 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
                                           cpu=0,
                                           out_dir="./",
                                           prefix="test",
-                                          min_auc=0.6){
+                                          min_auc=0.6,
+                                          method="xgboost"){
     if(missing_value_cutoff > 0){
         x <- lapply(x, filterPeaks, ratio=missing_value_cutoff)
     }
@@ -62,31 +63,39 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
         cpu <- length(x)
     }
 
-    #cat("Used cpus:",cpu,"\n")
-    #cl <- makeCluster(getOption("cl.cores", cpu))
-    #clusterExport(cl, c("MatNet"),envir=environment())
-    #clusterExport(cl, c("getTable"),envir=environment())
-    #save(x,file="x_fun.rda")
 
-    #net_res <- parLapply(cl,x,function(y){
-    #    y@peaksData <- y@peaksData %>% dplyr::filter(class %in% class_group)
-    #    dat <- getTable(y,valueID="value")
-    #    row.names(dat) <- dat$ID
-    #    dat$ID <- NULL
-    #    dat <- as.matrix(dat)
-    #    net_data <- MatNet(dat)
-    #    return(net_data)
-    #})
+    if(method=="xgboost"){
+        cat("Use xgboost for function prediction ...!\n")
+        fun_res <- lapply(x, function(y){
+            # pres <- function_predict(y,cpu=input_cpu)
+            y <- metaX::getTable(y,valueID = "value")
+            pres <- function_predict_xgb(y,cpu=input_cpu)
+        })
+    }else{
+        cat("Use co-expression network based method for function prediction ...!\n")
+        cat("Used cpus:",cpu,"\n")
+        cl <- makeCluster(getOption("cl.cores", cpu))
+        clusterExport(cl, c("MatNet"),envir=environment())
+        clusterExport(cl, c("getTable"),envir=environment())
+        #save(x,file="x_fun.rda")
 
-    #stopCluster(cl)
-    #save(net_res,file="net_res.rda")
+        net_res <- parLapply(cl,x,function(y){
+            y@peaksData <- y@peaksData %>% dplyr::filter(class %in% class_group)
+            dat <- getTable(y,valueID="value")
+            row.names(dat) <- dat$ID
+            dat$ID <- NULL
+            dat <- as.matrix(dat)
+            net_data <- MatNet(dat)
+            return(net_data)
+        })
 
+        stopCluster(cl)
+        #save(net_res,file="net_res.rda")
+        fun_res <- lapply(x, function(y){
+            pres <- function_predict(y,cpu=input_cpu)
+        })
+    }
 
-    fun_res <- lapply(x, function(y){
-        # pres <- function_predict(y,cpu=input_cpu)
-        y <- metaX::getTable(y,valueID = "value")
-        pres <- function_predict_xgb(y,cpu=input_cpu)
-    })
 
     dat_name <- names(fun_res)
     for(i in 1:length(dat_name)){
@@ -553,6 +562,7 @@ do_function_pred=function(data_dir,sample_list=NULL,
                           use_common_features_for_func_pred=FALSE,
                           cpu=0,
                           out_dir="./",
+                          method="xgboost",
                           prefix="omicsev"){
     ## import data
     input_data_files <- list.files(path = data_dir,pattern = ".tsv",
@@ -574,6 +584,7 @@ do_function_pred=function(data_dir,sample_list=NULL,
                                                missing_value_cutoff=missing_value_cutoff,
                                                use_all=!use_common_features_for_func_pred,
                                                cpu=cpu,
+                                               method=method,
                                                out_dir=out_dir,
                                                prefix=prefix)
     saveRDS(fp_res,file = paste(out_dir,"/res.rds",sep=""))

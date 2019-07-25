@@ -1186,13 +1186,15 @@ calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
 
     res <- lapply(x, function(y){
 
-        if(cpu==0){
-            library(doMC)
-            cpu = detectCores()
-            registerDoMC(cores = cpu)
-        }else if(cpu>=2){
-            library(doMC)
-            registerDoMC(cores = cpu)
+        if(requireNamespace("doMC",quietly = TRUE)){
+            if(cpu==0){
+                library(doMC)
+                cpu = detectCores()
+                registerDoMC(cores = cpu)
+            }else if(cpu>=2){
+                library(doMC)
+                registerDoMC(cores = cpu)
+            }
         }
         y <- metaX::missingValueImpute(y)
         dat <- featureSelection(y,group=class_group,method = "rf",

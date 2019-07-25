@@ -14,9 +14,9 @@
 ##' correlation analysis. A charactar vector.
 ##' @param class_for_fun The class of samples which will be used for function
 ##' prediction. A charactar vector.
-##' @param class_for_ml The class of samples which will be used for phenotype
+##' @param class_for_ml The classes of samples (two classes) which will be used for phenotype
 ##' prediction. A sample list file or a charactar vector.
-##' @use_common_features_for_func_pred whether or not to use common
+##' @param use_common_features_for_func_pred whether or not to use common
 ##' protien/genes for function prediction. Default is TRUE.
 ##' @param class_color The color for class.
 ##' @param out_dir Output folder

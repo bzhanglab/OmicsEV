@@ -5,8 +5,10 @@
 \title{Perform omics datasets evaluation}
 \usage{
 run_omics_evaluation(data_dir = NULL, x2 = NULL, sample_list = NULL,
-  data_type = "protein", use_class = NULL, class_color = NULL,
-  out_dir = "./", cpu = 0, missing_value_cutoff = 0.5)
+  data_type = "protein", class_for_cor = NULL, class_for_fun = NULL,
+  class_for_ml = NULL, use_common_features_for_func_pred = TRUE,
+  class_color = NULL, out_dir = "./", cpu = 0,
+  missing_value_cutoff = 0.5, species = "human")
 }
 \arguments{
 \item{data_dir}{A folder contains multiple omics datasets in tsv format.
@@ -23,8 +25,17 @@ order information.}
 \item{data_type}{The quantification data type in folder data_dir:
 protein, gene. Default is protein.}
 
-\item{use_class}{The class of samples which will be used to perform
-correlation analysis}
+\item{class_for_cor}{The class of samples which will be used to perform
+correlation analysis. A charactar vector.}
+
+\item{class_for_fun}{The class of samples which will be used for function
+prediction. A charactar vector.}
+
+\item{class_for_ml}{The classes of samples (two classes) which will be used for phenotype
+prediction. A sample list file or a charactar vector.}
+
+\item{use_common_features_for_func_pred}{whether or not to use common
+protien/genes for function prediction. Default is TRUE.}
 
 \item{class_color}{The color for class.}
 
@@ -35,6 +46,8 @@ used.}
 
 \item{missing_value_cutoff}{The cutoff of missing value filtering. Default
 is 0.5.}
+
+\item{species}{Default is human.}
 }
 \value{
 The path of HTML report.
