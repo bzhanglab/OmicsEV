@@ -210,10 +210,6 @@ run_reporter=function(x,out_file="test.html",x2=NULL,n_batch=0){
 }
 
 
-launch_gui=function(){
-    runApp(appDir = system.file("app",package = "OmicsEV"))
-}
-
 
 
 
