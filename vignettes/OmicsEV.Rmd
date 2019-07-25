@@ -70,13 +70,13 @@ In `OmicsEV`, Only one function (**run_omics_evaluation**) is needed to
 perform the whole evaluation process. An example is showing below:
 
 ```{r eval=FALSE, echo=TRUE}
+library(OmicsEV)
 run_omics_evaluation(data_dir = "datasets/",
                      sample_list = "sample_list.tsv",
-                     data_type = "protein",
-                     x2 = "rna_gene_quantification.tsv",
-                     class_color="class_color.tsv",
-                     use_class=c("tumor"),
-                     cpu=0)
+                     x2 = "protein.tsv",
+                     cpu=6,
+                     data_type="gene",
+                     class_for_ml="sample_ml.tsv")
 ```
 
 In general, only a few parameters have to be set:
@@ -119,16 +119,6 @@ When the function is finished successfully, an HTML-based report that contains
 different evaluation metrics will be generated. An example report is available 
 at https://github.com/bzhanglab/OmicsEV.
 
-Users can also perform the evaluation analysis through the shiny-based GUI 
-implemented in `OmicsEV`. The GUI can be lauched using the following function:
-
-```{r eval=FALSE, echo=TRUE}
-launch_gui()
-```
-
-```{r echo=FALSE}
-knitr::include_graphics("./gui.png" %>% normalizePath)
-```
 
 # Evaluation metrics implemented in OmicsEV
 
