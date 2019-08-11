@@ -651,7 +651,13 @@ run_basic_metrics=function(x,plist,out_dir="./"){
     res$features_number_distribution <- fig$fig
 
     message("plot CV distribution...")
-    fig <- metaX::plotCV(para)
+    class_sample <- para@peaksData %>% dplyr::select(class,sample) %>% distinct()
+    class_2 <- which(table(class_sample$class)>=2) %>% names()
+    cv_para <- para
+    cv_para@peaksData <- cv_para@peaksData %>% dplyr::filter(class %in% class_2)
+    cv_para@sampleList <- cv_para@sampleList %>% dplyr::filter(class %in% class_2)
+
+    fig <- metaX::plotCV(cv_para)
     #fig1 <- paste("data/",basename(fig$fig),sep="")
     #fig2 <- paste("data/",basename(fig$highfig),sep="")
     ##
