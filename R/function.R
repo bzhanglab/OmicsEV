@@ -8,7 +8,10 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
                                           prefix="test",
                                           min_auc=0.6,
                                           method="xgboost"){
+
+
     if(missing_value_cutoff > 0){
+        message(date(),": missing value filtering ...\n")
         x <- lapply(x, filterPeaks, ratio=missing_value_cutoff)
     }
 
@@ -275,7 +278,7 @@ function_predict_xgb=function(x,min_n=10,kfold=5,niter=50,cpu=0){
     clusterEvalQ(cl,library("xgboost"))
 
     #save(fundb_list,net_data,file="test.rda")
-    pres <- parLapply(cl,fundb_list,function(y){
+    pres <- parLapplyLB(cl,fundb_list,function(y){
         ann <- strsplit(x = y,split = ";") %>% unlist()
         n_ID1 <- length(ann)
 

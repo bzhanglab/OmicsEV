@@ -59,6 +59,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     dataset_names <- basename(input_data_files) %>%
         str_replace_all(pattern = ".tsv",replacement = "")
 
+    message(date(),": import data ...\n")
     x1 <- list()
     for(i in 1:length(input_data_files)){
         x1[[i]] <- import_data(input_data_files[i],sample_list = sample_list,
@@ -80,6 +81,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     save(x1,file = paste(out_dir,"/input_x.rda",sep=""))
 
     ## run basic metrics
+    message(date(),": calculate basic metrics for each dataset ...\n")
     if(is.null(class_color)){
         class_names <- res$input_parameters$sample_list$class %>% unique
         class_color_data <- data.frame(class = class_names, col=rainbow(length(class_names)))
@@ -94,6 +96,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     n_batch <- res$input_parameters$sample_list$batch %>% unique() %>% length
     cat("Batch number:",n_batch,"\n")
     if(n_batch >= 2){
+        message(date(),": batch effect evaluation ...\n")
         res$batch_effect_metrics <- calc_batch_effect_metrics(x1)
         ##
         res$pca_batch_plot <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view")
@@ -103,6 +106,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     ## complex
     ## function prediction
     if(species %in% c("human","drosophila")){
+        message(date(),": complex analysis ...\n")
         network_data <- import_network_data(type = data_type,species=species)
         network_raw_res <- calc_network_corr(x1,network_data,sample_class=class_for_cor,
                                          missing_value_ratio=0.00001,cpu=cpu)
@@ -116,6 +120,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     }
 
     if((data_type == "protein" || data_type == "gene") && !is.null(x2)){
+        message(date(),": correlation analysis ...\n")
         ## rna protein
         protein_rna_res <- calc_protein_rna_corr(x1,dat2,sample_class = class_for_cor,
                                                  out_dir = out_dir,cpu = cpu,
@@ -126,6 +131,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
 
     ## phenotype prediction
     if(!is.null(class_for_ml)){
+        message(date(),": phenotype prediction ...\n")
         if(!is.null(class_for_ml) && file.exists(class_for_ml)){
             ml_res <- calc_ml_metrics(x1,sample_list=class_for_ml,cpu=cpu)
         }else{
@@ -136,6 +142,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
 
     ## function prediction
     if(species=="human"){
+        message(date(),": function prediction ...\n")
         save(x1,missing_value_cutoff,cpu,out_dir,file = "data_for_function_prediction.rda")
         fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
                                                sample_class=class_for_fun,
@@ -148,6 +155,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     saveRDS(res,file = rfile)
     report_file <- paste(out_dir %>% normalizePath(),"/final_evaluation_report.html",sep="")
     #run_reporter(rfile,report_file,x2=x2,n_batch = n_batch)
+    message(date(),": report generation ...\n")
     run_reporter(rfile,report_file)
     return(report_file)
 }
