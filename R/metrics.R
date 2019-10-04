@@ -1026,10 +1026,11 @@ get_pcr_table=function(x,top_pc=10){
 }
 
 
-calc_batch_effect_metrics=function(x,out_dir="./",prefix="test"){
+calc_batch_effect_metrics=function(x,out_dir="./",prefix="test",missing_value_cutoff=0.5){
 
     cat("Missing value imputation ...\n")
     x <- lapply(x, function(y){
+        y <- metaX::filterPeaks(y,ratio = missing_value_cutoff)
         y <- missingValueImpute(y)
         return(y)
     })

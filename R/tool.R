@@ -88,16 +88,24 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
         class_color <- paste(out_dir,"/class_color.tsv",sep="")
         write_tsv(class_color_data,path=class_color)
     }
+
     basic_metrics_res <- calc_basic_metrics(x1,class_color=class_color,out_dir=out_dir,cpu=cpu)
     saveRDS(basic_metrics_res,file = paste(out_dir,"/basic_metrics_res.rds",sep=""))
     res$basic_metrics <- basic_metrics_res
+
+    ## remove missing value
+    #message(date(),": filter missing value ...\n")
+    #x1 <- lapply(x1, function(y){
+    #    y <- metaX::filterPeaks(y,ratio = missing_value_cutoff)
+    #    return(y)
+    #})
 
     ## batch effect evaluation
     n_batch <- res$input_parameters$sample_list$batch %>% unique() %>% length
     cat("Batch number:",n_batch,"\n")
     if(n_batch >= 2){
         message(date(),": batch effect evaluation ...\n")
-        res$batch_effect_metrics <- calc_batch_effect_metrics(x1)
+        res$batch_effect_metrics <- calc_batch_effect_metrics(x1,missing_value_cutoff=missing_value_cutoff)
         ##
         res$pca_batch_plot <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view")
         res$pca_batch_plot_13 <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view_13",pc="13")
