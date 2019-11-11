@@ -140,6 +140,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     ## phenotype prediction
     if(!is.null(class_for_ml)){
         message(date(),": phenotype prediction ...\n")
+        save(x1,class_for_ml,cpu,file = paste(out_dir,"/ml_data.rda",sep=""))
         if(!is.null(class_for_ml) && file.exists(class_for_ml)){
             ml_res <- calc_ml_metrics(x1,sample_list=class_for_ml,cpu=cpu)
         }else{

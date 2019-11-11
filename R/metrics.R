@@ -1047,7 +1047,7 @@ calc_batch_effect_metrics=function(x,out_dir="./",prefix="test",missing_value_cu
 plot_pca=function(x,out_dir="./",prefix="test",pointSize=0.8,labelSize=4,
                   legendRowBatch = 10,
                   legendRowClass = NULL,show_class=FALSE,
-                  pc="12"){
+                  pc="12",ncol_sub_fig=3,fig_res=120, pngWidth=6.5, legend_pos=NULL){
     # pc = "12" or "13"
 
     plotData <- lapply(x,function(y){y$pca_plot_data}) %>% bind_rows()
@@ -1086,17 +1086,23 @@ plot_pca=function(x,out_dir="./",prefix="test",pointSize=0.8,labelSize=4,
         ggobj <- ggobj + geom_point(aes(shape=class),size=pointSize)+
             scale_shape_manual(values=1:n_distinct(plotData$class))
     }
+
+    ggobj <- ggobj + facet_wrap(.~dataSet,ncol = ncol_sub_fig,scales="free")
+
     if(!is.null(legendRowBatch)){
         ggobj <- ggobj + guides(color = guide_legend(nrow = legendRowBatch))
 
     }
-    ggobj <- ggobj + facet_wrap(.~dataSet,ncol = 3,scales="free")
+
+    if(!is.null(legend_pos)){
+        ggobj <- ggobj + theme(legend.position=legend_pos)
+    }
 
     #pdf(file = highfig,width = pdfWidth,height = pdfHeight)
-    pngWidth <- 6.5
-    ht <- ceiling(length(unique(plotData$dataSet))/3) * pngWidth/3
+    #pngWidth <- 6.5
+    ht <- ceiling(length(unique(plotData$dataSet))/ncol_sub_fig) * pngWidth/ncol_sub_fig
     fig <- paste(out_dir,"/",prefix,"-pca_batch.png",sep="")
-    png(fig,width = pngWidth,height = ht,res = 120,units = "in")
+    png(fig,width = pngWidth,height = ht,res = fig_res,units = "in")
 
     print(ggobj)
     dev.off()
