@@ -1244,12 +1244,12 @@ calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
     for(i in 1:length(res)){
         res[[i]]$dataSet <- name_datasets[i]
     }
-    save(res,file="test_2019.rda")
 
-    ftable <- lapply(res,function(x){x$results %>% select(dataSet,everything())}) %>%
-        bind_rows()
+    res_table <- bind_rows(res)
 
-    fres <- list(data=res,table=ftable,class_group=class_group)
+    ftable <- res_table %>% group_by(dataSet) %>% dplyr::summarise(mean_ROC=mean(ROC),median_ROC=median(ROC),sd_ROC=sd(ROC))
+
+    fres <- list(data=res_table,table=ftable,class_group=class_group)
 
     return(fres)
 }
