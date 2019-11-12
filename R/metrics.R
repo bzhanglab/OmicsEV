@@ -1155,7 +1155,8 @@ plot_density=function(x,out_dir="./",prefix="test",filter_by_quantile=0){
 
 
 calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
-                         missing_value_cutoff=0.5, valueID="value",cpu=0){
+                         missing_value_cutoff=0.5, valueID="value",cpu=0,
+                         n_repeats=20){
 
     if(missing_value_cutoff > 0){
         x <- lapply(x, filterPeaks, ratio=missing_value_cutoff)
@@ -1214,16 +1215,22 @@ calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
             }
         }
         y <- metaX::missingValueImpute(y)
-        dat <- featureSelection(y,group=class_group,method = "rf",
-                                valueID = valueID, fold = 5,
-                                resampling_method = "LOOCV",
-                                repeats = 10,
-                                plot_roc = FALSE,
-                                ratio = 2/3, k = 100,
-                                metric = "ROC",
-                                sizes = length(unique(y@peaksData$ID)),
-                                plotCICurve = FALSE,verbose=TRUE)
-        return(dat)
+
+        dd <- lapply(1:n_repeats,function(i){
+            cat("Repeat:", i,"\n")
+            dat <- featureSelection(y,group=class_group,method = "rf",
+                                    valueID = valueID, fold = 5,
+                                    resampling_method = "LOOCV",
+                                    repeats = 10,
+                                    plot_roc = FALSE,
+                                    ratio = 2/3, k = 100,
+                                    metric = "ROC",
+                                    sizes = length(unique(y@peaksData$ID)),
+                                    plotCICurve = FALSE,verbose=TRUE)
+
+        })
+        return(dd)
+        #return(dat)
     })
 
     name_datasets <- names(res)
@@ -1231,6 +1238,7 @@ calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
     for(i in 1:length(res)){
         res[[i]]$results$dataSet <- name_datasets[i]
     }
+    save(res,file="test_2019.rda")
 
     ftable <- lapply(res,function(x){x$results %>% select(dataSet,everything())}) %>%
         bind_rows()

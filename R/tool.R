@@ -134,7 +134,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
                                                  out_dir = out_dir,cpu = cpu,
                                                  missing_value_ratio=missing_value_cutoff)
         res$protein_rna <- protein_rna_res
-        saveRDS(protein_rna_res,file = paste(out_dir,"/protein_rna_res.rda",sep=""))
+        saveRDS(protein_rna_res,file = paste(out_dir,"/protein_rna_res.rds",sep=""))
     }
 
     ## phenotype prediction

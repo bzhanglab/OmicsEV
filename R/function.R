@@ -278,7 +278,7 @@ function_predict_xgb=function(x,min_n=10,kfold=5,niter=50,cpu=0){
     clusterEvalQ(cl,library("xgboost"))
 
     #save(fundb_list,net_data,file="test.rda")
-    pres <- parLapplyLB(cl,fundb_list,function(y){
+    pres <- parallel::parLapply(cl,fundb_list,function(y){
         ann <- strsplit(x = y,split = ";") %>% unlist()
         n_ID1 <- length(ann)
 
