@@ -375,6 +375,7 @@ calcCorBetweenProteinAndRNA=function(para1,para2,log=TRUE,select_by=1,top_n=1000
     fres$feature_wise_cor_data <- res
     fres$feature_wise <- rr
     fres$sample_wise <- sample_wise_cor
+
     return(fres)
 }
 
@@ -468,7 +469,48 @@ calc_protein_rna_corr=function(x,rna,sample_class=NULL,out_dir="./",cpu=0,
     dev.off()
     fres$sample_wise_cor_fig <- sample_wise_cor_fig
 
+    # generate CDF and boxplot plots for gene-wise correlation analysis
+    ## boxplot
+    gene_wise_cor_res_all <- lapply(res, function(y){y$feature_wise_cor_data}) %>% bind_rows()
+    fres$gene_wise_cor_boxplot_fig <- plot_feature_wise_cor_boxplot(gene_wise_cor_res_all,out_dir = out_dir,prefix = "OmicsEV")
+    ## CDF
+    fres$gene_wise_cor_cdf_fig <- plot_feature_wise_cor_cdf(gene_wise_cor_res_all,out_dir = out_dir,prefix = "OmicsEV")
+
     return(fres)
+
+}
+
+plot_feature_wise_cor_cdf=function(x, out_dir="./",prefix="test"){
+
+    fig <- paste(out_dir,"/",prefix,"-feature_wise_cor_cdf.png",sep="")
+    png(fig,width = 400,height = 400,res=120)
+    gg <- ggplot(x,aes(cor,group=dataSet,color=dataSet))+
+        stat_ecdf(geom = "step",size=0.3)+
+        theme(legend.position = c(0, 1),
+              legend.justification = c(0, 1),
+              legend.key = element_blank(),
+              legend.background=element_blank())+
+        ylab("CDF")+
+        xlab("Pearson correlation")
+    print(gg)
+    dev.off()
+    return(fig)
+}
+
+plot_feature_wise_cor_boxplot=function(x, out_dir="./",prefix="test"){
+
+    median_cor <- x %>% group_by(dataSet) %>% summarise(median_cor=median(cor,na.rm = TRUE)) %>% arrange(desc(median_cor))
+    x$dataSet <- factor(x$dataSet,levels = median_cor$dataSet)
+
+    fig <- paste(out_dir,"/",prefix,"-feature_wise_cor_boxplot.png",sep="")
+    png(fig,width = 800,height = 400,res=120)
+    gg <- ggplot(x,aes(x=dataSet,y=cor))+
+        geom_boxplot(width=0.5,outlier.size=0.2)+
+        ylab("Pearson correlation")+
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+    print(gg)
+    dev.off()
+    return(fig)
 
 }
 
@@ -1252,6 +1294,28 @@ calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
     fres <- list(data=res_table,table=ftable,class_group=class_group)
 
     return(fres)
+}
+
+plot_ml_boxplot=function(x, out_dir="./",prefix="test"){
+
+    mean_roc <- x %>% group_by(dataSet) %>% summarise(mean_ROC=mean(ROC)) %>% arrange(desc(mean_ROC))
+    x$dataSet <- factor(x$dataSet,levels = mean_roc$dataSet)
+
+
+
+    fig <- paste(out_dir,"/",prefix,"-ml_boxplot.png",sep="")
+    png(fig,width = 800,height = 400,res=120)
+    gg <- ggplot(x,aes(x=dataSet,y=ROC))+
+        geom_boxplot(width=0.5,outlier.size=0.2)+
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+        stat_summary(fun.y=mean, colour="darkred", geom="point",
+                     shape=18, size=3, show.legend = FALSE) +
+        geom_text(data = mean_roc %>% mutate(mean_roc_label=sprintf("%.2f",mean_ROC)),
+                  aes(label = mean_roc_label, y = mean_ROC + 0.1*(max(x$ROC)-min(x$ROC))),colour="darkred")
+    print(gg)
+    dev.off()
+    return(fig)
+
 }
 
 # generate overview table and overview radar figure

@@ -146,6 +146,7 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
         }else{
             ml_res <- calc_ml_metrics(x1,sample_class=class_for_ml,cpu=cpu)
         }
+        ml_res$fig <- plot_ml_boxplot(ml_res$data,out_dir,prefix="OmicsEV")
         res$ml <- ml_res
     }
 
@@ -225,6 +226,8 @@ run_reporter=function(x,out_file="test.html",x2=NULL,n_batch=0){
     cat("Work dir:",work_dir,"\n")
     render(rmd,params = list(input=x),output_file = out_file, knit_root_dir=work_dir)
 }
+
+
 
 
 

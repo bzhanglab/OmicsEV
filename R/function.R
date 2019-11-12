@@ -493,7 +493,7 @@ plot_fun_boxplot=function(x, out_dir="./",prefix="test"){
     fig <- paste(out_dir,"/",prefix,"-fun_boxplot.png",sep="")
     png(fig,width = 800,height = 400,res=120)
     gg <- ggplot(box_data,aes(x=Method,y=Rank))+
-        geom_boxplot()+
+        geom_boxplot(width=0.5,outlier.size=0.2)+
         theme(axis.text.x = element_text(angle = 90, hjust = 1))+
         stat_summary(fun.y=mean, colour="darkred", geom="point",
                      shape=18, size=3, show.legend = FALSE) +
