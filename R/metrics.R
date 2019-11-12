@@ -372,6 +372,7 @@ calcCorBetweenProteinAndRNA=function(para1,para2,log=TRUE,select_by=1,top_n=1000
                      stringsAsFactors = FALSE)
 
     fres <- list()
+    fres$feature_wise_cor_data <- res
     fres$feature_wise <- rr
     fres$sample_wise <- sample_wise_cor
     return(fres)
@@ -433,6 +434,7 @@ calc_protein_rna_corr=function(x,rna,sample_class=NULL,out_dir="./",cpu=0,
     for(i in 1:length(dataset_name)){
         res[[i]]$feature_wise$dataSet <- dataset_name[i]
         res[[i]]$sample_wise$dataSet <- dataset_name[i]
+        res[[i]]$feature_wise_cor_data$dataSet <- dataset_name[i]
     }
 
     ## feature wise
