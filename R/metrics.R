@@ -1227,16 +1227,22 @@ calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
                                     metric = "ROC",
                                     sizes = length(unique(y@peaksData$ID)),
                                     plotCICurve = FALSE,verbose=TRUE)
+            dat$results$Repeat_ID = i
+            return(dat)
 
         })
-        return(dd)
+
+        eval_res <- lapply(dd,function(x){ x$results %>% select(everything())}) %>%
+            bind_rows()
+
+        return(eval_res)
         #return(dat)
     })
 
     name_datasets <- names(res)
 
     for(i in 1:length(res)){
-        res[[i]]$results$dataSet <- name_datasets[i]
+        res[[i]]$dataSet <- name_datasets[i]
     }
     save(res,file="test_2019.rda")
 
