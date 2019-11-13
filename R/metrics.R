@@ -1256,7 +1256,12 @@ calc_ml_metrics=function(x,sample_list=NULL,sample_class=NULL,use_all=TRUE,
                 registerDoMC(cores = cpu)
             }
         }
-        y <- metaX::missingValueImpute(y)
+        if(any(is.na(y@peaksData$value))){
+            y <- metaX::missingValueImpute(y)
+        }else{
+            cat("No missing value!\n")
+        }
+
 
         dd <- lapply(1:n_repeats,function(i){
             cat("Repeat:", i,"\n")
