@@ -93,7 +93,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
         })
 
         stopCluster(cl)
-        #save(net_res,file="net_res.rda")
+        save(net_res,file="net_res.rda")
         fun_res <- lapply(x, function(y){
             pres <- function_predict(y,cpu=input_cpu)
         })
