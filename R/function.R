@@ -511,6 +511,15 @@ plot_fun_boxplot=function(x, out_dir="./",prefix="test"){
                   aes(label = mean_rank_label, y = mean_rank + 0.5),colour="darkred")
     print(gg)
     dev.off()
+
+    ## save plot data
+    fig_data_file <- paste(out_dir,"/",prefix,"-fun_boxplot.rds",sep="")
+    fig_data <- list()
+    fig_data$plot_object <- gg
+    fig_data$plot_data <- box_data
+    saveRDS(fig_data,file = fig_data_file)
+
+
     return(fig)
 
 }

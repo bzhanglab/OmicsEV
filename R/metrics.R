@@ -288,6 +288,15 @@ plot_network_cor=function(x, out_dir="./",prefix="test"){
     ks_df <- data.frame(dataSet=names(ks_res),ks=ks_res %>% unlist())
     res$cor <- merge(cor_res,ks_df,sort=FALSE)
 
+
+    ## save plot data
+    fig_data_file <- paste(out_dir,"/",prefix,"-complex_all_boxplot.rds",sep="")
+    fig_data <- list()
+    fig_data$plot_object <- gg
+    fig_data$plot_data <- dat
+    saveRDS(fig_data,file = fig_data_file)
+
+
     return(res)
 }
 
@@ -494,6 +503,14 @@ plot_feature_wise_cor_cdf=function(x, out_dir="./",prefix="test"){
         xlab("Pearson correlation")
     print(gg)
     dev.off()
+
+    ## save plot data
+    fig_data_file <- paste(out_dir,"/",prefix,"-feature_wise_cor_cdf.rds",sep="")
+    fig_data <- list()
+    fig_data$plot_object <- gg
+    fig_data$plot_data <- x
+    saveRDS(fig_data,file = fig_data_file)
+
     return(fig)
 }
 
@@ -1319,6 +1336,14 @@ plot_ml_boxplot=function(x, out_dir="./",prefix="test"){
                   aes(label = mean_roc_label, y = mean_ROC + 0.1*(max(x$ROC)-min(x$ROC))),colour="darkred")
     print(gg)
     dev.off()
+
+    ## save plot data
+    fig_data_file <- paste(out_dir,"/",prefix,"-ml_boxplot.rds",sep="")
+    fig_data <- list()
+    fig_data$plot_object <- gg
+    fig_data$plot_data <- x
+    saveRDS(fig_data,file = fig_data_file)
+
     return(fig)
 
 }
