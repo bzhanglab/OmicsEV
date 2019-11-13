@@ -6,7 +6,7 @@ importFrom(dplyr,filter,rename,mutate,distinct,select,left_join,bind_rows,"%>%",
            inner_join,one_of,summarise,bind_cols,everything,as_tibble)
 importFrom(tidyr,gather,spread_,spread)
 importFrom(parallel,makeCluster,stopCluster,clusterExport,detectCores,
-           parLapply,parSapply,clusterEvalQ)
+           parLapply,parSapply,clusterEvalQ,parLapplyLB)
 importFrom(ggplot2, aes, aes_string, element_text, facet_grid,element_blank,
            facet_wrap, geom_bar, geom_errorbar, geom_histogram,element_rect,
            geom_line, geom_point, geom_text, geom_vline, ggplot,stat_ellipse,
@@ -17,7 +17,7 @@ importFrom(ggplot2, aes, aes_string, element_text, facet_grid,element_blank,
            scale_y_log10,geom_density2d,scale_shape_manual,guide_legend,
            coord_cartesian,scale_shape_discrete,geom_jitter,position_jitter,
            geom_density,coord_flip,labs,expand_limits,geom_boxplot,guides,
-           scale_color_manual,ylim,geom_violin,stat_summary)
+           scale_color_manual,ylim,geom_violin,stat_summary,stat_ecdf)
 importFrom(stringr,str_replace_all)
 importFrom(readr,read_tsv,write_tsv)
 importFrom(UpSetR,upset,fromList)

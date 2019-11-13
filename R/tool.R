@@ -27,14 +27,17 @@
 ##' @param species Default is human.
 ##' @return The path of HTML report.
 ##' @author Bo Wen \email{wenbostar@@gmail.com}
-run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="protein",
+run_omics_evaluation=function(data_dir=NULL,
+                              x2=NULL,x2_label="RNA",add_x2=TRUE,
+                              sample_list=NULL,data_type="protein",
                               class_for_cor=NULL,
                               class_for_fun=NULL,
                               class_for_ml=NULL,
                               use_common_features_for_func_pred=TRUE,
                               class_color=NULL,out_dir="./",cpu=0,
                               missing_value_cutoff=0.5,
-                              species="human"){
+                              species="human",
+                              use_existing_data=FALSE){
     cat("species:",species,"\n")
     res <- list()
 
@@ -71,14 +74,21 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
 
     res$input_parameters$datasets <- x1
 
+    x1_data <- x1
+
     ## rna
     dat2 <- NULL
     if(!is.null(x2)){
         dat2 <- import_data(x2,sample_list = sample_list,
                             missing_value_cutoff = missing_value_cutoff)
+        dat2@ID <- x2_label
+        if(add_x2){
+            x1_data[[x2_label]] <- dat2
+        }
     }
 
     save(x1,file = paste(out_dir,"/input_x.rda",sep=""))
+
 
     ## run basic metrics
     message(date(),": calculate basic metrics for each dataset ...\n")
@@ -89,9 +99,16 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
         write_tsv(class_color_data,path=class_color)
     }
 
-    basic_metrics_res <- calc_basic_metrics(x1,class_color=class_color,out_dir=out_dir,cpu=cpu)
-    saveRDS(basic_metrics_res,file = paste(out_dir,"/basic_metrics_res.rds",sep=""))
-    res$basic_metrics <- basic_metrics_res
+    basic_metrics_res_file <- paste(out_dir,"/basic_metrics_res.rds",sep="")
+    if(use_existing_data && file.exists(basic_metrics_res_file)){
+        cat("Use existing data from file:",basic_metrics_res_file,"\n")
+        basic_metrics_res <- readRDS(basic_metrics_res_file)
+        res$basic_metrics <- basic_metrics_res
+    }else{
+        basic_metrics_res <- calc_basic_metrics(x1,class_color=class_color,out_dir=out_dir,cpu=cpu)
+        saveRDS(basic_metrics_res,file = basic_metrics_res_file)
+        res$basic_metrics <- basic_metrics_res
+    }
 
     ## remove missing value
     #message(date(),": filter missing value ...\n")
@@ -114,17 +131,37 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     ## complex
     ## function prediction
     if(species %in% c("human","drosophila")){
-        message(date(),": complex analysis ...\n")
-        network_data <- import_network_data(type = data_type,species=species)
-        network_raw_res <- calc_network_corr(x1,network_data,sample_class=class_for_cor,
-                                         missing_value_ratio=0.00001,cpu=cpu)
-        network_table_res <- plot_network_cor(network_raw_res$result,out_dir = out_dir,
-                                              prefix = "network")
-        saveRDS(network_raw_res,file = paste(out_dir,"/network_raw_res.rds",sep=""))
-        saveRDS(network_table_res,file = paste(out_dir,"/network_table_res.rds",sep=""))
 
-        res$network_result <- network_raw_res
-        res$network_table <- network_table_res
+        message(date(),": complex analysis ...\n")
+        complex_data_res_file <- paste(out_dir,"/complex_data_res.rds",sep="")
+        if(use_existing_data && file.exists(complex_data_res_file)){
+
+            cat("Use existing data from file:",complex_data_res_file,"\n")
+            complex_data_res <- readRDS(complex_data_res_file)
+
+            res$network_result <- complex_data_res$network_raw_res
+            res$network_table <- complex_data_res$network_table_res
+
+
+        }else{
+
+            network_data <- import_network_data(type = data_type,species=species)
+            network_raw_res <- calc_network_corr(x1_data,network_data,sample_class=class_for_cor,
+                                             missing_value_ratio=0.00001,cpu=cpu)
+            network_table_res <- plot_network_cor(network_raw_res$result,out_dir = out_dir,
+                                                  prefix = "network")
+            saveRDS(network_raw_res,file = paste(out_dir,"/network_raw_res.rds",sep=""))
+            saveRDS(network_table_res,file = paste(out_dir,"/network_table_res.rds",sep=""))
+
+            complex_data_res <- list()
+            complex_data_res$network_raw_res <- network_raw_res
+            complex_data_res$network_table_res <- network_table_res
+            complex_data_res$add_x2 <- add_x2
+            saveRDS(complex_data_res,file = complex_data_res_file)
+
+            res$network_result <- network_raw_res
+            res$network_table <- network_table_res
+        }
     }
 
     if((data_type == "protein" || data_type == "gene") && !is.null(x2)){
@@ -140,25 +177,47 @@ run_omics_evaluation=function(data_dir=NULL,x2=NULL,sample_list=NULL,data_type="
     ## phenotype prediction
     if(!is.null(class_for_ml)){
         message(date(),": phenotype prediction ...\n")
-        save(x1,class_for_ml,cpu,file = paste(out_dir,"/ml_data.rda",sep=""))
-        if(!is.null(class_for_ml) && file.exists(class_for_ml)){
-            ml_res <- calc_ml_metrics(x1,sample_list=class_for_ml,cpu=cpu)
+
+        ml_data_res_file <- paste(out_dir,"/ml_data_res.rds",sep="")
+        if(use_existing_data && file.exists(ml_data_res_file)){
+
+            cat("Use existing data from file:",ml_data_res_file,"\n")
+            ml_res <- readRDS(ml_data_res_file)
+            ml_res$fig <- plot_ml_boxplot(ml_res$data,out_dir,prefix="OmicsEV")
+            res$ml <- ml_res
         }else{
-            ml_res <- calc_ml_metrics(x1,sample_class=class_for_ml,cpu=cpu)
+
+            save(x1_data,class_for_ml,cpu,file = paste(out_dir,"/ml_data.rda",sep=""))
+            if(!is.null(class_for_ml) && file.exists(class_for_ml)){
+                ml_res <- calc_ml_metrics(x1_data,sample_list=class_for_ml,cpu=cpu)
+            }else{
+                ml_res <- calc_ml_metrics(x1_data,sample_class=class_for_ml,cpu=cpu)
+            }
+            ml_res$fig <- plot_ml_boxplot(ml_res$data,out_dir,prefix="OmicsEV")
+            saveRDS(ml_res,file=ml_data_res_file)
+            res$ml <- ml_res
         }
-        ml_res$fig <- plot_ml_boxplot(ml_res$data,out_dir,prefix="OmicsEV")
-        res$ml <- ml_res
     }
 
     ## function prediction
     if(species=="human"){
         message(date(),": function prediction ...\n")
-        save(x1,missing_value_cutoff,cpu,out_dir,file = "data_for_function_prediction.rda")
-        fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
+        fun_data_res_file <- paste(out_dir,"/fun_data_res.rds",sep="")
+        if(use_existing_data && file.exists(fun_data_res_file)){
+
+            cat("Use existing data from file:",fun_data_res_file,"\n")
+            fp_res <- readRDS(fun_data_res_file)
+            res$fun_pred <- fp_res
+
+        }else{
+            save(x1,missing_value_cutoff,cpu,out_dir,file = "data_for_function_prediction.rda")
+            fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
                                                sample_class=class_for_fun,
                                                use_all=!use_common_features_for_func_pred,
                                                cpu=cpu,out_dir=out_dir,prefix="omicsev")
-        res$fun_pred <- fp_res
+            res$fun_pred <- fp_res
+        }
+
     }
     ##
     rfile <- paste(out_dir,"/final_res.rds",sep="")
