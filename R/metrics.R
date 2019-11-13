@@ -483,7 +483,7 @@ calc_protein_rna_corr=function(x,rna,sample_class=NULL,out_dir="./",cpu=0,
 plot_feature_wise_cor_cdf=function(x, out_dir="./",prefix="test"){
 
     fig <- paste(out_dir,"/",prefix,"-feature_wise_cor_cdf.png",sep="")
-    png(fig,width = 400,height = 400,res=120)
+    png(fig,width = 400,height = 400,res=150)
     gg <- ggplot(x,aes(cor,group=dataSet,color=dataSet))+
         stat_ecdf(geom = "step",size=0.3)+
         theme(legend.position = c(0, 1),
