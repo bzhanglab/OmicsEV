@@ -78,7 +78,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     }else{
         cat("Use co-expression network based method for function prediction ...!\n")
 
-        net_data_file <- paste(out_dir,"/net_data.rda",sep="")
+        net_data_file <- paste(out_dir,"/net_data.rds",sep="")
         if(use_existing_data && file.exists(net_data_file)){
             net_res <- readRDS(net_data_file)
         }else{
@@ -102,7 +102,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
             saveRDS(net_res,file=net_data_file)
         }
 
-        fun_res <- lapply(x, function(y){
+        fun_res <- lapply(net_res, function(y){
             pres <- function_predict(y,cpu=input_cpu)
         })
     }
