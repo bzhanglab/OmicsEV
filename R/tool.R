@@ -123,10 +123,25 @@ run_omics_evaluation=function(data_dir=NULL,
     cat("Batch number:",n_batch,"\n")
     if(n_batch >= 2){
         message(date(),": batch effect evaluation ...\n")
-        res$batch_effect_metrics <- calc_batch_effect_metrics(x1,missing_value_cutoff=missing_value_cutoff)
-        ##
-        res$pca_batch_plot <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view")
-        res$pca_batch_plot_13 <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view_13",pc="13")
+
+        batch_effect_data_res_file <- paste(out_dir,"/batch_effect_data_res.rds",sep="")
+        if(use_existing_data && file.exists(batch_effect_data_res_file)){
+            cat("Use existing data from file:",batch_effect_data_res_file,"\n")
+            batch_effect_res <- readRDS(batch_effect_data_res_file)
+            res$batch_effect_metrics <- batch_effect_res$batch_effect_metrics
+            res$pca_batch_plot <- batch_effect_res$pca_batch_plot
+            res$pca_batch_plot_13 <- batch_effect_res$pca_batch_plot_13
+        }else{
+            res$batch_effect_metrics <- calc_batch_effect_metrics(x1,missing_value_cutoff=missing_value_cutoff)
+            res$pca_batch_plot <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view")
+            res$pca_batch_plot_13 <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view_13",pc="13")
+
+            batch_effect_res <- list()
+            batch_effect_res$batch_effect_metrics <- batch_effect_metrics
+            batch_effect_res$pca_batch_plot <- pca_batch_plot
+            batch_effect_res$pca_batch_plot_13 <- pca_batch_plot_13
+            saveRDS(batch_effect_res,file = batch_effect_data_res_file)
+        }
     }
 
     ## complex correlation analysis
