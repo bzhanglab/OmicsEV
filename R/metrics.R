@@ -1379,8 +1379,8 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
 
     if(!is.null(x$ml)){
         dat <- merge(dat,x$ml$table %>%
-                         dplyr::select(dataSet,ROC) %>%
-                         dplyr::rename(AUROC=ROC))
+                         dplyr::select(dataSet,mean_ROC) %>%
+                         dplyr::rename(AUROC=mean_ROC))
     }
 
     if(!is.null(x$fun_pred)){
