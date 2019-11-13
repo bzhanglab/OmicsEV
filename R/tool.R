@@ -210,8 +210,8 @@ run_omics_evaluation=function(data_dir=NULL,
             res$fun_pred <- fp_res
 
         }else{
-            save(x1,missing_value_cutoff,cpu,out_dir,file = "data_for_function_prediction.rda")
-            fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
+            save(x1_data,missing_value_cutoff,class_for_fun,use_common_features_for_func_pred,cpu,out_dir,method_for_fun,file = "data_for_function_prediction.rda")
+            fp_res <- calc_function_prediction_metrics(x1_data,missing_value_cutoff=missing_value_cutoff,
                                                sample_class=class_for_fun,
                                                use_all=!use_common_features_for_func_pred,
                                                cpu=cpu,out_dir=out_dir,prefix="omicsev",
