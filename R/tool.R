@@ -156,7 +156,8 @@ run_omics_evaluation=function(data_dir=NULL,
             complex_data_res <- readRDS(complex_data_res_file)
 
             res$network_result <- complex_data_res$network_raw_res
-            res$network_table <- complex_data_res$network_table_res
+            res$network_table <- plot_network_cor(res$network_result$result,out_dir = out_dir,
+                                                  prefix = "network")
 
 
         }else{
@@ -166,8 +167,8 @@ run_omics_evaluation=function(data_dir=NULL,
                                              missing_value_ratio=0.00001,cpu=cpu)
             network_table_res <- plot_network_cor(network_raw_res$result,out_dir = out_dir,
                                                   prefix = "network")
-            saveRDS(network_raw_res,file = paste(out_dir,"/network_raw_res.rds",sep=""))
-            saveRDS(network_table_res,file = paste(out_dir,"/network_table_res.rds",sep=""))
+            #saveRDS(network_raw_res,file = paste(out_dir,"/network_raw_res.rds",sep=""))
+            #saveRDS(network_table_res,file = paste(out_dir,"/network_table_res.rds",sep=""))
 
             complex_data_res <- list()
             complex_data_res$network_raw_res <- network_raw_res
