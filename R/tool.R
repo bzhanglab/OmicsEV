@@ -32,6 +32,7 @@ run_omics_evaluation=function(data_dir=NULL,
                               sample_list=NULL,data_type="protein",
                               class_for_cor=NULL,
                               class_for_fun=NULL,
+                              method_for_fun="xgboost",
                               class_for_ml=NULL,
                               use_common_features_for_func_pred=TRUE,
                               class_color=NULL,out_dir="./",cpu=0,
@@ -128,8 +129,7 @@ run_omics_evaluation=function(data_dir=NULL,
         res$pca_batch_plot_13 <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view_13",pc="13")
     }
 
-    ## complex
-    ## function prediction
+    ## complex correlation analysis
     if(species %in% c("human","drosophila")){
 
         message(date(),": complex analysis ...\n")
@@ -214,7 +214,8 @@ run_omics_evaluation=function(data_dir=NULL,
             fp_res <- calc_function_prediction_metrics(x1,missing_value_cutoff=missing_value_cutoff,
                                                sample_class=class_for_fun,
                                                use_all=!use_common_features_for_func_pred,
-                                               cpu=cpu,out_dir=out_dir,prefix="omicsev")
+                                               cpu=cpu,out_dir=out_dir,prefix="omicsev",
+                                               method=method_for_fun)
             res$fun_pred <- fp_res
         }
 
