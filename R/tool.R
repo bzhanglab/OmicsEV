@@ -34,6 +34,7 @@ run_omics_evaluation=function(data_dir=NULL,
                               class_for_fun=NULL,
                               method_for_fun="xgboost",
                               class_for_ml=NULL,
+                              n_repeats_for_ml=20,
                               use_common_features_for_func_pred=TRUE,
                               class_color=NULL,out_dir="./",cpu=0,
                               missing_value_cutoff=0.5,
@@ -204,9 +205,9 @@ run_omics_evaluation=function(data_dir=NULL,
 
             save(x1_data,class_for_ml,cpu,file = paste(out_dir,"/ml_data.rda",sep=""))
             if(!is.null(class_for_ml) && file.exists(class_for_ml)){
-                ml_res <- calc_ml_metrics(x1_data,sample_list=class_for_ml,cpu=cpu)
+                ml_res <- calc_ml_metrics(x1_data,sample_list=class_for_ml,cpu=cpu,n_repeats = n_repeats_for_ml)
             }else{
-                ml_res <- calc_ml_metrics(x1_data,sample_class=class_for_ml,cpu=cpu)
+                ml_res <- calc_ml_metrics(x1_data,sample_class=class_for_ml,cpu=cpu,n_repeats = n_repeats_for_ml)
             }
             ml_res$fig <- plot_ml_boxplot(ml_res$data,out_dir,prefix="OmicsEV")
             saveRDS(ml_res,file=ml_data_res_file)
