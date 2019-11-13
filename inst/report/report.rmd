@@ -313,6 +313,13 @@ if(!is.null(final_res$input_parameters$x2)){
   kable(final_res$protein_rna$feature_wise_cor_table, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) %>%
     row_spec(which(final_res$protein_rna$feature_wise_cor_table$median_cor >= sort(final_res$protein_rna$feature_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
+  
+  if(!is.null(final_res$protein_rna$gene_wise_cor_boxplot_fig)){
+    include_graphics(final_res$protein_rna$gene_wise_cor_boxplot_fig %>% normalizePath)
+  }
+  if(!is.null(final_res$protein_rna$gene_wise_cor_cdf_fig)){
+    include_graphics(final_res$protein_rna$gene_wise_cor_cdf_fig %>% normalizePath)
+  }
 }
 ```  
 
@@ -335,6 +342,10 @@ if(!is.null(final_res$ml)){
   cat("<p>Build model for prediction:",paste(final_res$ml$class_group,collapse = ","),".</p>\n")
   kable(final_res$ml$table, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
+  
+  if(!is.null(final_res$ml$fig)){
+    include_graphics(final_res$ml$fig %>% normalizePath)
+  }
 }
 
 ```
