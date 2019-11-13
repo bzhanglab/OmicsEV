@@ -216,6 +216,7 @@ run_omics_evaluation=function(data_dir=NULL,
                                                use_all=!use_common_features_for_func_pred,
                                                cpu=cpu,out_dir=out_dir,prefix="omicsev",
                                                method=method_for_fun)
+            saveRDS(fp_res,file = fun_data_res_file)
             res$fun_pred <- fp_res
         }
 
