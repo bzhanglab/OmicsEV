@@ -7,7 +7,8 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
                                           out_dir="./",
                                           prefix="test",
                                           min_auc=0.6,
-                                          method="xgboost"){
+                                          method="xgboost",
+                                          use_existing_data=FALSE){
 
 
     if(missing_value_cutoff > 0){
@@ -76,24 +77,31 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
         })
     }else{
         cat("Use co-expression network based method for function prediction ...!\n")
-        cat("Used cpus:",cpu,"\n")
-        cl <- makeCluster(getOption("cl.cores", cpu))
-        clusterExport(cl, c("MatNet"),envir=environment())
-        clusterExport(cl, c("getTable"),envir=environment())
-        #save(x,file="x_fun.rda")
 
-        net_res <- parLapply(cl,x,function(y){
-            y@peaksData <- y@peaksData %>% dplyr::filter(class %in% class_group)
-            dat <- getTable(y,valueID="value")
-            row.names(dat) <- dat$ID
-            dat$ID <- NULL
-            dat <- as.matrix(dat)
-            net_data <- MatNet(dat)
-            return(net_data)
-        })
+        net_data_file <- paste(out_dir,"/net_data.rda",sep="")
+        if(use_existing_data && file.exists(net_data_file)){
+            net_res <- readRDS(net_data_file)
+        }else{
+            cat("Used cpus:",cpu,"\n")
+            cl <- makeCluster(getOption("cl.cores", cpu))
+            clusterExport(cl, c("MatNet"),envir=environment())
+            clusterExport(cl, c("getTable"),envir=environment())
+            #save(x,file="x_fun.rda")
 
-        stopCluster(cl)
-        save(net_res,file="net_res.rda")
+            net_res <- parLapply(cl,x,function(y){
+                y@peaksData <- y@peaksData %>% dplyr::filter(class %in% class_group)
+                dat <- getTable(y,valueID="value")
+                row.names(dat) <- dat$ID
+                dat$ID <- NULL
+                dat <- as.matrix(dat)
+                net_data <- MatNet(dat)
+                return(net_data)
+            })
+
+            stopCluster(cl)
+            saveRDS(net_res,file=net_data_file)
+        }
+
         fun_res <- lapply(x, function(y){
             pres <- function_predict(y,cpu=input_cpu)
         })
