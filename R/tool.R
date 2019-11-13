@@ -137,9 +137,9 @@ run_omics_evaluation=function(data_dir=NULL,
             res$pca_batch_plot_13 <- plot_pca(basic_metrics_res$datasets,out_dir = out_dir,prefix = "pca_view_13",pc="13")
 
             batch_effect_res <- list()
-            batch_effect_res$batch_effect_metrics <- batch_effect_metrics
-            batch_effect_res$pca_batch_plot <- pca_batch_plot
-            batch_effect_res$pca_batch_plot_13 <- pca_batch_plot_13
+            batch_effect_res$batch_effect_metrics <- res$batch_effect_metrics
+            batch_effect_res$pca_batch_plot <- res$pca_batch_plot
+            batch_effect_res$pca_batch_plot_13 <- res$pca_batch_plot_13
             saveRDS(batch_effect_res,file = batch_effect_data_res_file)
         }
     }
