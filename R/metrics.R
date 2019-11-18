@@ -841,6 +841,7 @@ run_basic_metrics=function(x,plist,out_dir="./"){
                         #clustering_distance_rows="euclidean",
                         #clustering_distance_cols="euclidean",
                         #clustering_method="ward.D2",
+                        seriation = TRUE,
                         classCol=classCol,
                         show_colnames=FALSE)
 
