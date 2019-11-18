@@ -115,9 +115,17 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     }
 
     fres <- bind_rows(fun_res)
+    cat("Total terms:",fres$term %>% unique() %>% length,"\n")
 
+    raw_fres <- fres
+    remove_terms <- fres %>% dplyr::filter(is.na(AUC)) %>%
+        dplyr::select(term) %>%
+        dplyr::distinct()
 
-    f_table <- fres
+    f_table <- fres %>% dplyr::filter(!(term %in% remove_terms$term))
+
+    cat("Valid terms:",f_table$term %>% unique() %>% length,"\n")
+
     f_table$AUC[is.na(f_table$AUC)] <- 0
 
     f_table$AUC <- sprintf("%.3f",f_table$AUC) %>% as.numeric()
@@ -157,7 +165,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
 
     final_table <- t(final_table)
 
-    return(list(data=fres,table=final_table,fig=fig))
+    return(list(raw_data = raw_fres, data=fres,table=final_table,fig=fig))
 
 }
 
