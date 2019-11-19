@@ -836,12 +836,13 @@ run_basic_metrics=function(x,plist,out_dir="./"){
 
 
     ## plot heatmap
+    save(ppca,classCol,file = "heatmap.rda")
     fig <- plotHeatMap(ppca,valueID="value",log=FALSE,rmQC=FALSE,
                         #scale="row",
                         #clustering_distance_rows="euclidean",
                         #clustering_distance_cols="euclidean",
                         #clustering_method="ward.D2",
-                        seriation = TRUE,
+                        seriation = FALSE,
                         classCol=classCol,
                         show_colnames=FALSE)
 
