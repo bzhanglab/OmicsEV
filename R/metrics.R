@@ -19,6 +19,46 @@ import_network_data=function(file=NULL,type="protein",species="human"){
     return(x)
 }
 
+import_network_data_from_table=function(file){
+    a <- readr::read_tsv(file)
+    x <- a$complex
+    n_p <- sapply(x,function(y){
+        a=unique(unlist(strsplit(split=";",x=y)));
+        length(a)})
+    # filter complex only having one protein
+    x <- x[n_p>=2]
+    x <- sapply(x, function(y){
+        a=unique(unlist(strsplit(split=";",x=y)));
+        a=sort(a);paste(a,sep=";",collapse = ";")}) %>%
+        unique
+    aa <- sapply(x, function(y){
+        t(combn(unlist(strsplit(split = ";",x=y)),2))})
+    names(aa) <- NULL
+    aa <- do.call(rbind,aa)
+    res <- list()
+    res$complex <- apply(aa,1,function(xx){
+        sort(str_replace_all(xx,pattern=" ",replacement=""))}) %>%
+        t %>%
+        dplyr::as_data_frame() %>%
+        distinct() %>%
+        filter(V1!="",V2!="")
+    res$complex <- res$complex %>% filter(V1!=V2)
+
+    ## random complex
+    rnd <- c(res$complex$V1,res$complex$V2) %>%
+        unique %>%
+        sort %>%
+        combn(m=2) %>%
+        t %>%
+        dplyr::as_data_frame()
+
+    yyy <- paste(res$complex$V1,res$complex$V2,sep="|")
+    rnd_p <- paste(rnd$V1,rnd$V2,sep="|")
+    rnd <- rnd[ !(rnd_p %in% yyy), ]
+    res$rnd_complex <- rnd
+    return(res)
+}
+
 
 import_data_from_corum=function(file){
     a <- read.csv(file,stringsAsFactors = FALSE)
