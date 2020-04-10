@@ -1401,12 +1401,13 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     if(!is.null(x$batch_effect_metrics)){
 
         # kBET
-        dat <- merge(dat,x$batch_effect_metrics$kbet$table %>%
-                         select(dataSet,kBET.observed))
+        if(!is.null(x$batch_effect_metrics$kbet)){
+            dat <- merge(dat,x$batch_effect_metrics$kbet$table %>%
+                             select(dataSet,kBET.observed))
 
-        dat$kBET <- 1 - dat$kBET.observed
-        dat$kBET.observed <- NULL
-
+            dat$kBET <- 1 - dat$kBET.observed
+            dat$kBET.observed <- NULL
+        }
         #dat$kBET.observed <- cell_spec(dat$kBET.observed,
         #                               color = ifelse(y >= max(y), "red", "black"))
 
