@@ -1139,10 +1139,11 @@ calc_batch_effect_metrics=function(x,out_dir="./",prefix="test",missing_value_cu
         y <- missingValueImpute(y)
         return(y)
     })
-    kbet_res <- run_kbet(x)
+    #kbet_res <- run_kbet(x)
     sil_res <- calc_silhouette_width(x)
     pcr_res <- calc_pca_batch_regression(x)
-    res <- list(kbet=kbet_res,sil=sil_res,pcr=pcr_res)
+    #res <- list(kbet=kbet_res,sil=sil_res,pcr=pcr_res)
+    res <- list(kbet=NULL,sil=sil_res,pcr=pcr_res)
     return(res)
 }
 
