@@ -32,6 +32,7 @@ run_omics_evaluation=function(data_dir=NULL,
                               sample_list=NULL,data_type="protein",
                               class_for_cor=NULL,
                               class_for_fun=NULL,
+                              do_fun_pred=TRUE,
                               method_for_fun="xgboost",
                               class_for_ml=NULL,
                               n_repeats_for_ml=20,
@@ -54,6 +55,7 @@ run_omics_evaluation=function(data_dir=NULL,
     res$input_parameters$class_for_ml <- class_for_ml
     res$input_parameters$missing_value_cutoff <- missing_value_cutoff
     res$input_parameters$x2 <- x2
+    res$input_parameters$do_fun_pred <- do_fun_pred
 
     ## import data
     input_data_files <- list.files(path = data_dir,pattern = ".tsv",
@@ -217,26 +219,30 @@ run_omics_evaluation=function(data_dir=NULL,
     }
 
     ## function prediction
-    if(species=="human"){
-        message(date(),": function prediction ...\n")
-        fun_data_res_file <- paste(out_dir,"/fun_data_res.rds",sep="")
-        if(use_existing_data && file.exists(fun_data_res_file)){
+    if(do_fun_pred==TRUE){
+        if(species=="human"){
+            message(date(),": function prediction ...\n")
+            fun_data_res_file <- paste(out_dir,"/fun_data_res.rds",sep="")
+            if(use_existing_data && file.exists(fun_data_res_file)){
 
-            cat("Use existing data from file:",fun_data_res_file,"\n")
-            fp_res <- readRDS(fun_data_res_file)
-            res$fun_pred <- fp_res
+                cat("Use existing data from file:",fun_data_res_file,"\n")
+                fp_res <- readRDS(fun_data_res_file)
+                res$fun_pred <- fp_res
 
-        }else{
-            save(x1_data,missing_value_cutoff,class_for_fun,use_common_features_for_func_pred,cpu,out_dir,method_for_fun,file = "data_for_function_prediction.rda")
-            fp_res <- calc_function_prediction_metrics(x1_data,missing_value_cutoff=missing_value_cutoff,
-                                               sample_class=class_for_fun,
-                                               use_all=!use_common_features_for_func_pred,
-                                               cpu=cpu,out_dir=out_dir,prefix="omicsev",
-                                               method=method_for_fun)
-            saveRDS(fp_res,file = fun_data_res_file)
-            res$fun_pred <- fp_res
+            }else{
+                save(x1_data,missing_value_cutoff,class_for_fun,use_common_features_for_func_pred,cpu,out_dir,method_for_fun,file = "data_for_function_prediction.rda")
+                fp_res <- calc_function_prediction_metrics(x1_data,missing_value_cutoff=missing_value_cutoff,
+                                                   sample_class=class_for_fun,
+                                                   use_all=!use_common_features_for_func_pred,
+                                                   cpu=cpu,out_dir=out_dir,prefix="omicsev",
+                                                   method=method_for_fun)
+                saveRDS(fp_res,file = fun_data_res_file)
+                res$fun_pred <- fp_res
+            }
+
         }
-
+    }else{
+        res$fun_pred <- NULL
     }
     ##
     rfile <- paste(out_dir,"/final_res.rds",sep="")
