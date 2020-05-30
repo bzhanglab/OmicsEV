@@ -656,7 +656,7 @@ plot_upset=function(x,out_dir="./",prefix="test"){
     cs = ComplexHeatmap::comb_size(m)
     ht <- ComplexHeatmap::UpSet(m,
                set_order = order(ss),
-               comb_order = order(comb_degree(m), -cs),
+               comb_order = order(ComplexHeatmap::comb_degree(m), -cs),
                top_annotation = HeatmapAnnotation(
                    "Intersection size" = anno_barplot(cs,
                                                         ylim = c(0, max(cs)*1.1),
