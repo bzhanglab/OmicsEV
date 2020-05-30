@@ -641,6 +641,7 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
     return(fres)
 }
 
+
 plot_upset=function(x,out_dir="./",prefix="test"){
 
     a <- lapply(x, function(y){
@@ -649,11 +650,21 @@ plot_upset=function(x,out_dir="./",prefix="test"){
 
     fig <- paste(out_dir,"./",prefix,".png",sep = "")
     png(fig, width = 9.5, height = 5.5,res=120, units = "in")
-    upset(fromList(a), order.by = "freq",nsets=length(names(a)),text.scale=1.5,
-          set_size.angles=90)
+
+    m <- make_comb_mat(a)
+    ht <- draw(UpSet(m))
+    od <- column_order(ht)
+    cs <- comb_size(m)
+    decorate_annotation("Intersection\nsize", {
+        grid.text(cs[od], x = seq_along(cs), y = unit(cs[od], "native") + unit(3, "pt"),
+                  default.units = "native", just = "bottom", gp = gpar(fontsize = 9))
+    })
+
     dev.off()
     return(fig)
 }
+
+
 
 
 run_basic_metrics=function(x,plist,out_dir="./"){
