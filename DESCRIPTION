@@ -9,7 +9,7 @@ Description: A tool for large scale omics datasets evaluation
 Depends:
     R (>= 3.5.1)
 Imports:
-    dplyr,ggplot2,tidyr,parallel,UpSetR,rmarkdown,formattable,kableExtra,
+    dplyr,ggplot2,tidyr,parallel,rmarkdown,formattable,kableExtra,
     kBET,metaX,NetSAM,plotly,xgboost,pROC,knitr,BiocStyle,png,ComplexHeatmap
 License: LGPL-2
 URL: https://github.com/bzhanglab/OmicsEV

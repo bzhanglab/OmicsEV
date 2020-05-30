@@ -20,7 +20,6 @@ importFrom(ggplot2, aes, aes_string, element_text, facet_grid,element_blank,
            scale_color_manual,ylim,geom_violin,stat_summary,stat_ecdf)
 importFrom(stringr,str_replace_all)
 importFrom(readr,read_tsv,write_tsv)
-importFrom(UpSetR,upset,fromList)
 importFrom(rmarkdown,render)
 importFrom(formattable,color_bar)
 importFrom(kableExtra,cell_spec,spec_font_size)
