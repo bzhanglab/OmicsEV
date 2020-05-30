@@ -671,7 +671,7 @@ plot_upset=function(x,out_dir="./",prefix="test"){
     ht <- ComplexHeatmap::draw(ht)
     od <- ComplexHeatmap::column_order(ht)
     ComplexHeatmap::decorate_annotation("Intersection size", {
-        grid.text(cs[od], x = seq_along(cs), y = grid::unit(cs[od], "native") + grid::unit(3, "pt"),
+        grid::grid.text(cs[od], x = seq_along(cs), y = grid::unit(cs[od], "native") + grid::unit(3, "pt"),
                   default.units = "native", just = "bottom", gp = grid::gpar(fontsize = 9))
     })
 
