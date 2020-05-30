@@ -974,7 +974,7 @@ get_sample_data=function(x){
     })
     xx <- dplyr::bind_rows(a)
     class_samples <- xx %>% group_by(class,dataSet) %>%
-        dplyr::summarise(samples=n()) %>%
+        dplyr::summarise(samples=dplyr::n()) %>%
         ungroup() %>%
         tidyr::spread(key=dataSet,value=samples)
 

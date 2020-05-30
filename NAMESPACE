@@ -3,7 +3,7 @@ exportPattern("^[[:alpha:]]+")
 
 importFrom(dplyr,filter,rename,mutate,distinct,select,left_join,bind_rows,"%>%",arrange,
            group_by,n_distinct,select_,do,summarize,ungroup,contains,mutate_,
-           inner_join,one_of,summarise,bind_cols,everything,as_tibble)
+           inner_join,one_of,summarise,bind_cols,everything,as_tibble,n)
 importFrom(tidyr,gather,spread_,spread)
 importFrom(parallel,makeCluster,stopCluster,clusterExport,detectCores,
            parLapply,parSapply,clusterEvalQ,parLapplyLB)
