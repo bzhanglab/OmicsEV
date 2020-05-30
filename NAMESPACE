@@ -33,6 +33,7 @@ importFrom(NetSAM,MatNet)
 importFrom(plotly,plot_ly,add_trace,layout)
 importFrom(xgboost,xgb.cv)
 importFrom(pROC,roc)
-importFrom(ComplexHeatmap,make_comb_mat,draw,UpSet,column_order,comb_size,decorate_annotation)
+importFrom(ComplexHeatmap,make_comb_mat,draw,UpSet,column_order,comb_size,decorate_annotation,
+           HeatmapAnnotation,anno_barplot)
 
 

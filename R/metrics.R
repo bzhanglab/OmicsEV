@@ -651,11 +651,26 @@ plot_upset=function(x,out_dir="./",prefix="test"){
     fig <- paste(out_dir,"./",prefix,".png",sep = "")
     png(fig, width = 9.5, height = 5.5,res=120, units = "in")
 
-    m <- make_comb_mat(a)
-    ht <- draw(UpSet(m))
-    od <- column_order(ht)
-    cs <- comb_size(m)
-    decorate_annotation("Intersection\nsize", {
+    m  <- ComplexHeatmap::make_comb_mat(a)
+    ss = ComplexHeatmap::set_size(m)
+    cs = ComplexHeatmap::comb_size(m)
+    ht <- ComplexHeatmap::UpSet(m,
+               set_order = order(ss),
+               comb_order = order(comb_degree(m), -cs),
+               top_annotation = HeatmapAnnotation(
+                   "Intersection size" = anno_barplot(cs,
+                                                        ylim = c(0, max(cs)*1.1),
+                                                        border = FALSE,
+                                                        gp = gpar(fill = "black"),
+                                                        height = unit(4, "cm")
+                   ),
+                   annotation_name_side = "left",
+                   annotation_name_rot = 90))
+
+
+    ht <- ComplexHeatmap::draw(ht)
+    od <- ComplexHeatmap::column_order(ht)
+    ComplexHeatmap::decorate_annotation("Intersection size", {
         grid.text(cs[od], x = seq_along(cs), y = unit(cs[od], "native") + unit(3, "pt"),
                   default.units = "native", just = "bottom", gp = gpar(fontsize = 9))
     })
