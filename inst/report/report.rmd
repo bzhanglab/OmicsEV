@@ -73,7 +73,9 @@ kable(ov_table,"html",escape = FALSE) %>%
 
 ```{r echo=FALSE, fig.align='center', warning=FALSE,message=FALSE}
 #save(final_res,file="a.rda")
-plot_radar(ov_table[,-c(2,3)]) 
+if(ncol(ov_table) > 3){
+  plot_radar(ov_table[,-c(2,3)]) 
+}
 ```
 
 
