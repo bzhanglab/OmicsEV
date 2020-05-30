@@ -661,8 +661,8 @@ plot_upset=function(x,out_dir="./",prefix="test"){
                    "Intersection size" = anno_barplot(cs,
                                                         ylim = c(0, max(cs)*1.1),
                                                         border = FALSE,
-                                                        gp = gpar(fill = "black"),
-                                                        height = unit(4, "cm")
+                                                        gp = grid::gpar(fill = "black"),
+                                                        height = grid::unit(4, "cm")
                    ),
                    annotation_name_side = "left",
                    annotation_name_rot = 90))
@@ -671,8 +671,8 @@ plot_upset=function(x,out_dir="./",prefix="test"){
     ht <- ComplexHeatmap::draw(ht)
     od <- ComplexHeatmap::column_order(ht)
     ComplexHeatmap::decorate_annotation("Intersection size", {
-        grid.text(cs[od], x = seq_along(cs), y = unit(cs[od], "native") + unit(3, "pt"),
-                  default.units = "native", just = "bottom", gp = gpar(fontsize = 9))
+        grid.text(cs[od], x = seq_along(cs), y = grid::unit(cs[od], "native") + grid::unit(3, "pt"),
+                  default.units = "native", just = "bottom", gp = grid::gpar(fontsize = 9))
     })
 
     dev.off()
