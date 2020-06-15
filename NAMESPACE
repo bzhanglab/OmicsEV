@@ -28,7 +28,7 @@ importFrom(metaX, filterPeaks,removeSample,metaXpipe,reSetPeaksData,
            checkSampleList,makeDirectory,hasQC,printCV,plotPeakNumber,
            plotCV,plotMissValue,plotIntDistr,plotCorHeatmap,plotPeakSumDist,
            plotPeakMeanDist,missingValueImpute,transformation,getTable,
-           preProcess,plotPCA,plotHeatMap,peakStat,featureSelection)
+           preProcess,plotPCA,plotHeatMap,peakStat,featureSelection,filterQCPeaks)
 importFrom(NetSAM,MatNet)
 importFrom(plotly,plot_ly,add_trace,layout)
 importFrom(xgboost,xgb.cv)
