@@ -355,6 +355,29 @@ if(!is.null(final_res$input_parameters$x2)){
 
 ```{r results="asis",fig.align='center'}
 
+if(!is.null(final_res$snr)){
+  cat("## Noise to signal analysis\n")
+  cat("<p>Noise to signal analysis.</p>\n")
+  kable(final_res$snr$table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)%>%
+    row_spec(which(final_res$snr$table$snr <= sort(final_res$snr$table$snr,decreasing = FALSE)[3]), bold = T, color = "red")
+  
+}
+
+```
+
+```{r, echo=FALSE}
+if(!is.null(final_res$snr)){
+  if(!is.null(final_res$snr$fig)){
+    include_graphics(final_res$snr$fig %>% normalizePath)
+  }
+}
+```
+
+
+
+```{r results="asis",fig.align='center'}
+
 if(!is.null(final_res$ml)){
   cat("## Phenotype prediction\n")
   cat("<p>Build model for prediction:",paste(final_res$ml$class_group,collapse = ","),".</p>\n")

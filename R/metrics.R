@@ -1534,6 +1534,52 @@ plot_radar=function(x){
     return(p)
 }
 
+## Without missing value imputation
+noise_signal_analysis=function(x, qc_sample=NULL,bio_sample=NULL, out_dir="./"){
+
+    a <- lapply(x, function(y){
+        dat <- y@peaksData %>% mutate(dataSet=y@ID,sample=as.character(sample)) %>%
+            as_tibble()
+        dat$value[dat$value<=0] <- NA
+
+        dat$value <- log2(dat$value)
+
+        dat <- dat %>% filter(class %in% c(qc_sample, bio_sample))
+
+        dat$class <- ifelse(dat$class %in% qc_sample,"QC","Bio")
+
+        b <- dat %>% dplyr::group_by(ID,class) %>%
+            dplyr::summarise(sd=sd(value,na.rm = TRUE),.groups = 'drop') %>%
+            tidyr::spread(key = class, value = sd)
+
+        b <- b %>% dplyr::mutate(snr=QC/Bio, dataSet=y@ID)
+
+        return(b)
+    })
+
+    snr_res <- dplyr::bind_rows(a)
+
+    res <- list()
+    res$table <- snr_res %>% group_by(dataSet) %>%
+        dplyr::summarise(snr=median(snr,na.rm=TRUE),n=n()) %>%
+        dplyr::arrange(snr)
+    res$raw_data <- snr_res
+
+    snr_res$dataSet <- factor(snr_res$dataSet,levels = res$table$dataSet)
+
+    fig <- paste(out_dir,"/snr.png",sep="")
+    png(fig,height = 500,width = 700,res=130)
+    gg <- ggplot(snr_res,aes(x=dataSet,y=snr,color=dataSet)) +
+        geom_boxplot(outlier.size = 0.5) +
+        ylab("Noise to signal ratio")+
+        theme(axis.text.x = element_text(angle = 90,hjust = 1,vjust=0.5),legend.position = "none")
+    print(gg)
+    dev.off()
+    res$fig <- fig
+    return(res)
+
+}
+
 
 
 

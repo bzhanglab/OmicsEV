@@ -40,7 +40,9 @@ run_omics_evaluation=function(data_dir=NULL,
                               class_color=NULL,out_dir="./",cpu=0,
                               missing_value_cutoff=0.5,
                               species="human",
-                              use_existing_data=FALSE){
+                              use_existing_data=FALSE,
+                              snr_qc_sample=NULL,
+                              snr_bio_sample=NULL){
     cat("species:",species,"\n")
     res <- list()
 
@@ -92,6 +94,14 @@ run_omics_evaluation=function(data_dir=NULL,
     }
 
     save(x1,file = paste(out_dir,"/input_x.rda",sep=""))
+
+
+    if(!is.null(snr_qc_sample) && !is.null(snr_bio_sample)){
+        message(date(),": Noise to signal analysis ...\n")
+        cat("QC sample:",snr_qc_sample,", bio sample(s): ",paste(snr_bio_sample, collapse = ","),"\n")
+        res$snr <- noise_signal_analysis(x1,qc_sample = snr_qc_sample,bio_sample = snr_bio_sample,
+                                         out_dir = out_dir)
+    }
 
 
     ## run basic metrics
