@@ -140,7 +140,6 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     max4term <- f_table_format[,-c(1,2),drop=FALSE] %>% apply(1,max)
     f_table_format <- f_table_format[max4term>=min_auc,]
 
-    save(f_table_format,file="f_table_format.rda")
     ## generate boxplot
     if(length(x) >=2){
         fig <- plot_fun_boxplot(f_table_format[,-c(1,2),drop=FALSE],out_dir = out_dir,
@@ -228,7 +227,7 @@ function_predict=function(net_data,min_n=10,kfold=5,ranNum=1000,r=0.5,cpu=0){
             },
             warning=function(cond){
                 message("Please see the file: kfoldCrossValidation.rda for related data!")
-                save(e,ann_use,net_data,r,kfold,ranNum,file="kfoldCrossValidation.rda")
+                save(cond,ann_use,net_data,r,kfold,ranNum,file="kfoldCrossValidation.rda")
                 return(NULL)
             })
 
