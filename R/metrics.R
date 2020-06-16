@@ -1576,6 +1576,39 @@ noise_signal_analysis=function(x, qc_sample=NULL,bio_sample=NULL, out_dir="./"){
     print(gg)
     dev.off()
     res$fig <- fig
+
+
+    ## MAD
+
+    mad_figs <- lapply(x, function(y){
+        dat <- y@peaksData %>% mutate(dataSet=y@ID,sample=as.character(sample)) %>%
+            as_tibble()
+        dat$value[dat$value<=0] <- NA
+
+        dat$value <- log2(dat$value)
+
+        b <- dat %>% group_by(sample,class) %>%
+            dplyr::summarise(mad=mad(value,na.rm = TRUE)) %>%
+            ungroup() %>%
+            dplyr::arrange(mad)
+        b$i <- 1:nrow(b)
+
+        fig <- paste(out_dir,"/mad",y@ID,".png",sep = "")
+        png(fig,width = 1000,height = 400,res=150)
+        gg <- ggplot(b,aes(x=i,y=mad,color=class)) +
+            geom_point() +
+            geom_hline(yintercept = median(b$mad)) +
+            xlab("Rank") +
+            ylab("MAD (sample)")
+        print(gg)
+        dev.off()
+        return(fig)
+    })
+
+    names(mad_figs) <- names(x)
+
+    res$mad_figs <- mad_figs
+
     return(res)
 
 }
