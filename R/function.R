@@ -140,6 +140,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
     max4term <- f_table_format[,-c(1,2),drop=FALSE] %>% apply(1,max)
     f_table_format <- f_table_format[max4term>=min_auc,]
 
+    save(f_table_format,file="f_table_format.rda")
     ## generate boxplot
     if(length(x) >=2){
         fig <- plot_fun_boxplot(f_table_format[,-c(1,2),drop=FALSE],out_dir = out_dir,
