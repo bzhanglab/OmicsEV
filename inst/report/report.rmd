@@ -378,8 +378,8 @@ if(!is.null(final_res$snr)){
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 
 if(!is.null(final_res$snr)){
-  figs <- final_res$snr$mad_figs
-  figs <- unlist(get_full_path(figs))
+  figs <- unlist(final_res$snr$mad_figs)
+  figs <- get_full_path(figs)
   for(i in 1:length(figs)){
     knitr::include_graphics(figs[i] %>% normalizePath)
     cat(names(figs)[i])
