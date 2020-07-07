@@ -1,4 +1,4 @@
-FROM bioconductor/bioconductor_docker:RELEASE_3_10
+FROM bioconductor/bioconductor_docker:RELEASE_3_11
 
 
 MAINTAINER wenbostar@gmail.com
