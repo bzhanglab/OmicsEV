@@ -39,7 +39,7 @@ import_network_data_from_table=function(file){
     res$complex <- apply(aa,1,function(xx){
         sort(str_replace_all(xx,pattern=" ",replacement=""))}) %>%
         t %>%
-        dplyr::as_data_frame() %>%
+        tibble::as_tibble() %>%
         distinct() %>%
         filter(V1!="",V2!="")
     res$complex <- res$complex %>% filter(V1!=V2)
@@ -50,12 +50,14 @@ import_network_data_from_table=function(file){
         sort %>%
         combn(m=2) %>%
         t %>%
-        dplyr::as_data_frame()
+        tibble::as_tibble()
 
     yyy <- paste(res$complex$V1,res$complex$V2,sep="|")
     rnd_p <- paste(rnd$V1,rnd$V2,sep="|")
     rnd <- rnd[ !(rnd_p %in% yyy), ]
     res$rnd_complex <- rnd
+
+    names(res) <- c("network","rnd_network")
     return(res)
 }
 
@@ -80,7 +82,7 @@ import_data_from_corum=function(file){
     res$complex <- apply(aa,1,function(xx){
         sort(str_replace_all(xx,pattern=" ",replacement=""))}) %>%
         t %>%
-        dplyr::as_data_frame() %>%
+        tibble::as_tibble() %>%
         distinct() %>%
         filter(V1!="",V2!="")
     res$complex <- res$complex %>% filter(V1!=V2)
@@ -91,12 +93,15 @@ import_data_from_corum=function(file){
         sort %>%
         combn(m=2) %>%
         t %>%
-        dplyr::as_data_frame()
+        tibble::as_tibble()
 
     yyy <- paste(res$complex$V1,res$complex$V2,sep="|")
     rnd_p <- paste(rnd$V1,rnd$V2,sep="|")
     rnd <- rnd[ !(rnd_p %in% yyy), ]
     res$rnd_complex <- rnd
+
+    names(res) <- c("network","rnd_network")
+
     return(res)
 }
 
