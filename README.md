@@ -24,8 +24,7 @@ BiocManager::install("bzhanglab/OmicsEV")
 #### Method 2:
 Install OmicsEV using Docker:
 ```sh
-git clone -b docker https://github.com/bzhanglab/OmicsEV/
-docker build -t omicsev OmicsEV
+docker pull proteomics/omicsev
 ```
 
 ## Usage
