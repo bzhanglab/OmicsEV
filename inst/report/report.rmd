@@ -360,7 +360,7 @@ if(!is.null(final_res$snr)){
   cat("<p>Noise to signal analysis.</p>\n")
   kable(final_res$snr$table, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
-    row_spec(which(final_res$snr$table$snr <= sort(final_res$snr$table$snr,decreasing = FALSE)[3]), bold = T, color = "red")
+    row_spec(which(final_res$snr$table$nsr <= sort(final_res$snr$table$nsr,decreasing = FALSE)[3]), bold = T, color = "red")
   
 }
 
