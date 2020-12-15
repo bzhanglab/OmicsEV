@@ -401,7 +401,8 @@ calcCorBetweenProteinAndRNA=function(para1,para2,log=TRUE,select_by=1,top_n=1000
     ## Gene wise correlation
     res <- m %>% group_by(ID) %>% dplyr::summarise(sd_x=sd(x,na.rm = TRUE),
                                                    sd_y=sd(y,na.rm=TRUE),
-                                                   cor=cor(x,y,use = "com",method = cor_method))
+                                                   cor=cor(x,y,use = "com",method = cor_method),
+                                                   pvalue=get_cor_pvalue(x,y,cor_method = cor_method))
     #save(para1,para2,valueID,na_row,m,res,file="test111.rda")
 
     png(paste(outdir,"/",prefix,"-cor-sd.png",sep=""),width = 600,height = 1200,res=120)
@@ -430,8 +431,57 @@ calcCorBetweenProteinAndRNA=function(para1,para2,log=TRUE,select_by=1,top_n=1000
     fres$feature_wise <- rr
     fres$sample_wise <- sample_wise_cor
 
+    fres$hist_fig <- plot_mRNA_protein_hist(fres$feature_wise_cor_data,out_dir = outdir,prefix = prefix)
+
     return(fres)
 }
+
+get_cor_pvalue=function(x,y,cor_method="spearman"){
+    cor_res <- cor.test(x,y,method = cor_method,use = "com")
+    return(cor_res$p.value)
+}
+
+plot_mRNA_protein_hist=function(x,out_dir="./",prefix="test"){
+    br <- c(seq(min(x$cor,na.rm = TRUE)-0.1,-0.000000001,by=0.01),
+            seq(0,max(x$cor,na.rm = TRUE),by=0.01))
+    max_count <- max(table(cut(x$cor,breaks = br)))
+    positive_cor_ratio <- sum(x$cor>0,na.rm = TRUE)/nrow(x)
+
+    x$pvalue <- p.adjust(x$pvalue,method = "BH")
+    sig_positive_cor_ratio <- sum(x$pvalue <= 0.01,na.rm = TRUE)/nrow(x)
+
+    mean_cor <- mean(x$cor,na.rm = TRUE)
+    n_pairs <- nrow(x)
+
+    positive_cor_ratio <- sprintf("%.2f%%",100*positive_cor_ratio)
+    sig_positive_cor_ratio <- sprintf("%.2f%%",100*sig_positive_cor_ratio) #%>% paste("*\\'%\\'~",sep = "")
+
+    gg <- x %>% mutate(col=ifelse(cor>0,"red","blue")) %>%
+        ggplot(aes(x=cor,fill=col)) +
+        geom_histogram(breaks=br,color="black",size=0.1)+
+        xlab("Spearman’s correlation")+
+        ylab("Frequency")+
+        ggpubr::theme_pubr()+
+        theme(legend.position = "none")+
+        scale_fill_manual(breaks = c("red", "blue"),
+                          values=c("red", "blue"))+
+        geom_vline(xintercept = mean_cor,linetype=2)+
+        annotate("text",x=mean_cor,y=1.05*max_count,label=paste("Mean = ",sprintf("%.2f",mean_cor),sep = ""),
+                 hjust=-0.05,size=3.5)+
+        annotate("text",x=min(br)+0.01,y=1.05*max_count,
+                 label=paste0(n_pairs," pairs\n",
+                             positive_cor_ratio," positive correlation\n",
+                             sig_positive_cor_ratio," significant\npositive correlation\n(adjusted P <= 0.01)"),
+                 vjust=1,hjust=0,size=3.5)
+    fig <- paste(out_dir,"/",prefix,"-mRNA-protein-hist.png",sep = "")
+    png(fig,width = 600,height = 500,res=150)
+    print(gg)
+    dev.off()
+    gg_obj <- paste(out_dir,"/",prefix,"-mRNA-protein-hist_ggplot.rds",sep = "")
+    saveRDS(gg,file = gg_obj)
+    return(fig)
+}
+
 
 calc_protein_rna_corr=function(x,rna,sample_class=NULL,out_dir="./",cpu=0,
                                missing_value_ratio=0.5){
