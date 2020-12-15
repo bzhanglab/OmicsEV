@@ -351,9 +351,11 @@ plot_network_cor=function(x, out_dir="./",prefix="test"){
 # This function is used to calculate the correlation between protein and mRNA.
 calcCorBetweenProteinAndRNA=function(para1,para2,log=TRUE,select_by=1,top_n=1000,
                                      geneset = NULL,
-                                     outdir = "./",prefix = "test",use_class=NULL,
+                                     outdir = "./",use_class=NULL,
                                      reg=FALSE,
                                      cor_method="spearman",valueID="value"){
+
+    prefix <- para1@ID
 
     if(!is.null(use_class)){
         cat("Only use class ",use_class,"\n")
