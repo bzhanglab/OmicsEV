@@ -335,6 +335,18 @@ if(!is.null(final_res$input_parameters$x2)){
 }
 ```  
 
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$protein_rna$data, metric = "hist_fig")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$input_parameters$x2)){
   cat("## Correlation between mRNA and protein: sample-wise correlation\n")
