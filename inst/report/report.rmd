@@ -336,12 +336,14 @@ if(!is.null(final_res$input_parameters$x2)){
 ```  
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
-figs <- get_metrics(final_res$protein_rna$data, metric = "hist_fig")
-figs <- get_full_path(figs)
-for(i in 1:length(figs)){
-  knitr::include_graphics(figs[i] %>% normalizePath)
-  cat(names(figs)[i])
-  cat("![](",figs[i],")")
+if(!is.null(final_res$input_parameters$x2)){
+  figs <- get_metrics(final_res$protein_rna$data, metric = "hist_fig")
+  figs <- get_full_path(figs)
+  for(i in 1:length(figs)){
+    knitr::include_graphics(figs[i] %>% normalizePath)
+    cat(names(figs)[i])
+    cat("![](",figs[i],")")
+  }
 }
 
 ```
@@ -445,5 +447,24 @@ if(!is.null(final_res$fun_pred)){
   }
 }
 ```
+
+```{r results="asis",fig.align='center'}
+
+if(!is.null(final_res$fun_pred)){
+  
+  if(!is.null(final_res$fun_pred$two_group_fig)){
+    figs <- sapply(final_res$fun_pred$two_group_fig, function(x){x})
+    figs <- get_full_path(figs)
+    for(i in 1:length(figs)){
+      knitr::include_graphics(figs[i] %>% normalizePath)
+      cat(names(figs)[i])
+      cat("![](",figs[i],")")
+    }
+  }
+}
+
+```
+
+
 
 
