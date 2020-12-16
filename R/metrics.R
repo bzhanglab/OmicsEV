@@ -394,6 +394,10 @@ calcCorBetweenProteinAndRNA=function(para1,para2,log=TRUE,select_by=1,top_n=1000
     na_row <- apply(m[,3:4],1,function(x){any(is.na(x))})
     m <- m[!na_row,]
 
+    ## filter genes occurring less than 3 samples
+    n3 <- m %>% group_by(ID) %>% summarise(n=sum(!is.na(x) & !is.na(y))) %>% filter(n>=3)
+    m <- m %>% filter(ID %in% n3$ID)
+
     ## Sample wise correlation
     save(m,file = "m.rda")
     sample_wise_cor <- m %>% group_by(sample) %>%
