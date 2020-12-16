@@ -677,6 +677,7 @@ generate_func_point_plots=function(x,x2_name="RNA",out_dir="./"){
         fig <- plot_func_point(a,out_dir = out_dir,prefix = i)
         return(fig)
     })
+    names(res) <-datasets
     return(res)
 }
 
