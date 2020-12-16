@@ -6,6 +6,9 @@
 ##' When the value of parameter is not NULL, the data in this file will be used
 ##' to perform correlation analysis between this dataset and the dataset in
 ##' data_dir
+##' @param x2_label The name for the dataset provided by x2 used in the report.
+##' If the dataset is an RNA dataset, the label name should be "RNA". If the
+##' dataset is a protein dataset, the label name should be "Protein".
 ##' @param sample_list A file in tsv format contains sample class, batch and
 ##' order information.
 ##' @param data_type The quantification data type in folder data_dir:
@@ -241,10 +244,16 @@ run_omics_evaluation=function(data_dir=NULL,
 
             }else{
                 save(x1_data,missing_value_cutoff,class_for_fun,use_common_features_for_func_pred,cpu,out_dir,method_for_fun,file = "data_for_function_prediction.rda")
+                if(add_x2==TRUE){
+                    x2_name = x2_label
+                }else{
+                    x2_name = NULL
+                }
                 fp_res <- calc_function_prediction_metrics(x1_data,missing_value_cutoff=missing_value_cutoff,
                                                    sample_class=class_for_fun,
                                                    use_all=!use_common_features_for_func_pred,
                                                    cpu=cpu,out_dir=out_dir,prefix="omicsev",
+                                                   x2_name=x2_name,
                                                    method=method_for_fun)
                 saveRDS(fp_res,file = fun_data_res_file)
                 res$fun_pred <- fp_res

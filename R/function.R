@@ -8,6 +8,7 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
                                           prefix="test",
                                           min_auc=0.6,
                                           method="xgboost",
+                                          x2_name=NULL,## RNA or Protein
                                           use_existing_data=FALSE){
 
 
@@ -165,7 +166,14 @@ calc_function_prediction_metrics=function(x,missing_value_cutoff=0.5,
 
     final_table <- t(final_table)
 
-    return(list(raw_data = raw_fres, data=fres,table=final_table,fig=fig))
+    if(!is.null(x2_name)){
+        scatter_plots <- generate_func_point_plots(fres,x2_name = x2_name,out_dir = out_dir)
+    }else{
+        scatter_plots <- NULL
+    }
+
+    return(list(raw_data = raw_fres, data=fres,table=final_table,fig=fig,
+                two_group_fig=scatter_plots))
 
 }
 
@@ -625,6 +633,52 @@ plot_pair_point=function(x){
     plot(x$rna,x$proteome,xlim=c(0.5,1),ylim=c(0.5,1),xlab="RNA",ylab="Protein");abline(a = 0,b=1)
 }
 
+
+plot_func_point=function(x,out_dir="./",prefix="test"){
+    d <- x %>% filter(!is.na(RNA),!is.na(Protein))
+    d$col <- "black"
+    d$col[d$Protein >1.1*d$RNA] <- "red"
+    d$col[d$RNA >1.1*d$Protein] <- "blue"
+
+    label=paste("AUROC(protein) > 1.1*AUROC(RNA): ",sum(d$Protein>d$RNA*1.1,na.rm = TRUE),
+                "\nAUROC(RNA) > 1.1*AUROC(protein): ",sum(d$RNA>d$Protein*1.1,na.rm = TRUE),sep = "")
+    gg <- ggplot(d,aes(x=RNA,y=Protein)) +
+        geom_point(aes(colour=col)) +
+        geom_line(data=data.frame(x=c(0.5,1),y=c(0.5,1)),aes(x=x,y=y),linetype=2)+
+        geom_line(data=data.frame(x=1.1*c(0.5,1),y=c(0.5,1)),aes(x=x,y=y),linetype=2)+
+        geom_line(data=data.frame(x=c(0.5,1),y=1.1*c(0.5,1)),aes(x=x,y=y),linetype=2)+
+        coord_cartesian(xlim =c(NA,1.01), ylim = c(NA,1.01)) +
+        ggpubr::theme_classic2()+
+        annotate("text",x=1,y=0.52,label=label,hjust=1,size=3.2)+
+        theme(legend.position = "none")+
+        scale_color_manual(breaks = c("red", "blue","black"),
+                           values=c("red", "blue","black"))
+    fig <- paste(out_dir,"/",prefix,"-func-scatterplot.png",sep = "")
+    png(fig,width = 650,height = 650,res=150)
+    print(gg)
+    dev.off()
+    return(fig)
+}
+
+
+# x2_name can be "RNA" or "Protein"
+generate_func_point_plots=function(x,x2_name="RNA",out_dir="./"){
+    datasets <- setdiff(x$dataSet %>% unique() %>% sort,x2_name)
+
+    res <- lapply(datasets, function(i){
+        d <- x %>% filter(dataSet %in% c(i,x2_name))
+        a <- d %>% select(AUC, term, dataSet) %>% spread(key = dataSet,value = AUC) %>% select(-term)
+        if(x2_name == "RNA"){
+            a <- a[,c(x2_name,i)]
+        }else if(x2_name == "Protein"){
+            a <- a[,c(i,x2_name)]
+        }
+        names(a) <- c("RNA","Protein")
+        fig <- plot_func_point(a,out_dir = out_dir,prefix = i)
+        return(fig)
+    })
+    return(res)
+}
 
 
 

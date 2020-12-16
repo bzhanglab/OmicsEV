@@ -476,7 +476,7 @@ plot_mRNA_protein_hist=function(x,out_dir="./",prefix="test"){
                              sig_positive_cor_ratio," significant\npositive correlation\n(adjusted P <= 0.01)"),
                  vjust=1,hjust=0,size=3.5)
     fig <- paste(out_dir,"/",prefix,"-mRNA-protein-hist.png",sep = "")
-    png(fig,width = 600,height = 500,res=150)
+    png(fig,width = 650,height = 500,res=150)
     print(gg)
     dev.off()
     gg_obj <- paste(out_dir,"/",prefix,"-mRNA-protein-hist_ggplot.rds",sep = "")
