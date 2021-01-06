@@ -1503,7 +1503,7 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         sil <- data.frame(dataSet=names(x$batch_effect_metrics$sil),
                           silhouette_width=x$batch_effect_metrics$sil)
         dat <- merge(dat,sil)
-        dat$silhouette_width <- abs(dat$silhouette_width)
+        dat$silhouette_width <- 1 - abs(dat$silhouette_width)
 
         # PCR
         # pcr <- get_pcr_table(x$batch_effect_metrics$pcr$pcr)
