@@ -27,6 +27,8 @@
 ##' used.
 ##' @param missing_value_cutoff The cutoff of missing value filtering. Default
 ##' is 0.5.
+##' @param missing_value_cutoff_for_complex_cor The cutoff of missing value
+##' filtering for correlation based on protein complexes. Default is 0.5.
 ##' @param species Default is human.
 ##' @return The path of HTML report.
 ##' @author Bo Wen \email{wenbostar@@gmail.com}
@@ -42,6 +44,7 @@ run_omics_evaluation=function(data_dir=NULL,
                               use_common_features_for_func_pred=TRUE,
                               class_color=NULL,out_dir="./",cpu=0,
                               missing_value_cutoff=0.5,
+                              missing_value_cutoff_for_complex_cor=0.5,
                               species="human",
                               use_existing_data=FALSE,
                               snr_qc_sample=NULL,
@@ -179,7 +182,8 @@ run_omics_evaluation=function(data_dir=NULL,
 
             network_data <- import_network_data(type = data_type,species=species)
             network_raw_res <- calc_network_corr(x1_data,network_data,sample_class=class_for_cor,
-                                             missing_value_ratio=0.00001,cpu=cpu)
+												 missing_value_ratio=missing_value_cutoff_for_complex_cor,cpu=cpu)
+    	                                         #missing_value_ratio=0.00001,cpu=cpu)
             network_table_res <- plot_network_cor(network_raw_res$result,out_dir = out_dir,
                                                   prefix = "network")
             #saveRDS(network_raw_res,file = paste(out_dir,"/network_raw_res.rds",sep=""))
