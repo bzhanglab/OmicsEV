@@ -165,6 +165,7 @@ calc_network_corr=function(x,y,sample_class=NULL,missing_value_ratio=0.00001,cpu
     if(missing_value_ratio>0){
         cat("Filter missing value with cutoff: ",missing_value_ratio,"\n")
         x <- lapply(x, function(xx){
+            cat("dataset:",xx@ID,"\n")
             yy <- xx %>% filterPeaks(ratio=missing_value_ratio)
             return(yy)
         })
