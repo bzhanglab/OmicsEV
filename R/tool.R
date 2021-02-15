@@ -331,7 +331,11 @@ run_reporter=function(x,out_file="test.html",x2=NULL,n_batch=0){
     work_dir <- dirname(x)
     cat("Input file:",x,"\n")
     cat("Work dir:",work_dir,"\n")
-    render(rmd,params = list(input=x),output_file = out_file, knit_root_dir=work_dir)
+    render(rmd,params = list(input=x),output_file = basename(out_file),
+           output_dir = work_dir,
+           intermediates_dir = work_dir,
+           knit_root_dir = work_dir,
+           )
 }
 
 
