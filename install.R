@@ -8,3 +8,4 @@ BiocManager::install("bzhanglab/NetSAM")
 #BiocManager::install("AnalytixWare/ShinySky")
 BiocManager::install("doMC")
 BiocManager::install("bzhanglab/OmicsEV")
+
