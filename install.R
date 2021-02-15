@@ -1,4 +1,4 @@
-# Install the development version from GitHub:
+# Install the development version of OmicsEV from GitHub:
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 install.packages("remotes")
@@ -8,4 +8,3 @@ BiocManager::install("bzhanglab/NetSAM")
 #BiocManager::install("AnalytixWare/ShinySky")
 BiocManager::install("doMC")
 BiocManager::install("bzhanglab/OmicsEV")
-
