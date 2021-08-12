@@ -45,6 +45,7 @@ ADD install.R /tmp/
 
 RUN R -f /tmp/install.R
 
+RUN echo "Run ..."
 RUN echo "R_LIBS=/usr/local/lib/R/host-site-library:\${R_LIBS}" > /usr/local/lib/R/etc/Renviron.site
 RUN echo "R_LIBS_USER=''" >> /usr/local/lib/R/etc/Renviron.site
 RUN echo "options(defaultPackages=c(getOption('defaultPackages'),'BiocManager'))" >> /usr/local/lib/R/etc/Rprofile.site
