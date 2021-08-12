@@ -339,7 +339,7 @@ run_reporter=function(x,out_file="test.html",x2=NULL,n_batch=0){
     render(rmd,params = list(input=x),output_file = basename(out_file),
            output_dir = work_dir,
            intermediates_dir = work_dir,
-           knit_root_dir = work_dir,
+           knit_root_dir = getwd(),
            )
 }
 
