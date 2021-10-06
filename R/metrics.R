@@ -503,7 +503,8 @@ calc_protein_rna_corr=function(x,rna,sample_class=NULL,out_dir="./",cpu=0,
             paste(sample_class,collapse = ","),"\n")
         x <- lapply(x, function(xx){
             rm_samples <- xx@sampleList %>% filter(!(class %in% sample_class))
-            yy <- removeSample(xx,rsamples = rm_samples)
+            yy <- removeSample(xx,rsamples = rm_samples$sample)
+            cat("The number of samples used in correlation analysis:",yy@peaksData$sample %>% unique %>% length,"\n")
             return(yy)
         })
     }else{
