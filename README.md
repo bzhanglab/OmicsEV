@@ -1,6 +1,5 @@
 ## OmicsEV
 
-[![HitCount](http://hits.dwyl.io/bzhanglab/OmicsEV.svg)](http://hits.dwyl.io/bzhanglab/OmicsEV)
 
 A tool for large scale omics datasets evaluation
 
@@ -25,6 +24,7 @@ BiocManager::install("bzhanglab/OmicsEV")
 Install OmicsEV using Docker:
 ```sh
 docker pull proteomics/omicsev
+docker run -it -v /your_data_path/:/opt/ -u $(id -u):$(id -g) proteomics/omicsev
 ```
 
 ## Usage
