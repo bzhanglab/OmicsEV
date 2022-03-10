@@ -24,8 +24,14 @@ BiocManager::install("bzhanglab/OmicsEV")
 Install OmicsEV using Docker:
 ```sh
 docker pull proteomics/omicsev
+```
+
+Use OmicsEV in docker (recommended):
+```sh
+# change the path your_data_path to a real path
 docker run -it -v /your_data_path/:/opt/ -u $(id -u):$(id -g) proteomics/omicsev
 ```
+
 
 ## Usage
 
