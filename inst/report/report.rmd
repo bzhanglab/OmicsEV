@@ -74,7 +74,15 @@ kable(ov_table,"html",escape = FALSE) %>%
 ```{r echo=FALSE, fig.align='center', warning=FALSE,message=FALSE}
 #save(final_res,file="a.rda")
 if(ncol(ov_table) > 3){
-  plot_radar(ov_table[,-c(2,3)]) 
+    if("# proteins (genes)" %in% names(ov_table) && "# proteins (genes) [50%]" %in% names(ov_table)){
+        ov_data <- ov_table %>% dplyr::rename(ID=`# proteins (genes)`) %>%
+            dplyr::rename(Quant=`# proteins (genes) [50%]`) %>%
+            dplyr::mutate(ID=ID/max(ID),Quant=Quant/max(Quant))
+    }else{
+        ov_data <- ov_table[,-c(2,3)]
+    }
+    
+  plot_radar(ov_data)
 }
 ```
 
