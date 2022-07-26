@@ -1480,12 +1480,56 @@ plot_ml_boxplot=function(x, out_dir="./",prefix="test"){
 
 }
 
+
+calc_metrics_for_data_distribution=function(x,cpu=0){
+    # x is list of datasets
+    if(cpu==0){
+        cpu = detectCores()
+    }
+    a <- lapply(x, function(y){
+        cat("Dataset:",y@ID,"\n")
+        dat <- y@peaksData %>% mutate(dataSet=y@ID,sample=as.character(sample)) %>%
+            as_tibble()
+        dat$value[dat$value<=0] <- NA
+
+        # log2 scale
+        dat$value <- log2(dat$value)
+        all_samples <- dat$sample %>% unique()
+        ss <- combn(all_samples,m=2)
+
+        cl <- makeCluster(getOption("cl.cores", cpu))
+        clusterExport(cl, c("get_ks_statistic"),envir=environment())
+        ksv <- parLapply(cl,1:ncol(ss),fun = get_ks_statistic,ss=ss,dat=dat)
+        stopCluster(cl)
+        ksv <- unlist(ksv)
+        ks <- median(ksv,na.rm = TRUE)
+        res <- data.frame(dataSet=y@ID,quant_median_ks=ks,n=length(ksv),stringsAsFactors = FALSE) %>%
+            as_tibble()
+        return(res)
+    }) %>% bind_rows()
+    return(a)
+}
+
+get_ks_statistic = function(s,ss,dat){
+    ii <- as.character(ss[,s])
+    x1 <- dat$value[dat$sample==ii[1]]
+    x2 <- dat$value[dat$sample==ii[2]]
+    b <- ks.test(x1,x2)
+    return(b$statistic)
+}
+
 # generate overview table and overview radar figure
 generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     ## generate an overview table which contains different metrics
     ## input: x =>
 
     dat <- get_identification_summary_table(x,format = FALSE)
+
+    if(!("quant_median_ks" %in% names(x))){
+        data_dv <- calc_metrics_for_data_distribution(x$input_parameters$datasets,cpu=x$input_parameters$cpu)
+        data_dv$quant_median_ks <- 1 - data_dv$quant_median_ks/max(data_dv$quant_median_ks)
+        dat <- merge(dat,data_dv %>% dplyr::select(dataSet,quant_median_ks),by="dataSet")
+    }
 
     if(!is.null(x$batch_effect_metrics)){
 

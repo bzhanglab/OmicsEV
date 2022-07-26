@@ -19,7 +19,7 @@
 ##' prediction. A charactar vector.
 ##' @param class_for_ml The classes of samples (two classes) which will be used for phenotype
 ##' prediction. A sample list file or a charactar vector.
-##' @para method_for_fun The method used for gene function prediction ("co" or "xgboost"). Default is "co" which is 
+##' @para method_for_fun The method used for gene function prediction ("co" or "xgboost"). Default is "co" which is
 ##' co-expression network-based method.
 ##' @param use_common_features_for_func_pred whether or not to use common
 ##' protien/genes for function prediction. Default is TRUE.
@@ -65,6 +65,7 @@ run_omics_evaluation=function(data_dir=NULL,
     res$input_parameters$class_for_ml <- class_for_ml
     res$input_parameters$missing_value_cutoff <- missing_value_cutoff
     res$input_parameters$x2 <- x2
+    res$input_parameters$cpu <- cpu
     res$input_parameters$do_fun_pred <- do_fun_pred
 
     ## import data
@@ -101,7 +102,7 @@ run_omics_evaluation=function(data_dir=NULL,
         }
     }else{
     	x2_label <- NULL
-    
+
     }
 
     save(x1,file = paste(out_dir,"/input_x.rda",sep=""))
