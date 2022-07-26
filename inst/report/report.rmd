@@ -130,6 +130,15 @@ for(i in 1:length(figs)){
 
 The boxplots show the protein or gene expression distribution across samples. X axis is sample ordered by input order. Y axis is log2 transformed protein or gene expression. The samples from different classes are coded in different colors.
 
+```{r echo=FALSE}
+if("quant_median_ks" %in% names(final_res$basic_metrics)){
+    kable(final_res$basic_metrics$quant_median_ks,"html",escape = FALSE) %>%
+        kable_styling(bootstrap_options = "striped", full_width = F) #%>%
+        #row_spec(which.max(id_table[,3]), bold = T, color = "red")
+}
+```
+
+
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "features_quant_distribution")
 figs <- get_full_path(figs)
