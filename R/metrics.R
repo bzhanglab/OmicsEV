@@ -1526,7 +1526,8 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     dat <- get_identification_summary_table(x,format = FALSE)
 
     if(!("quant_median_ks" %in% names(x))){
-        data_dv <- calc_metrics_for_data_distribution(x$input_parameters$datasets,cpu=x$input_parameters$cpu)
+        ncpu <- ifelse("cpu" %in% names(x$input_parameters),x$input_parameters$cpu,0)
+        data_dv <- calc_metrics_for_data_distribution(x$input_parameters$datasets,cpu=ncpu)
         data_dv$quant_median_ks <- 1 - data_dv$quant_median_ks/max(data_dv$quant_median_ks)
         dat <- merge(dat,data_dv %>% dplyr::select(dataSet,quant_median_ks),by="dataSet")
     }
