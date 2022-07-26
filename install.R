@@ -8,7 +8,6 @@ install_version("randomForest", version = "4.6-14", repos = "http://cran.r-proje
 install_version("missForest", version = "1.4", repos = "http://cran.r-project.org/",upgrade=FALSE)
 install_version("rjson", version = "0.2.20", repos = "http://cran.r-project.org/",upgrade=FALSE)
 install_version("GetoptLong", version = "1.0.4", repos = "http://cran.r-project.org/",upgrade=FALSE)
-install_version("knitr", version = "1.28", repos = "http://cran.r-project.org/",upgrade=FALSE)
 install_version("DiscriMiner", version = "0.1-29", repos = "http://cran.r-project.org/",upgrade=FALSE)
 install_version("MALDIquant", version = "1.19.3", repos = "http://cran.r-project.org/",upgrade=FALSE)
 install_version("locfit", version = "1.5-9.4", repos = "http://cran.r-project.org/",upgrade=FALSE)
@@ -18,4 +17,4 @@ BiocManager::install("bzhanglab/NetSAM",update=FALSE,ask=FALSE)
 #BiocManager::install("AnalytixWare/ShinySky")
 BiocManager::install("doMC",update=FALSE,ask=FALSE)
 BiocManager::install("bzhanglab/OmicsEV",update=FALSE,ask=FALSE)
-
+install_version("knitr", version = "1.28", repos = "http://cran.r-project.org/",upgrade=FALSE)
