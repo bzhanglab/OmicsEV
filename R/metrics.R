@@ -679,6 +679,7 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
     if(cpu==0){
         cpu <- detectCores()
     }
+    ncpu = cpu
     if(cpu > length(dataset_name)){
         cpu <- length(dataset_name)
     }
@@ -700,6 +701,10 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
     fres$density_plot <- density_fig
     fres$datasets <- res
 
+    ## distribution
+    data_dv <- calc_metrics_for_data_distribution(x,cpu=ncpu)
+    data_dv$quant_median_ks <- 1 - data_dv$quant_median_ks/max(data_dv$quant_median_ks)
+    fres$quant_median_ks <- data_dv
 
     return(fres)
 }
@@ -1487,7 +1492,7 @@ calc_metrics_for_data_distribution=function(x,cpu=0){
         cpu = detectCores()
     }
     a <- lapply(x, function(y){
-        cat("Dataset:",y@ID,"\n")
+        # cat("Dataset:",y@ID,"\n")
         dat <- y@peaksData %>% mutate(dataSet=y@ID,sample=as.character(sample)) %>%
             as_tibble()
         dat$value[dat$value<=0] <- NA
@@ -1525,10 +1530,13 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
 
     dat <- get_identification_summary_table(x,format = FALSE)
 
-    if(!("quant_median_ks" %in% names(x))){
+    if(!("quant_median_ks" %in% names(x$basic_metrics)) && length(x$input_parameters$datasets) >= 2){
         ncpu <- ifelse("cpu" %in% names(x$input_parameters),x$input_parameters$cpu,0)
         data_dv <- calc_metrics_for_data_distribution(x$input_parameters$datasets,cpu=ncpu)
         data_dv$quant_median_ks <- 1 - data_dv$quant_median_ks/max(data_dv$quant_median_ks)
+        dat <- merge(dat,data_dv %>% dplyr::select(dataSet,quant_median_ks),by="dataSet")
+    }else if("quant_median_ks" %in% names(x$basic_metrics)){
+        data_dv <- x$basic_metrics$quant_median_ks
         dat <- merge(dat,data_dv %>% dplyr::select(dataSet,quant_median_ks),by="dataSet")
     }
 
