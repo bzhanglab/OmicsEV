@@ -703,10 +703,14 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
 
     ## distribution
     data_dv <- calc_metrics_for_data_distribution(x,cpu=ncpu)
-    data_dv$quant_median_ks <- 1 - data_dv$quant_median_ks/max(data_dv$quant_median_ks)
+    data_dv$quant_median_ks <- 1 - min_max_scale(data_dv$quant_median_ks)
     fres$quant_median_ks <- data_dv
 
     return(fres)
+}
+
+min_max_scale = function(x){
+    return((x- min(x)) /(max(x)-min(x)))
 }
 
 
