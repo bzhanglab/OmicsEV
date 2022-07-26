@@ -1515,7 +1515,7 @@ get_ks_statistic = function(s,ss,dat){
     x1 <- dat$value[dat$sample==ii[1]]
     x2 <- dat$value[dat$sample==ii[2]]
     b <- ks.test(x1,x2)
-    return(b$statistic)
+    return(abs(b$statistic))
 }
 
 # generate overview table and overview radar figure
