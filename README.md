@@ -7,30 +7,21 @@ A tool for large scale omics datasets evaluation
 
 ## Installation
 
-#### Method 1:
-
-Install OmicsEV into the installed R library:
-``` r
-# Install the development version from GitHub:
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-install.packages("remotes")
-BiocManager::install("theislab/kBET")
-BiocManager::install("wenbostar/metaX")
-BiocManager::install("bzhanglab/NetSAM")
-BiocManager::install("bzhanglab/OmicsEV")
-```
-#### Method 2:
+#### Method 1 (recommended):
 Install OmicsEV using Docker:
 ```sh
 docker pull proteomics/omicsev
 ```
 
-Use OmicsEV in docker (recommended):
+Use OmicsEV in docker:
 ```sh
 # change the path your_data_path to a real path
 docker run -it -v /your_data_path/:/opt/ -u $(id -u):$(id -g) proteomics/omicsev
 ```
+
+#### Method 2:
+
+Follow the instruction at https://github.com/bzhanglab/OmicsEV/wiki/OmicsEV-package-installation to install OmicsEV.
 
 
 ## Usage
