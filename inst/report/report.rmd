@@ -88,9 +88,9 @@ if(ncol(ov_table) > 3){
 
 
 
-# Descriptive
+# Identification and quantification depth
 
-## Protein/gene identification and quantification
+## Study-wise
 
 The table below shows the number of identified proteins or genes for each dataset. We take the proteins or genes filtered by 50% missing value as quantified proteins or genes.
 
@@ -110,7 +110,7 @@ if(!is.null(final_res$basic_metrics$datasets_id_overla)){
 ```
 
 
-## Protein/gene number distribution
+## Sample-wise
 
 The figures below show the number of proteins or genes identified in each sample. The samples from different batches are coded in different shapes and the samples from different classes are coded in different colors.
 
@@ -124,7 +124,21 @@ for(i in 1:length(figs)){
 }
 ```
 
-# Data visualization
+## Missing value distribution
+
+The missing value distribution can give an overview of the percent of missing values of all proteins or genes in both the QC and experiment samples.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "missing_value_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+```
+
+# Data distribution
 
 ## Protein or gene expression distribution
 
@@ -157,76 +171,8 @@ knitr::include_graphics(final_res$basic_metrics$density_plot %>% normalizePath)
 ```
 
 
-## Batch effect (Heatmap ordered by batches)
+# Batch effect
 
-In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.
-
-```{r, echo=FALSE, fig.align='center', results='asis'}
-figs <- get_metrics(final_res$basic_metrics$datasets, metric = "sample_wise_cor_heatmap")
-figs <- get_full_path(figs)
-for(i in 1:length(figs)){
-  knitr::include_graphics(figs[i] %>% normalizePath)
-  cat(names(figs)[i])
-  cat("![](",figs[i],")")
-}
-
-```
-
-
-## Protein or gene coefficient of variation (CV) distribution
-
-```{r, echo=FALSE, fig.align='center', results='asis'}
-figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cv_distribution")
-figs <- get_full_path(figs)
-for(i in 1:length(figs)){
-  knitr::include_graphics(figs[i] %>% normalizePath)
-  cat(names(figs)[i])
-  cat("![](",figs[i],")")
-}
-
-```
-
-## Missing value distribution
-
-The missing value distribution can give an overview of the percent of missing values of all proteins or genes in both the QC and experiment samples.
-
-```{r, echo=FALSE, fig.align='center', results='asis'}
-figs <- get_metrics(final_res$basic_metrics$datasets, metric = "missing_value_distribution")
-figs <- get_full_path(figs)
-for(i in 1:length(figs)){
-  knitr::include_graphics(figs[i] %>% normalizePath)
-  cat(names(figs)[i])
-  cat("![](",figs[i],")")
-}
-```
-
-## Unsupervised analysis of samples: PCA
-
-```{r, echo=FALSE, fig.align='center', results='asis'}
-figs <- get_metrics(final_res$basic_metrics$datasets, metric = "pca_with_batch")
-figs <- get_full_path(figs)
-for(i in 1:length(figs)){
-  knitr::include_graphics(figs[i] %>% normalizePath)
-  cat(names(figs)[i])
-  cat("![](",figs[i],")")
-}
-```
-
-## Unsupervised analysis of samples: Cluster analysis
-
-```{r, echo=FALSE, fig.align='center', results='asis'}
-figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cluster_heatmap")
-figs <- get_full_path(figs)
-for(i in 1:length(figs)){
-  knitr::include_graphics(figs[i] %>% normalizePath)
-  cat(names(figs)[i])
-  cat("![](",figs[i],")")
-}
-
-```
-
-
-# Quantitative evaluation
 
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
@@ -257,7 +203,7 @@ absolute value |s| as an indicator for the presence or absence of batch effects.
 
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
-  cat("## Batch effect evaluation based on principal components\n\n")
+  cat("## Batch effect evaluation based on principal component regression\n\n")
   cat("<p>For each PC, we calculate Pearson's correlation coefficient with batch covariate b:</p>\n")
   cat("<p style='text-align: center;'>r<sub>i</sub> =corr(PC<sub>i</sub>,b)</p>\n")
   cat("<p>In a linear model with a single dependent, as is the case here for the PCs correlated to batch covariate, the coefficient of determination R<sup>2</sup> is the squared Pearson's correlation coefficient:</p>\n")
@@ -286,10 +232,9 @@ if(n_batch >= 2){
   }
 ```
 
-
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
-  cat("## Batch effect evaluation using pca score plot\n\n")
+  #cat("## Batch effect evaluation using pca score plot\n\n")
   cat("In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.\n")
   fig <- final_res$pca_batch_plot$fig
 knitr::include_graphics(fig %>% normalizePath)
@@ -307,9 +252,42 @@ if(n_batch >= 2){
 
 ```
 
+
+## Correlation heatmap
+
+In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "sample_wise_cor_heatmap")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+
+# Platform reproducibility (optional with QC sample)
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cv_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+# Biological signal
+
+
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$network_table)){
-  cat("## Correlation between proteins: within vs between protein complexes\n")
+  cat("## Correlation among protein complex members: within vs between protein complexes\n")
   include_graphics(final_res$network_table$network_boxplot %>% normalizePath)
 }
 
@@ -321,124 +299,6 @@ if(!is.null(final_res$network_table)){
   kable(final_res$network_table$cor, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
     row_spec(which(final_res$network_table$cor$ks >= sort(final_res$network_table$cor$ks,decreasing = TRUE)[3]), bold = T, color = "red")
-}
-
-```
-
-
-```{r results="asis",fig.align='center'}
-if(!is.null(final_res$input_parameters$x2)){
-  cat("## Correlation between mRNA and protein: gene-wise correlation\n")
-  kable(final_res$protein_rna$feature_wise_cor_table, "html",digits = 3) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F) %>%
-    row_spec(which(final_res$protein_rna$feature_wise_cor_table$median_cor >= sort(final_res$protein_rna$feature_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
-  
-}
-```  
-
-```{r results="asis",fig.align='center'}
-if(!is.null(final_res$input_parameters$x2)){
-  if(!is.null(final_res$protein_rna$gene_wise_cor_boxplot_fig)){
-    include_graphics(final_res$protein_rna$gene_wise_cor_boxplot_fig %>% normalizePath)
-  }
-}
-```  
-
-```{r results="asis",fig.align='center'}
-if(!is.null(final_res$input_parameters$x2)){
-  if(!is.null(final_res$protein_rna$gene_wise_cor_cdf_fig)){
-    include_graphics(final_res$protein_rna$gene_wise_cor_cdf_fig %>% normalizePath)
-  }
-}
-```  
-
-```{r, echo=FALSE, fig.align='center', results='asis'}
-if(!is.null(final_res$input_parameters$x2)){
-  figs <- get_metrics(final_res$protein_rna$data, metric = "hist_fig")
-  figs <- get_full_path(figs)
-  for(i in 1:length(figs)){
-    knitr::include_graphics(figs[i] %>% normalizePath)
-    cat(names(figs)[i])
-    cat("![](",figs[i],")")
-  }
-}
-
-```
-
-
-```{r results="asis",fig.align='center'}
-if(!is.null(final_res$input_parameters$x2)){
-  cat("## Correlation between mRNA and protein: sample-wise correlation\n")
-  kable(final_res$protein_rna$sample_wise_cor_table, "html",digits = 3) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)%>%
-    row_spec(which(final_res$protein_rna$sample_wise_cor_table$median_cor >= sort(final_res$protein_rna$sample_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
-
-}
-```
-
-```{r results="asis",fig.align='center'}
-if(!is.null(final_res$input_parameters$x2)){
-  include_graphics(final_res$protein_rna$sample_wise_cor_fig %>% normalizePath)
-
-}
-```
-
-
-```{r results="asis",fig.align='center'}
-
-if(!is.null(final_res$snr)){
-  cat("## Noise to signal analysis\n")
-  cat("<p>Noise to signal analysis.</p>\n")
-  kable(final_res$snr$table, "html",digits = 3) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)%>%
-    row_spec(which(final_res$snr$table$nsr <= sort(final_res$snr$table$nsr,decreasing = FALSE)[3]), bold = T, color = "red")
-  
-}
-
-```
-
-```{r, echo=FALSE}
-if(!is.null(final_res$snr)){
-  if(!is.null(final_res$snr$fig)){
-    include_graphics(final_res$snr$fig %>% normalizePath)
-  }
-}
-```
-
-
-```{r, echo=FALSE, fig.align='center', results='asis'}
-
-if(!is.null(final_res$snr)){
-  figs <- unlist(final_res$snr$mad_figs)
-  figs <- get_full_path(figs)
-  for(i in 1:length(figs)){
-    knitr::include_graphics(figs[i] %>% normalizePath)
-    cat(names(figs)[i])
-    cat("![](",figs[i],")")
-  }
-}
-```
-
-
-```{r results="asis",fig.align='center'}
-
-if(!is.null(final_res$ml)){
-  cat("## Phenotype prediction\n")
-  cat("<p>Build model for prediction:",paste(final_res$ml$class_group,collapse = ","),".</p>\n")
-  kable(final_res$ml$table, "html",digits = 3) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
-  
-}
-
-```
-
-```{r results="asis",fig.align='center'}
-
-if(!is.null(final_res$ml)){
-  
-  if(!is.null(final_res$ml$fig)){
-    include_graphics(final_res$ml$fig %>% normalizePath)
-  }
 }
 
 ```
@@ -481,6 +341,156 @@ if(!is.null(final_res$fun_pred)){
 }
 
 ```
+
+
+```{r results="asis",fig.align='center'}
+
+if(!is.null(final_res$ml)){
+  cat("## Sample class prediction\n")
+  cat("<p>Build model for prediction:",paste(final_res$ml$class_group,collapse = ","),".</p>\n")
+  kable(final_res$ml$table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+  
+}
+
+```
+
+```{r results="asis",fig.align='center'}
+
+if(!is.null(final_res$ml)){
+  
+  if(!is.null(final_res$ml$fig)){
+    include_graphics(final_res$ml$fig %>% normalizePath)
+  }
+}
+
+```
+
+
+
+## Unsupervised analysis of samples: PCA
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "pca_with_batch")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+```
+
+## Unsupervised analysis of samples: Cluster analysis
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cluster_heatmap")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
+```{r results="asis",fig.align='center'}
+
+if(!is.null(final_res$snr)){
+  cat("## Noise to signal analysis\n")
+  cat("<p>Noise to signal analysis.</p>\n")
+  kable(final_res$snr$table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)%>%
+    row_spec(which(final_res$snr$table$nsr <= sort(final_res$snr$table$nsr,decreasing = FALSE)[3]), bold = T, color = "red")
+  
+}
+
+```
+
+```{r, echo=FALSE}
+if(!is.null(final_res$snr)){
+  if(!is.null(final_res$snr$fig)){
+    include_graphics(final_res$snr$fig %>% normalizePath)
+  }
+}
+```
+
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+
+if(!is.null(final_res$snr)){
+  figs <- unlist(final_res$snr$mad_figs)
+  figs <- get_full_path(figs)
+  for(i in 1:length(figs)){
+    knitr::include_graphics(figs[i] %>% normalizePath)
+    cat(names(figs)[i])
+    cat("![](",figs[i],")")
+  }
+}
+```
+
+
+
+# Multi-omics
+
+```{r results="asis",fig.align='center'}
+if(!is.null(final_res$input_parameters$x2)){
+  cat("## Gene-wise mRNA-protein correlation\n")
+  kable(final_res$protein_rna$feature_wise_cor_table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+    row_spec(which(final_res$protein_rna$feature_wise_cor_table$median_cor >= sort(final_res$protein_rna$feature_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
+  
+}
+```  
+
+```{r results="asis",fig.align='center'}
+if(!is.null(final_res$input_parameters$x2)){
+  if(!is.null(final_res$protein_rna$gene_wise_cor_boxplot_fig)){
+    include_graphics(final_res$protein_rna$gene_wise_cor_boxplot_fig %>% normalizePath)
+  }
+}
+```  
+
+```{r results="asis",fig.align='center'}
+if(!is.null(final_res$input_parameters$x2)){
+  if(!is.null(final_res$protein_rna$gene_wise_cor_cdf_fig)){
+    include_graphics(final_res$protein_rna$gene_wise_cor_cdf_fig %>% normalizePath)
+  }
+}
+```  
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+if(!is.null(final_res$input_parameters$x2)){
+  figs <- get_metrics(final_res$protein_rna$data, metric = "hist_fig")
+  figs <- get_full_path(figs)
+  for(i in 1:length(figs)){
+    knitr::include_graphics(figs[i] %>% normalizePath)
+    cat(names(figs)[i])
+    cat("![](",figs[i],")")
+  }
+}
+
+```
+
+
+```{r results="asis",fig.align='center'}
+if(!is.null(final_res$input_parameters$x2)){
+  cat("## Sample-wise mRNA-protein correlation\n")
+  kable(final_res$protein_rna$sample_wise_cor_table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)%>%
+    row_spec(which(final_res$protein_rna$sample_wise_cor_table$median_cor >= sort(final_res$protein_rna$sample_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
+
+}
+```
+
+```{r results="asis",fig.align='center'}
+if(!is.null(final_res$input_parameters$x2)){
+  include_graphics(final_res$protein_rna$sample_wise_cor_fig %>% normalizePath)
+
+}
+```
+
+
+
 
 
 
