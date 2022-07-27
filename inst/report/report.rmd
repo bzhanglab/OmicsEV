@@ -140,7 +140,7 @@ for(i in 1:length(figs)){
 
 # Data distribution
 
-## Protein or gene expression distribution
+## Protein or gene expression distribution - Boxplot
 
 The boxplots show the protein or gene expression distribution across samples. X axis is sample ordered by input order. Y axis is log2 transformed protein or gene expression. The samples from different classes are coded in different colors.
 
@@ -164,11 +164,28 @@ for(i in 1:length(figs)){
 
 ```
 
+## Protein or gene expression distribution - Density plot
+
 The density plots show the protein or gene expression distribution across samples. X axis is log2 transformed protein or gene expression. Y axis is density.
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 knitr::include_graphics(final_res$basic_metrics$density_plot %>% normalizePath)
 ```
+
+
+## Protein or gene coefficient of variation (CV) distribution
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cv_distribution")
+figs <- get_full_path(figs)
+for(i in 1:length(figs)){
+  knitr::include_graphics(figs[i] %>% normalizePath)
+  cat(names(figs)[i])
+  cat("![](",figs[i],")")
+}
+
+```
+
 
 
 # Batch effect
@@ -268,19 +285,6 @@ for(i in 1:length(figs)){
 
 ```
 
-
-# Platform reproducibility (optional with QC sample)
-
-```{r, echo=FALSE, fig.align='center', results='asis'}
-figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cv_distribution")
-figs <- get_full_path(figs)
-for(i in 1:length(figs)){
-  knitr::include_graphics(figs[i] %>% normalizePath)
-  cat(names(figs)[i])
-  cat("![](",figs[i],")")
-}
-
-```
 
 # Biological signal
 
