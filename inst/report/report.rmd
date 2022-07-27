@@ -138,7 +138,7 @@ for(i in 1:length(figs)){
 }
 ```
 
-# Data distribution
+# Normalization
 
 ## Protein or gene expression distribution - Boxplot
 
@@ -146,7 +146,8 @@ The boxplots show the protein or gene expression distribution across samples. X 
 
 ```{r echo=FALSE}
 if("quant_median_ks" %in% names(final_res$basic_metrics)){
-    kable(final_res$basic_metrics$quant_median_ks,"html",escape = FALSE) %>%
+    kable(final_res$basic_metrics$quant_median_ks %>%
+              rename(mean_statistic=raw_quant_median_ks,scaled_mean_statistic=quant_median_ks),"html",escape = FALSE) %>%
         kable_styling(bootstrap_options = "striped", full_width = F) #%>%
         #row_spec(which.max(id_table[,3]), bold = T, color = "red")
 }

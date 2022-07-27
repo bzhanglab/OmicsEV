@@ -703,7 +703,6 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
 
     ## distribution
     data_dv <- calc_metrics_for_data_distribution(x,cpu=ncpu)
-    data_dv$quant_median_ks <- 1 - min_max_scale(data_dv$quant_median_ks)
     fres$quant_median_ks <- data_dv
 
     return(fres)
@@ -1516,8 +1515,13 @@ calc_metrics_for_data_distribution=function(x,cpu=0){
             as_tibble()
         return(res)
     }) %>% bind_rows()
+    a$raw_quant_median_ks <- a$quant_median_ks
+    #a$quant_median_ks <- 1 - min_max_scale(a$quant_median_ks)
+    a$quant_median_ks <- 1 - a$quant_median_ks/(a$quant_median_ks+1)
     return(a)
 }
+
+
 
 get_ks_statistic = function(s,ss,dat){
     ii <- as.character(ss[,s])
@@ -1537,7 +1541,6 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     if(!("quant_median_ks" %in% names(x$basic_metrics)) && length(x$input_parameters$datasets) >= 2){
         ncpu <- ifelse("cpu" %in% names(x$input_parameters),x$input_parameters$cpu,0)
         data_dv <- calc_metrics_for_data_distribution(x$input_parameters$datasets,cpu=ncpu)
-        data_dv$quant_median_ks <- 1 - data_dv$quant_median_ks/max(data_dv$quant_median_ks)
         dat <- merge(dat,data_dv %>% dplyr::select(dataSet,quant_median_ks),by="dataSet")
     }else if("quant_median_ks" %in% names(x$basic_metrics)){
         data_dv <- x$basic_metrics$quant_median_ks
