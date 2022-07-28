@@ -140,7 +140,7 @@ for(i in 1:length(figs)){
 
 # Normalization
 
-## Protein or gene expression distribution - Boxplot
+## Boxplot
 
 The boxplots show the protein or gene expression distribution across samples. X axis is sample ordered by input order. Y axis is log2 transformed protein or gene expression. The samples from different classes are coded in different colors.
 
@@ -165,7 +165,7 @@ for(i in 1:length(figs)){
 
 ```
 
-## Protein or gene expression distribution - Density plot
+## Density plot
 
 The density plots show the protein or gene expression distribution across samples. X axis is log2 transformed protein or gene expression. Y axis is density.
 
@@ -174,18 +174,6 @@ knitr::include_graphics(final_res$basic_metrics$density_plot %>% normalizePath)
 ```
 
 
-## Protein or gene coefficient of variation (CV) distribution
-
-```{r, echo=FALSE, fig.align='center', results='asis'}
-figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cv_distribution")
-figs <- get_full_path(figs)
-for(i in 1:length(figs)){
-  knitr::include_graphics(figs[i] %>% normalizePath)
-  cat(names(figs)[i])
-  cat("![](",figs[i],")")
-}
-
-```
 
 
 
@@ -207,7 +195,7 @@ if(n_batch >= 2){
 
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){  
-  cat("## Batch effect evaluation using silhouette width\n\n")
+  cat("## Silhouette width\n\n")
   cat("<p>The silhouette width s(i) ranges from –1 to 1, with s(i) -> 1 if two clusters
 are separate and s(i) -> −1 if two clusters overlap but have dissimilar variance.
 If s(i) -> 0, both clusters have roughly the same structure. Thus, we use the
@@ -221,7 +209,7 @@ absolute value |s| as an indicator for the presence or absence of batch effects.
 
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
-  cat("## Batch effect evaluation based on principal component regression\n\n")
+  cat("## PCA with batch annotation\n\n")
   cat("<p>For each PC, we calculate Pearson's correlation coefficient with batch covariate b:</p>\n")
   cat("<p style='text-align: center;'>r<sub>i</sub> =corr(PC<sub>i</sub>,b)</p>\n")
   cat("<p>In a linear model with a single dependent, as is the case here for the PCs correlated to batch covariate, the coefficient of determination R<sup>2</sup> is the squared Pearson's correlation coefficient:</p>\n")
@@ -292,7 +280,7 @@ for(i in 1:length(figs)){
 
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$network_table)){
-  cat("## Correlation among protein complex members: within vs between protein complexes\n")
+  cat("## Correlation among protein complex members\n")
   include_graphics(final_res$network_table$network_boxplot %>% normalizePath)
 }
 
@@ -312,7 +300,7 @@ if(!is.null(final_res$network_table)){
 ```{r results="asis",fig.align='center'}
 
 if(!is.null(final_res$fun_pred)){
-  cat("## Co-expression network based function prediction\n")
+  cat("## Gene function prediction\n")
   cat("<p>In this evaluation, each dataset was used to build co-expression network. For a selected network and a selected function term (such as GO or KEGG), proteins/genes annotated to the term and also included in the network were defined as a positive protein/gene set and other proteins/genes in the network constituted the negative protein/gene set for the term. For a selected function term, we use some of the proteins/genes as the seed protein/gene, then we use random walk algorithm to calculate scores for other proteins/genes. A higher score of a protein/gene represents a closer relationship between the protein/gene and the seed proteins/genes. Finally, for each selected function term, we calculate an AUROC to evaluate the prediction performance.</p>\n")
   kable(final_res$fun_pred$table, "html",digits = 3,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) %>%
@@ -373,7 +361,7 @@ if(!is.null(final_res$ml)){
 
 
 
-## Unsupervised analysis of samples: PCA
+## PCA with sample class annotation
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "pca_with_batch")
@@ -385,7 +373,7 @@ for(i in 1:length(figs)){
 }
 ```
 
-## Unsupervised analysis of samples: Cluster analysis
+## Unsupervised clustering
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cluster_heatmap")
@@ -435,7 +423,37 @@ if(!is.null(final_res$snr)){
 
 
 
-# Multi-omics
+```{r results="asis",fig.align='center'}
+
+if("QC" %in% final_res$input_parameters$sample_list$class){
+  cat("# Platform reproducibility\n")
+  cat("## Coefficient of variation distribution\n")
+  cat("<p>Platform reproducibility is evaluated based on coefficient of variation distribution of QC samples.</p>\n")
+  #kable(final_res$snr$table, "html",digits = 3) %>%
+  #kable_styling(bootstrap_options = "striped", full_width = F)%>%
+  #  row_spec(which(final_res$snr$table$nsr <= sort(final_res$snr$table$nsr,decreasing = FALSE)[3]), bold = T, color = "red")
+  
+}
+
+```
+
+
+```{r, echo=FALSE, fig.align='center', results='asis'}
+
+if("QC" %in% final_res$input_parameters$sample_list$class){
+    figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cv_distribution")
+    figs <- get_full_path(figs)
+    for(i in 1:length(figs)){
+      knitr::include_graphics(figs[i] %>% normalizePath)
+      cat(names(figs)[i])
+      cat("![](",figs[i],")")
+    }
+}
+
+```
+
+
+# Multi-omics concordance
 
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$input_parameters$x2)){

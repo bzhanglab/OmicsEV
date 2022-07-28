@@ -862,6 +862,7 @@ run_basic_metrics=function(x,plist,out_dir="./"){
     #fig2 <- paste("data/",basename(fig$highfig),sep="")
     ##
     res$cv_distribution <- fig$fig
+    res$cv_stat <- fig$stat
 
     message("plot missing value distribution...")
     fig <- plotMissValue(para,height = 3.7,width = 9.15)
