@@ -424,15 +424,15 @@ if(!is.null(final_res$snr)){
 
 
 ```{r results="asis",fig.align='center'}
-
-if("QC" %in% final_res$input_parameters$sample_list$class){
+cv_table <- get_cv_table(final_res$basic_metrics$datasets,"cv_stat")
+if("QC" %in% cv_table$class){
   cat("# Platform reproducibility\n")
   cat("## Coefficient of variation distribution\n")
   cat("<p>Platform reproducibility is evaluated based on coefficient of variation distribution of QC samples.</p>\n")
-  #kable(final_res$snr$table, "html",digits = 3) %>%
-  #kable_styling(bootstrap_options = "striped", full_width = F)%>%
-  #  row_spec(which(final_res$snr$table$nsr <= sort(final_res$snr$table$nsr,decreasing = FALSE)[3]), bold = T, color = "red")
-  
+  show_cv_table <- cv_table %>% dplyr::filter(class=="QC") %>% dplyr::select(class,median_cv,dataSet)
+  kable(show_cv_table, "html",digits = 3) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)%>%
+    row_spec(which(show_cv_table$median_cv <= sort(show_cv_table$median_cv,decreasing = FALSE)[3]), bold = T, color = "red")
 }
 
 ```
@@ -440,7 +440,7 @@ if("QC" %in% final_res$input_parameters$sample_list$class){
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 
-if("QC" %in% final_res$input_parameters$sample_list$class){
+if("QC" %in% cv_table$class){
     figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cv_distribution")
     figs <- get_full_path(figs)
     for(i in 1:length(figs)){

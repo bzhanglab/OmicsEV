@@ -1749,5 +1749,10 @@ get_cv=function(peaksData){
     return(cvstat)
 }
 
+get_cv_table=function(x, metric = "total_features"){
+    res <- lapply(x,function(y)y[[metric]]) %>% dplyr::bind_rows()
+    return(res)
+}
+
 
 
