@@ -862,7 +862,7 @@ run_basic_metrics=function(x,plist,out_dir="./"){
     #fig2 <- paste("data/",basename(fig$highfig),sep="")
     ##
     res$cv_distribution <- fig$fig
-    res$cv_stat <- fig$stat
+    res$cv_stat <- get_cv(cv_para@peaksData) %>% mutate(dataSet=cv_para@ID)
 
     message("plot missing value distribution...")
     fig <- plotMissValue(para,height = 3.7,width = 9.15)
@@ -1737,6 +1737,17 @@ noise_signal_analysis=function(x, qc_sample=NULL,bio_sample=NULL, out_dir="./"){
 
 }
 
+
+get_cv=function(peaksData){
+    cvstat <- peaksData %>%
+        dplyr::group_by(class,ID) %>%
+        dplyr::summarize(cv=sd(value,na.rm=TRUE)/mean(value,na.rm=TRUE)) %>%
+        dplyr::ungroup() %>%
+        dplyr::group_by(class) %>%
+        dplyr::summarize(median_cv=median(cv,na.rm=TRUE),mean_cv=mean(cv,na.rm=TRUE),n=n()) %>%
+        as.data.frame()
+    return(cvstat)
+}
 
 
 
