@@ -442,8 +442,8 @@ if("QC" %in% cv_table$class){
   cat("# Platform reproducibility\n")
   cat("## Coefficient of variation distribution\n")
   cat("<p>Platform reproducibility is evaluated based on coefficient of variation distribution of QC samples.</p>\n")
-  show_cv_table <- cv_table %>% dplyr::filter(class=="QC") %>% dplyr::select(class,median_cv,dataSet)
-  kable(show_cv_table, "html",digits = 3) %>%
+  show_cv_table <- cv_table %>% dplyr::filter(class=="QC") %>% dplyr::select(dataSet,class,median_cv)
+  kable(show_cv_table %>% dplyr::rename(median_CV=median_cv), "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
     row_spec(which(show_cv_table$median_cv <= sort(show_cv_table$median_cv,decreasing = FALSE)[3]), bold = T, color = "red")
 }
@@ -471,7 +471,7 @@ if("QC" %in% cv_table$class){
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$input_parameters$x2)){
   cat("## Gene-wise mRNA-protein correlation\n")
-  kable(final_res$protein_rna$feature_wise_cor_table, "html",digits = 3) %>%
+  kable(final_res$protein_rna$feature_wise_cor_table %>% dplyr::rename(gene_wise_cor=median_cor), "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) %>%
     row_spec(which(final_res$protein_rna$feature_wise_cor_table$median_cor >= sort(final_res$protein_rna$feature_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
   
@@ -511,7 +511,7 @@ if(!is.null(final_res$input_parameters$x2)){
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$input_parameters$x2)){
   cat("## Sample-wise mRNA-protein correlation\n")
-  kable(final_res$protein_rna$sample_wise_cor_table, "html",digits = 3) %>%
+  kable(final_res$protein_rna$sample_wise_cor_table %>% dplyr::rename(sample_wise_cor=median_cor), "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
     row_spec(which(final_res$protein_rna$sample_wise_cor_table$median_cor >= sort(final_res$protein_rna$sample_wise_cor_table$median_cor,decreasing = TRUE)[3]), bold = T, color = "red")
 
