@@ -1554,12 +1554,12 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         data_dv <- calc_metrics_for_data_distribution(x$input_parameters$datasets,cpu=ncpu)
         dat <- merge(dat,data_dv %>%
                          dplyr::select(dataSet,quant_median_ks) %>%
-                         dplyr::select(scaled_data_dist_similarity=quant_median_ks),by="dataSet")
+                         dplyr::rename(scaled_data_dist_similarity=quant_median_ks),by="dataSet")
     }else if("quant_median_ks" %in% names(x$basic_metrics)){
         data_dv <- x$basic_metrics$quant_median_ks
         dat <- merge(dat,data_dv %>%
                          dplyr::select(dataSet,quant_median_ks) %>%
-                         dplyr::select(scaled_data_dist_similarity=quant_median_ks),by="dataSet")
+                         dplyr::rename(scaled_data_dist_similarity=quant_median_ks),by="dataSet")
     }
 
     if(!is.null(x$batch_effect_metrics)){
