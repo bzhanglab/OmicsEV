@@ -1542,13 +1542,24 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
 
     dat <- get_identification_summary_table(x,format = FALSE)
 
+    ## add missing value metric
+    missing_value_table <- lapply(x$basic_metrics$datasets,function(y)y[["non_missing_value_ratio"]]) %>%
+        dplyr::bind_rows() %>%
+        dplyr::rename(non_missing_value_ratio=ratio)
+    dat <- merge(dat,missing_value_table %>% dplyr::select(dataSet,non_missing_value_ratio),by="dataSet")
+
+    ## data distribution metric
     if(!("quant_median_ks" %in% names(x$basic_metrics)) && length(x$input_parameters$datasets) >= 2){
         ncpu <- ifelse("cpu" %in% names(x$input_parameters),x$input_parameters$cpu,0)
         data_dv <- calc_metrics_for_data_distribution(x$input_parameters$datasets,cpu=ncpu)
-        dat <- merge(dat,data_dv %>% dplyr::select(dataSet,quant_median_ks),by="dataSet")
+        dat <- merge(dat,data_dv %>%
+                         dplyr::select(dataSet,quant_median_ks) %>%
+                         dplyr::select(scaled_data_dist_similarity=quant_median_ks),by="dataSet")
     }else if("quant_median_ks" %in% names(x$basic_metrics)){
         data_dv <- x$basic_metrics$quant_median_ks
-        dat <- merge(dat,data_dv %>% dplyr::select(dataSet,quant_median_ks),by="dataSet")
+        dat <- merge(dat,data_dv %>%
+                         dplyr::select(dataSet,quant_median_ks) %>%
+                         dplyr::select(scaled_data_dist_similarity=quant_median_ks),by="dataSet")
     }
 
     if(!is.null(x$batch_effect_metrics)){
@@ -1586,14 +1597,36 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         dat <- merge(dat,pcRegscale)
     }
 
+    ## complex
     if(!is.null(x$network_table)){
         dat <- merge(dat,x$network_table$cor %>% dplyr::select(dataSet,ks) %>%
                          dplyr::rename(complex_ks=ks))
     }
 
+    ## function prediction
+    if(!is.null(x$fun_pred)){
+        f_res <- get_func_pred_meanAUC(x$fun_pred$data,min_auc = min_auc)
+        dat <- merge(dat,f_res)
+    }
 
+    ## class prediction
+    if(!is.null(x$ml)){
+        dat <- merge(dat,x$ml$table %>%
+                         dplyr::select(dataSet,mean_ROC) %>%
+                         dplyr::rename(class_auc=mean_ROC))
+    }
 
+    ## median CV: QC samples
+    cv_table <- get_cv_table(x$basic_metrics$datasets,"cv_stat")
+    if("QC" %in% cv_table$class){
+        cv_table <- cv_table %>%
+        dplyr::filter(class=="QC") %>%
+        dplyr::select(dataSet,class,median_cv) %>%
+        dplyr::rename(median_CV=median_cv)
+        dat <- merge(dat,cv_table,by="dataSet")
+    }
 
+    ## mRNA-protein correlation
     if(!is.null(x$input_parameters$x2)){
         dat <- merge(dat,x$protein_rna$feature_wise_cor_table %>%
                          dplyr::select(dataSet,median_cor) %>%
@@ -1604,16 +1637,8 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
                          dplyr::rename(sample_wise_cor=median_cor))
     }
 
-    if(!is.null(x$ml)){
-        dat <- merge(dat,x$ml$table %>%
-                         dplyr::select(dataSet,mean_ROC) %>%
-                         dplyr::rename(AUROC=mean_ROC))
-    }
 
-    if(!is.null(x$fun_pred)){
-        f_res <- get_func_pred_meanAUC(x$fun_pred$data,min_auc = min_auc)
-        dat <- merge(dat,f_res)
-    }
+
 
     return(dat)
 

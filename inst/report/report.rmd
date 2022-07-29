@@ -88,7 +88,7 @@ if(ncol(ov_table) > 3){
 
 
 
-# Identification and quantification depth
+# Data depth
 
 ## Study-wise
 
@@ -149,7 +149,7 @@ for(i in 1:length(figs)){
 }
 ```
 
-# Normalization
+# Data normalization
 
 ## Boxplot
 
