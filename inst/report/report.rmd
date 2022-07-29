@@ -74,9 +74,9 @@ kable(ov_table,"html",escape = FALSE) %>%
 ```{r echo=FALSE, fig.align='center', warning=FALSE,message=FALSE}
 #save(final_res,file="a.rda")
 if(ncol(ov_table) > 3){
-    if("# proteins (genes)" %in% names(ov_table) && "# proteins (genes) [50%]" %in% names(ov_table)){
-        ov_data <- ov_table %>% dplyr::rename(ID=`# proteins (genes)`) %>%
-            dplyr::rename(Quant=`# proteins (genes) [50%]`) %>%
+    if("#identified features" %in% names(ov_table) && "#quantifiable features" %in% names(ov_table)){
+        ov_data <- ov_table %>% dplyr::rename(ID=`#identified features`) %>%
+            dplyr::rename(Quant=`#quantifiable features`) %>%
             dplyr::mutate(ID=ID/max(ID),Quant=Quant/max(Quant))
     }else{
         ov_data <- ov_table[,-c(2,3)]
@@ -128,6 +128,17 @@ for(i in 1:length(figs)){
 
 The missing value distribution can give an overview of the percent of missing values of all proteins or genes in both the QC and experiment samples.
 
+
+```{r echo=FALSE}
+missing_value_table <- lapply(final_res$basic_metrics$datasets,function(y)y[["non_missing_value_ratio"]]) %>% 
+    dplyr::bind_rows() %>% 
+    dplyr::rename(non_missing_value_ratio=ratio)
+kable(missing_value_table,"html",escape = FALSE) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) #%>%
+    #row_spec(which.max(id_table[,3]), bold = T, color = "red")
+```
+
+
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "missing_value_distribution")
 figs <- get_full_path(figs)
@@ -147,7 +158,8 @@ The boxplots show the protein or gene expression distribution across samples. X 
 ```{r echo=FALSE}
 if("quant_median_ks" %in% names(final_res$basic_metrics)){
     kable(final_res$basic_metrics$quant_median_ks %>%
-              rename(mean_statistic=raw_quant_median_ks,scaled_mean_statistic=quant_median_ks),"html",escape = FALSE) %>%
+              rename(data_dist_similarity=raw_quant_median_ks,
+                     scaled_data_dist_similarity=quant_median_ks),"html",escape = FALSE) %>%
         kable_styling(bootstrap_options = "striped", full_width = F) #%>%
         #row_spec(which.max(id_table[,3]), bold = T, color = "red")
 }
@@ -288,10 +300,11 @@ if(!is.null(final_res$network_table)){
 
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$network_table)){
-  cat("<p>The table showing below is a summary of the evaluation. 'diff' is Cor(intra) - Cor(inter). 'ks' is the statistic value of Kolmogorov-Smirnov test.</p>\n")
+  cat("<p>The table showing below is a summary of the evaluation. 'diff' is Cor(intra) - Cor(inter). 'complex_ks' is the statistic value of Kolmogorov-Smirnov test.</p>\n")
+  final_res$network_table$cor <- final_res$network_table$cor %>% dplyr::rename(complex_ks=ks)    
   kable(final_res$network_table$cor, "html",digits = 3) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
-    row_spec(which(final_res$network_table$cor$ks >= sort(final_res$network_table$cor$ks,decreasing = TRUE)[3]), bold = T, color = "red")
+    row_spec(which(final_res$network_table$cor$complex_ks >= sort(final_res$network_table$cor$complex_ks,decreasing = TRUE)[3]), bold = T, color = "red")
 }
 
 ```

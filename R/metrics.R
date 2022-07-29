@@ -871,6 +871,9 @@ run_basic_metrics=function(x,plist,out_dir="./"){
 
     ##
     res$missing_value_distribution <- fig$fig
+    res$non_missing_value_ratio <- data.frame(dataSet=para@ID,
+                                              ratio=get_missing_value_ratio(para@peaksData),
+                                              stringsAsFactors = FALSE)
 
     message("plot peak intensity distribution...")
     fig <- plotIntDistr(para,width = 9.15)
@@ -1071,7 +1074,7 @@ get_identification_summary_table=function(x,format=TRUE){
 
 
     }
-    names(a) <- c("dataSet","# proteins (genes)","# proteins (genes) [50%]")
+    names(a) <- c("dataSet","#identified features","#quantifiable features")
     return(a)
 }
 
@@ -1747,6 +1750,20 @@ get_cv=function(peaksData){
         dplyr::summarize(median_cv=median(cv,na.rm=TRUE),mean_cv=mean(cv,na.rm=TRUE),n=n()) %>%
         as.data.frame()
     return(cvstat)
+}
+
+get_cv_table=function(x, metric = "total_features"){
+    res <- lapply(x,function(y)y[[metric]]) %>% dplyr::bind_rows()
+    return(res)
+}
+
+get_missing_value_ratio=function(x){
+    n_samples <- length(unique(x$sample))
+    n_features <- length(unique(x$ID))
+    n_v <- n_samples * n_features
+    n_valid_v <- sum(!is.na(x$value))
+    ratio <- n_valid_v/n_v
+    return(ratio)
 }
 
 get_cv_table=function(x, metric = "total_features"){
