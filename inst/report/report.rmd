@@ -75,9 +75,12 @@ kable(ov_table,"html",escape = FALSE) %>%
 #save(final_res,file="a.rda")
 if(ncol(ov_table) > 3){
     if("#identified features" %in% names(ov_table) && "#quantifiable features" %in% names(ov_table)){
-        ov_data <- ov_table %>% dplyr::rename(ID=`#identified features`) %>%
-            dplyr::rename(Quant=`#quantifiable features`) %>%
-            dplyr::mutate(ID=ID/max(ID),Quant=Quant/max(Quant))
+        #ov_data <- ov_table %>% dplyr::rename(ID=`#identified features`) %>%
+        #    dplyr::rename(Quant=`#quantifiable features`) %>%
+        #    dplyr::mutate(ID=ID/max(ID),Quant=Quant/max(Quant))
+        ov_data <- ov_table %>% 
+            dplyr::mutate(`#identified features`=`#identified features`/max(`#identified features`),
+                          `#quantifiable features`=`#quantifiable features`/max(`#quantifiable features`))
     }else{
         ov_data <- ov_table[,-c(2,3)]
     }
