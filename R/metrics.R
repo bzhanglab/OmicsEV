@@ -1621,7 +1621,7 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     if("QC" %in% cv_table$class){
         cv_table <- cv_table %>%
         dplyr::filter(class=="QC") %>%
-        dplyr::select(dataSet,class,median_cv) %>%
+        dplyr::select(dataSet,median_cv) %>%
         dplyr::rename(median_CV=median_cv)
         dat <- merge(dat,cv_table,by="dataSet")
     }
