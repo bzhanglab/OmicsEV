@@ -1622,7 +1622,8 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         cv_table <- cv_table %>%
         dplyr::filter(class=="QC") %>%
         dplyr::select(dataSet,median_cv) %>%
-        dplyr::rename(median_CV=median_cv)
+        dplyr::rename(median_CV=median_cv) %>%
+        dplyr::mutate(median_CV=1-median_CV/max(median_CV))
         dat <- merge(dat,cv_table,by="dataSet")
     }
 
@@ -1796,5 +1797,23 @@ get_cv_table=function(x, metric = "total_features"){
     return(res)
 }
 
-
+format_overview_table=function(ov_table){
+    a <- ov_table
+    nm <- names(ov_table)
+    for(i in 2:ncol(a)){
+        y <- a[,i]
+        if(nm[i] == "#identified features" || nm[i] == "#quantifiable features"){
+            y <- y/max(y)
+        }
+        y_s <- sprintf("%.3f",y)
+        y <- cell_spec(y_s, bold = ifelse(y >= max(y), TRUE, FALSE))
+        a[,i] <- y
+    }
+    show_ov_table <- as.data.frame(t(a[,-1]))
+    names(show_ov_table) <- a$dataSet
+    show_ov_table$metric <- rownames(show_ov_table)
+    rownames(show_ov_table) <- NULL
+    show_ov_table <- show_ov_table %>% dplyr::select(metric,everything())
+    return(show_ov_table)
+}
 
