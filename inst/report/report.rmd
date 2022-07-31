@@ -77,6 +77,7 @@ kable(format_overview_table(ov_table_list), "html",digits = 3,escape = FALSE) %>
 if(ncol(ov_table) > 3){
     if("#identified features" %in% names(ov_table) && "#quantifiable features" %in% names(ov_table)){
         # no process
+        ov_data <- ov_table
     }else{
         ov_data <- ov_table[,-c(2,3)]
     }
