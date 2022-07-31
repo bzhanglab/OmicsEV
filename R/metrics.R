@@ -315,6 +315,7 @@ plot_network_cor=function(x, out_dir="./",prefix="test"){
     dat -> xxxx
     dat$nid <- factor(dat$nid,levels = aaaa$nid )
     gg <- ggplot(dat,aes(x=nid,y=cor,colour=type))+
+        theme_bw()+
         #geom_violin(position="dodge")+
         geom_boxplot(position="dodge")+
         xlab("data table")+
@@ -1725,9 +1726,10 @@ plot_radar=function(x){
     )
     #
     for(i in 1:nrow(radar_dat)){
-        p <- p %>% add_trace(
+        p <- p %>% add_closed_trace(
             r = radar_dat[i,-1] %>% as.numeric(),
             theta = names(radar_dat)[-1],
+            #line_close = TRUE,
             name = x$dataSet[i]
             #line = list(color = "#d3d3d3", dash = "3px")
             #mode = "lines"
@@ -1746,6 +1748,10 @@ plot_radar=function(x){
         )
 
     return(p)
+}
+
+add_closed_trace <- function(p, r, theta, ...){
+    plotly::add_trace(p, r = c(r, r[1]), theta = c(theta, theta[1]), ...)
 }
 
 ## Without missing value imputation
