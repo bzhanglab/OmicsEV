@@ -1540,13 +1540,25 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     ## generate an overview table which contains different metrics
     ## input: x =>
 
+    ## two data tables, one for radar plot real value, one for overview table
+
     dat <- get_identification_summary_table(x,format = FALSE)
+    show_dat <- dat
+    if("#identified features" %in% names(dat) && "#quantifiable features" %in% names(dat)){
+        dat <- dat %>% dplyr::mutate(`#identified features`=`#identified features`/max(`#identified features`),
+                          `#quantifiable features`=`#quantifiable features`/max(`#quantifiable features`))
+        show_dat %>% dplyr::mutate(`#identified features` = paste(`#identified features`,"\n(",format_number(dat$`#identified features`),")",sep=""),
+                                   `#quantifiable features`=paste(`#quantifiable features`,"\n(",format_number(dat$`#quantifiable features`),")",sep=""))
+    }
+
 
     ## add missing value metric
     missing_value_table <- lapply(x$basic_metrics$datasets,function(y)y[["non_missing_value_ratio"]]) %>%
         dplyr::bind_rows() %>%
         dplyr::rename(non_missing_value_ratio=ratio)
     dat <- merge(dat,missing_value_table %>% dplyr::select(dataSet,non_missing_value_ratio),by="dataSet")
+    show_dat <- merge(show_dat,missing_value_table %>% dplyr::select(dataSet,non_missing_value_ratio),by="dataSet") %>%
+        dplyr::mutate(non_missing_value_ratio=format_number(non_missing_value_ratio))
 
     ## data distribution metric
     if(!("quant_median_ks" %in% names(x$basic_metrics)) && length(x$input_parameters$datasets) >= 2){
@@ -1554,12 +1566,20 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         data_dv <- calc_metrics_for_data_distribution(x$input_parameters$datasets,cpu=ncpu)
         dat <- merge(dat,data_dv %>%
                          dplyr::select(dataSet,quant_median_ks) %>%
-                         dplyr::rename(scaled_data_dist_similarity=quant_median_ks),by="dataSet")
+                         dplyr::rename(data_dist_similarity=quant_median_ks),by="dataSet")
+        show_dat <- merge(show_dat,data_dv %>%
+                         dplyr::select(dataSet,raw_quant_median_ks,quant_median_ks) %>%
+                         dplyr::mutate(data_dist_similarity=paste(format_number(raw_quant_median_ks),"\n(",format_number(quant_median_ks),")",sep = "")) %>%
+                         dplyr::select(-raw_quant_median_ks,-quant_median_ks),by="dataSet")
     }else if("quant_median_ks" %in% names(x$basic_metrics)){
         data_dv <- x$basic_metrics$quant_median_ks
         dat <- merge(dat,data_dv %>%
                          dplyr::select(dataSet,quant_median_ks) %>%
-                         dplyr::rename(scaled_data_dist_similarity=quant_median_ks),by="dataSet")
+                         dplyr::rename(data_dist_similarity=quant_median_ks),by="dataSet")
+        show_dat <- merge(show_dat,data_dv %>%
+                              dplyr::select(dataSet,raw_quant_median_ks,quant_median_ks) %>%
+                              dplyr::mutate(data_dist_similarity=paste(format_number(raw_quant_median_ks),"\n(",format_number(quant_median_ks),")",sep = "")) %>%
+                              dplyr::select(-raw_quant_median_ks,-quant_median_ks),by="dataSet")
     }
 
     if(!is.null(x$batch_effect_metrics)){
@@ -1571,6 +1591,11 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
 
             dat$kBET <- 1 - dat$kBET.observed
             dat$kBET.observed <- NULL
+
+            show_dat <- merge(show_dat,x$batch_effect_metrics$kbet$table %>%
+                             select(dataSet,kBET.observed))
+            show_dat$kBET <- paste(format_number(show_dat$kBET.observed),"\n(",format_number(1-show_dat$kBET.observed),")",sep = "")
+            show_dat$kBET.observed <- NULL
         }
         #dat$kBET.observed <- cell_spec(dat$kBET.observed,
         #                               color = ifelse(y >= max(y), "red", "black"))
@@ -1582,6 +1607,10 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         dat <- merge(dat,sil)
         dat$silhouette_width <- 1 - abs(dat$silhouette_width)
 
+        show_dat <- merge(show_dat,sil)
+        show_dat$silhouette_width <- paste(format_number(show_dat$silhouette_width),"\n(",format_number(1 - abs(show_dat$silhouette_width)),")",sep = "")
+
+
         # PCR
         # pcr <- get_pcr_table(x$batch_effect_metrics$pcr$pcr)
         # sig_pc <- pcr %>% dplyr::filter(p.value.lm<=0.05) %>%
@@ -1592,21 +1621,31 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         #     dplyr::mutate(PC=paste("batch_effect_",PC,sep="")) %>%
         #     tidyr::spread(key = PC,value = R.squared)
         pcRegscale <- x$batch_effect_metrics$pcr$pcRegscale
-        pcRegscale$pcRegscale <- 1 - pcRegscale$pcRegscale
+        #pcRegscale$pcRegscale <- 1 - pcRegscale$pcRegscale
 
         dat <- merge(dat,pcRegscale)
+        dat$pcRegscale <- 1 - dat$pcRegscale
+
+        show_dat <- merge(show_dat,pcRegscale)
+        show_dat$pcRegscale <- paste(format_number(show_dat$pcRegscale),"\n(",format_number(1 - show_dat$pcRegscale),")",sep = "")
     }
 
     ## complex
     if(!is.null(x$network_table)){
         dat <- merge(dat,x$network_table$cor %>% dplyr::select(dataSet,ks) %>%
                          dplyr::rename(complex_ks=ks))
+        show_dat <- merge(show_dat,x$network_table$cor %>% dplyr::select(dataSet,ks) %>%
+                         dplyr::rename(complex_ks=ks)) %>%
+            dplyr::mutate(complex_ks=format_number(complex_ks))
+
     }
 
     ## function prediction
     if(!is.null(x$fun_pred)){
         f_res <- get_func_pred_meanAUC(x$fun_pred$data,min_auc = min_auc)
         dat <- merge(dat,f_res)
+        show_dat <- merge(show_dat,f_res) %>%
+            dplyr::mutate(func_auc=format_number(func_auc))
     }
 
     ## class prediction
@@ -1614,6 +1653,11 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         dat <- merge(dat,x$ml$table %>%
                          dplyr::select(dataSet,mean_ROC) %>%
                          dplyr::rename(class_auc=mean_ROC))
+
+        show_dat <- merge(show_dat,x$ml$table %>%
+                         dplyr::select(dataSet,mean_ROC) %>%
+                         dplyr::rename(class_auc=mean_ROC)) %>%
+            dplyr::mutate(class_auc=format_number(class_auc))
     }
 
     ## median CV: QC samples
@@ -1623,8 +1667,15 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         dplyr::filter(class=="QC") %>%
         dplyr::select(dataSet,median_cv) %>%
         dplyr::rename(median_CV=median_cv) %>%
-        dplyr::mutate(median_CV=1-median_CV/max(median_CV))
-        dat <- merge(dat,cv_table,by="dataSet")
+        dplyr::mutate(scaled_median_CV=1-median_CV/max(median_CV))
+
+        dat <- merge(dat,cv_table,by="dataSet") %>%
+            dplyr::select(-median_CV) %>%
+            dplyr::rename(median_CV=scaled_median_CV)
+        show_dat <- merge(show_dat,cv_table,by="dataSet") %>%
+            dplyr::mutate(median_CV=paste(format_number(median_CV),"\n(",format_number(scaled_median_CV),")",sep = "")) %>%
+            dplyr::select(-scaled_median_CV)
+
     }
 
     ## mRNA-protein correlation
@@ -1633,15 +1684,23 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
                          dplyr::select(dataSet,median_cor) %>%
                          dplyr::rename(gene_wise_cor=median_cor))
 
+        show_dat <- merge(show_dat,x$protein_rna$feature_wise_cor_table %>%
+                         dplyr::select(dataSet,median_cor) %>%
+                         dplyr::rename(gene_wise_cor=median_cor)) %>%
+            dplyr::mutate(gene_wise_cor=format_number(gene_wise_cor))
+
         dat <- merge(dat,x$protein_rna$sample_wise_cor_table %>%
                          dplyr::select(dataSet,median_cor) %>%
                          dplyr::rename(sample_wise_cor=median_cor))
+
+        show_dat <- merge(show_dat,x$protein_rna$sample_wise_cor_table %>%
+                         dplyr::select(dataSet,median_cor) %>%
+                         dplyr::rename(sample_wise_cor=median_cor)) %>%
+            dplyr::mutate(sample_wise_cor=format_number(sample_wise_cor))
     }
 
 
-
-
-    return(dat)
+    return(list(dat=dat,show_dat=show_dat))
 
 }
 
@@ -1798,22 +1857,25 @@ get_cv_table=function(x, metric = "total_features"){
 }
 
 format_overview_table=function(ov_table){
-    a <- ov_table
+    a <- ov_table$dat
+    show_a <- ov_table$show_dat
     nm <- names(ov_table)
     for(i in 2:ncol(a)){
         y <- a[,i]
-        if(nm[i] == "#identified features" || nm[i] == "#quantifiable features"){
-            y <- y/max(y)
-        }
-        y_s <- sprintf("%.3f",y)
-        y <- cell_spec(y_s, bold = ifelse(y >= max(y), TRUE, FALSE))
-        a[,i] <- y
+        y_show <- show_a[,i]
+        y_show <- cell_spec(y_show, bold = ifelse(y >= max(y), TRUE, FALSE))
+        show_a[,i] <- y_show
     }
-    show_ov_table <- as.data.frame(t(a[,-1]))
-    names(show_ov_table) <- a$dataSet
+    show_ov_table <- as.data.frame(t(show_a[,-1]))
+    names(show_ov_table) <- show_a$dataSet
     show_ov_table$metric <- rownames(show_ov_table)
     rownames(show_ov_table) <- NULL
     show_ov_table <- show_ov_table %>% dplyr::select(metric,everything())
     return(show_ov_table)
+}
+
+format_number=function(x,digit=3){
+    y <- sprintf("%.3f",x)
+    return(y)
 }
 
