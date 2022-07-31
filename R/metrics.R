@@ -1547,7 +1547,7 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     if("#identified features" %in% names(dat) && "#quantifiable features" %in% names(dat)){
         dat <- dat %>% dplyr::mutate(`#identified features`=`#identified features`/max(`#identified features`),
                           `#quantifiable features`=`#quantifiable features`/max(`#quantifiable features`))
-        show_dat %>% dplyr::mutate(`#identified features` = paste(`#identified features`,"\n(",format_number(dat$`#identified features`),")",sep=""),
+        show_dat <- show_dat %>% dplyr::mutate(`#identified features` = paste(`#identified features`,"\n(",format_number(dat$`#identified features`),")",sep=""),
                                    `#quantifiable features`=paste(`#quantifiable features`,"\n(",format_number(dat$`#quantifiable features`),")",sep=""))
     }
 
