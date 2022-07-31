@@ -1711,6 +1711,7 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
 
 plot_radar=function(x){
 
+    x <- x[,c(1:2,ncol(x):3)]
     radar_dat <- x
 
     p <- plot_ly(
