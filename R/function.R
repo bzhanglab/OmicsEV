@@ -524,7 +524,8 @@ plot_fun_boxplot=function(x, out_dir="./",prefix="test"){
         geom_text(data = box_data %>% group_by(Method) %>%
                       dplyr::summarise(mean_rank=mean(Rank)) %>%
                       mutate(mean_rank_label=sprintf("%.3f",mean_rank) ),
-                  aes(label = mean_rank_label, y = mean_rank + 0.5),colour="darkred")
+                  aes(label = mean_rank_label, y = mean_rank + 0.5),colour="darkred")+
+        xlab("data table")
     print(gg)
     dev.off()
 
@@ -544,7 +545,7 @@ get_func_pred_table=function(x, min_auc=0.6){
     f_table <- x
     f_table$AUC[is.na(f_table$AUC)] <- 0
 
-    f_table$AUC <- sprintf("%.3f",f_table$AUC) %>% as.numeric()
+    f_table$AUC <- sprintf("%.4f",f_table$AUC) %>% as.numeric()
     # max4term <- f_table[,-c(1,2)] %>% apply(1, max,na.rm = TRUE)
     #f_table <- f_table[max4term>=min_auc,]
 

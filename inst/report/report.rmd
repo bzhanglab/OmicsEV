@@ -1,5 +1,5 @@
 ---
-title: "Omics datasets evaluation report" 
+title: "Omics data tables evaluation report" 
 date: "`r Sys.Date()`"
 
 output:
@@ -36,7 +36,7 @@ protein_rna <- final_res$protein_rna
 
 # Introduction
 
-In this evaluation, there are total **`r final_res$input_parameters$n_datasets`** datasets. We used the evaluation metrics implemented in **OmicsEV** package to evaluate these datasets. The sample and class information for each dataset are shown in the table below.
+In this evaluation, there are total **`r final_res$input_parameters$n_datasets`** data tables. We used the evaluation metrics implemented in **OmicsEV** package to evaluate these data tables. The sample and class information for each data table are shown in the table below.
 
 ```{r echo=FALSE}
 class_samples_table <- get_sample_data(final_res$input_parameters$datasets)
@@ -92,7 +92,7 @@ if(ncol(ov_table) > 3){
 
 ## Study-wise
 
-The table below shows the number of identified proteins or genes for each dataset. We take the proteins or genes filtered by 50% missing value as quantified proteins or genes.
+The table below shows the number of identified proteins or genes for each data table. We take the proteins or genes filtered by 50% missing value as quantified proteins or genes.
 
 ```{r echo=FALSE}
 #save(final_res,file="a.rda")
@@ -104,7 +104,7 @@ kable(id_table,"html",escape = FALSE) %>%
 
 ```{r results="asis"}
 if(!is.null(final_res$basic_metrics$datasets_id_overla)){
-  cat("Upset chart below showing overlap in proteins or genes identified in each dataset. Numbers of identified proteins or genes shared between different datasets are indicated in the top bar chart and the specific datasets in each set are indicated with solid points below the bar chart. Total identifications for each dataset are indicated on the left as ‘Set size’.\n")
+  cat("Upset chart below showing overlap in proteins or genes identified in each data table. Numbers of identified proteins or genes shared between different data tables are indicated in the top bar chart and the specific data tables in each set are indicated with solid points below the bar chart. Total identifications for each data table are indicated on the left as ‘Set size’.\n")
   knitr::include_graphics(final_res$basic_metrics$datasets_id_overlap %>% normalizePath)
 }
 ```
@@ -322,7 +322,7 @@ if(!is.null(final_res$network_table)){
 
 if(!is.null(final_res$fun_pred)){
   cat("## Gene function prediction\n")
-  cat("<p>In this evaluation, each dataset was used to build co-expression network. For a selected network and a selected function term (such as GO or KEGG), proteins/genes annotated to the term and also included in the network were defined as a positive protein/gene set and other proteins/genes in the network constituted the negative protein/gene set for the term. For a selected function term, we use some of the proteins/genes as the seed protein/gene, then we use random walk algorithm to calculate scores for other proteins/genes. A higher score of a protein/gene represents a closer relationship between the protein/gene and the seed proteins/genes. Finally, for each selected function term, we calculate an AUROC to evaluate the prediction performance.</p>\n")
+  cat("<p>In this evaluation, each data table was used to build co-expression network. For a selected network and a selected function term (such as GO or KEGG), proteins/genes annotated to the term and also included in the network were defined as a positive protein/gene set and other proteins/genes in the network constituted the negative protein/gene set for the term. For a selected function term, we use some of the proteins/genes as the seed protein/gene, then we use random walk algorithm to calculate scores for other proteins/genes. A higher score of a protein/gene represents a closer relationship between the protein/gene and the seed proteins/genes. Finally, for each selected function term, we calculate an AUROC to evaluate the prediction performance.</p>\n")
   kable(final_res$fun_pred$table, "html",digits = 3,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) %>%
   scroll_box(height = "400px",width = "100%")
