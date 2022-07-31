@@ -1865,7 +1865,7 @@ format_overview_table=function(ov_table){
     for(i in 2:ncol(a)){
         y <- a[,i]
         y_show <- show_a[,i]
-        y_show <- cell_spec(y_show, bold = ifelse(y >= max(y), TRUE, FALSE))
+        y_show <- cell_spec(y_show, bold = ifelse(y >= max(y), TRUE, FALSE),color = ifelse(y >= max(y), "red", "black"))
         show_a[,i] <- y_show
     }
     show_ov_table <- as.data.frame(t(show_a[,-1]))
