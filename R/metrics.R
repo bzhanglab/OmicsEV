@@ -1061,9 +1061,10 @@ get_identification_summary_table=function(x,format=TRUE){
     x2 <- get_metrics(x$basic_metrics$datasets,metric="valid_features")
     a <- data.frame(dataSet=names(x1),x1=x1,x2=x2,stringsAsFactors = FALSE)
     if(format==TRUE){
-        a <- a %>%
-            dplyr::mutate(x1 = formattable::color_bar("lightgreen")(x1),
-                          x2 = formattable::color_bar("lightgreen")(x2)) #%>%
+        a <- a %>% mutate(x1=cell_spec(x1, bold = ifelse(x1 >= max(x1), TRUE, FALSE), color = ifelse(x1 >= max(x1), "red", "black"))) %>%
+            mutate(x2=cell_spec(x2, bold = ifelse(x2 >= max(x2), TRUE, FALSE), color = ifelse(x2 >= max(x2), "red", "black")))
+            # dplyr::mutate(x1 = formattable::color_bar("lightgreen")(x1),
+            #              x2 = formattable::color_bar("lightgreen")(x2)) #%>%
             #dplyr::mutate(x11 = ifelse(x1 >= max(x1),
             #                           cell_spec(x1, color = "red", bold = T),
             #                           cell_spec(x1, color = "green", italic = T)),
@@ -1075,6 +1076,7 @@ get_identification_summary_table=function(x,format=TRUE){
 
     }
     names(a) <- c("dataSet","#identified features","#quantifiable features")
+    rownames(a) <- NULL
     return(a)
 }
 
@@ -1874,8 +1876,9 @@ format_overview_table=function(ov_table){
     return(show_ov_table)
 }
 
-format_number=function(x,digit=3){
-    y <- sprintf("%.3f",x)
+format_number=function(x,digit=4){
+    format_str <- paste("%.",digit,"f",sep = "")
+    y <- sprintf(format_str,x)
     return(y)
 }
 

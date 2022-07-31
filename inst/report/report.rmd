@@ -67,7 +67,7 @@ dataset_names <- names(basic_metrics$datasets)
 #save(final_res,file="a.rda")
 ov_table_list <- generate_overview_table(final_res)
 ov_table <- ov_table_list$dat
-kable(format_overview_table(ov_table_list), "html",digits = 3,escape = FALSE) %>%
+kable(format_overview_table(ov_table_list), "html",digits = 4,escape = FALSE) %>%
       kable_styling(bootstrap_options = "striped", full_width = F) %>%
       scroll_box(height = "400px",width = "100%")
 ```
@@ -106,7 +106,7 @@ kable(id_table,"html",escape = FALSE) %>%
 if(!is.null(final_res$basic_metrics$datasets_id_overla)){
   cat("Upset chart below showing overlap in proteins or genes identified in each dataset. Numbers of identified proteins or genes shared between different datasets are indicated in the top bar chart and the specific datasets in each set are indicated with solid points below the bar chart. Total identifications for each dataset are indicated on the left as ‘Set size’.\n")
   knitr::include_graphics(final_res$basic_metrics$datasets_id_overlap %>% normalizePath)
-  }
+}
 ```
 
 
