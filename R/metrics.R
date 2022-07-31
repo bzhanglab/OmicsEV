@@ -571,7 +571,7 @@ calc_protein_rna_corr=function(x,rna,sample_class=NULL,out_dir="./",cpu=0,
         geom_boxplot(width=0.1)+
         geom_text(data = sample_wise_cor_res_table, aes(x = dataSet, y = median_cor, label = sprintf("%.4f",median_cor)),
                   size = 5, vjust = -0.2, color = "black",)+
-        xlab("Dataset")+
+        xlab("data table")+
         ylab("Sample wise correlation")+
         theme(legend.position="none")
 
