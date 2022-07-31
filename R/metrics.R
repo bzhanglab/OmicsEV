@@ -317,7 +317,7 @@ plot_network_cor=function(x, out_dir="./",prefix="test"){
     gg <- ggplot(dat,aes(x=nid,y=cor,colour=type))+
         #geom_violin(position="dodge")+
         geom_boxplot(position="dodge")+
-        xlab("Dataset")+
+        xlab("data table")+
         ylab("Correlation")+
         theme(axis.text.x = element_text(angle = 90, hjust = 1))
     print(gg)
