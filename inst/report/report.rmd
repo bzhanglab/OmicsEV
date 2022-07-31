@@ -254,7 +254,7 @@ if(n_batch >= 2){
   cat("<p>'Scaled PC regression', i.e. total variance of PCs which correlate significantly with batch covariate (FDR<0.05) scaled by the total variance of",pcr_res$top_pc,"PCs:</p>\n")
   kable(pcr_res$pcRegscale %>% dplyr::rename(`data table`=dataSet), "html",escape = FALSE) %>%
       kable_styling(bootstrap_options = "striped", full_width = F) %>%
-      row_spec(which.min(pcr_res$pcRegscale), bold = T, color = "red")
+      row_spec(which.min(pcr_res$pcRegscale$pcRegscale), bold = T, color = "red")
 }
 ```
 
