@@ -96,7 +96,7 @@ The table below shows the number of identified proteins or genes for each datase
 
 ```{r echo=FALSE}
 #save(final_res,file="a.rda")
-id_table <- get_identification_summary_table(final_res) 
+id_table <- get_identification_summary_table(final_res) %>% dplyr::rename(`data table`=dataSet)
 kable(id_table,"html",escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) #%>%
     #row_spec(which.max(id_table[,3]), bold = T, color = "red")
@@ -132,10 +132,11 @@ The missing value distribution can give an overview of the percent of missing va
 ```{r echo=FALSE}
 missing_value_table <- lapply(final_res$basic_metrics$datasets,function(y)y[["non_missing_value_ratio"]]) %>% 
     dplyr::bind_rows() %>% 
-    dplyr::rename(non_missing_value_ratio=ratio)
-kable(missing_value_table,"html",escape = FALSE) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F) #%>%
-    #row_spec(which.max(id_table[,3]), bold = T, color = "red")
+    dplyr::rename(non_missing_value_ratio=ratio) %>%
+    dplyr::rename(`data table`=dataSet)
+kable(missing_value_table,"html",escape = FALSE, digits = 4) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+    row_spec(which.max(missing_value_table$non_missing_value_ratio), bold = T, color = "red")
 ```
 
 
