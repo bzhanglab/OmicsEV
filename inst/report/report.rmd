@@ -160,6 +160,7 @@ The boxplots show the protein or gene expression distribution across samples. X 
 if("quant_median_ks" %in% names(final_res$basic_metrics)){
     kable(final_res$basic_metrics$quant_median_ks %>%
               dplyr::rename(data_dist_similarity=raw_quant_median_ks) %>%
+              dplyr::rename(`data table`=dataSet) %>%
               dplyr::select(-quant_median_ks),#scaled_data_dist_similarity=quant_median_ks)
                      "html",escape = FALSE, digits = 4) %>%
         kable_styling(bootstrap_options = "striped", full_width = F) %>%
@@ -200,7 +201,7 @@ if(n_batch >= 2){
     cat("## Batch effect evaluation using kBET\n\n")
     cat("<p>In this section, we used k-nearest neighbour batch effect test (kBET) for quantification of batch effects. First, the algorithm creates k-nearest neighbour matrix and choses 10% of the samples to check the batch label distribution in its neighbourhood. If the local batch label distribution is sufficiently similar to the global batch label distribution, the $\\chi^2$-test does not reject the null hypothesis (that is 'all batches are well-mixed'). Finally, the result of kBET is the average test rejection rate. The lower the test result, the less bias is introduced by the batch effect.</p>\n")
     kbet_res <- final_res$batch_effect_metrics$kbet
-    kable(kbet_res$table, "html",digits = 3,escape = FALSE) %>%
+    kable(kbet_res$table, "html",digits = 4,escape = FALSE) %>%
     kable_styling(bootstrap_options = "striped", full_width = F)
   }
 }
@@ -215,8 +216,12 @@ are separate and s(i) -> −1 if two clusters overlap but have dissimilar varian
 If s(i) -> 0, both clusters have roughly the same structure. Thus, we use the
 absolute value |s| as an indicator for the presence or absence of batch effects.</p>\n")
   sil_res <- final_res$batch_effect_metrics$sil
-  kable(data.frame(dataSet=names(sil_res),silhouette_width=sil_res), "html",digits = 3,escape = FALSE) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
+  show_sil <- data.frame(dataSet=names(sil_res),silhouette_width=sil_res) %>%
+      dplyr::rename(`data table`=dataSet)
+  rownames(show_sil) <- NULL
+  kable(show_sil, "html",digits = 4,escape = FALSE) %>%
+      kable_styling(bootstrap_options = "striped", full_width = F) %>%
+      row_spec(which.min(abs(show_sil$silhouette_width)), bold = T, color = "red")
 }
 ```
 
@@ -230,7 +235,7 @@ if(n_batch >= 2){
   cat("<p style='text-align: center;'>R<sup>2</sup>(PC<sub>i</sub>,b) = r<sub>i</sub><sup>2</sup></p>\n")
   cat("<p>Then we estimate the significance of the correlation coefficient either with a t-test or a one-way ANOVA. The R<sup>2</sup> value highlighted with red is significant (p-value <= 0.05).</p>\n")
   pcr_res <- final_res$batch_effect_metrics$pcr
-  kable(pcr_res$table, "html",digits = 3,escape = FALSE) %>%
+  kable(pcr_res$table, "html",digits = 4,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
   
 }
@@ -247,9 +252,10 @@ if(n_batch >= 2){
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
   cat("<p>'Scaled PC regression', i.e. total variance of PCs which correlate significantly with batch covariate (FDR<0.05) scaled by the total variance of",pcr_res$top_pc,"PCs:</p>\n")
-  kable(pcr_res$pcRegscale, "html",escape = FALSE) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
-  }
+  kable(pcr_res$pcRegscale %>% dplyr::rename(`data table`=dataSet), "html",escape = FALSE) %>%
+      kable_styling(bootstrap_options = "striped", full_width = F) %>%
+      row_spec(which.min(pcr_res$pcRegscale), bold = T, color = "red")
+}
 ```
 
 ```{r results="asis",fig.align='center'}
@@ -304,9 +310,9 @@ if(!is.null(final_res$network_table)){
 if(!is.null(final_res$network_table)){
   cat("<p>The table showing below is a summary of the evaluation. 'diff' is Cor(intra) - Cor(inter). 'complex_ks' is the statistic value of Kolmogorov-Smirnov test.</p>\n")
   final_res$network_table$cor <- final_res$network_table$cor %>% dplyr::rename(complex_ks=ks)    
-  kable(final_res$network_table$cor, "html",digits = 3) %>%
+  kable(final_res$network_table$cor %>% dplyr::rename(`data table`=dataSet), "html",digits = 4) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
-    row_spec(which(final_res$network_table$cor$complex_ks >= sort(final_res$network_table$cor$complex_ks,decreasing = TRUE)[3]), bold = T, color = "red")
+    row_spec(which.max(final_res$network_table$cor$complex_ks), bold = T, color = "red")
 }
 
 ```
