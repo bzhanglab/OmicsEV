@@ -167,7 +167,7 @@ for(i in 1:length(figs)){
 
 ```
 
-To quantify the normalization effect, for each pair of sample, perform an AUROC test to quantify the ability of feature abundance to distinguish the two samples and then generate a score based on 1-2*abs(AUROC-0.5), which will be 0 to 1, higher the better (no systematic difference between the two samples). The final metric for each data table is the median of scores from all sample pairs.
+To quantify the normalization effect, for each pair of samples, perform an AUROC test to quantify the ability of feature abundance to distinguish the two samples and then generate a score based on 1-2*abs(AUROC-0.5), which will be 0 to 1, higher the better (no systematic difference between the two samples). The final metric for each data table is the median of scores from all sample pairs.
 
 ```{r echo=FALSE}
 if("quant_median_metric" %in% names(final_res$basic_metrics)){
