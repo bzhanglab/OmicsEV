@@ -160,8 +160,7 @@ The boxplots show the protein or gene expression distribution across samples. X 
 if("quant_median_metric" %in% names(final_res$basic_metrics)){
     kable(final_res$basic_metrics$quant_median_metric %>%
               dplyr::rename(data_dist_similarity=quant_median_metric) %>%
-              dplyr::rename(`data table`=dataSet) %>%
-              dplyr::select(-quant_median_metric),#scaled_data_dist_similarity=quant_median_ks)
+              dplyr::rename(`data table`=dataSet),
                      "html",escape = FALSE, digits = 4) %>%
         kable_styling(bootstrap_options = "striped", full_width = F) %>%
         row_spec(which.max(final_res$basic_metrics$quant_median_metric$quant_median_metric), bold = T, color = "red")
