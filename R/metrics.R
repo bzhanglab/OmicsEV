@@ -1948,8 +1948,8 @@ get_formated_id_table=function(final_res){
     if("#identified features" %in% names(id_table) && "#quantifiable features" %in% names(id_table)){
         id_table <- id_table %>% dplyr::mutate(`#identified features`=`#identified features`/total_features,
                                                `#quantifiable features`=`#quantifiable features`/total_features)
-        show_id_table <- show_id_table %>% dplyr::mutate(`#identified features` = paste(`#identified features`,"\n(",format_number(id_table$`#identified features`),")",sep=""),
-                                                         `#quantifiable features` = paste(`#quantifiable features`,"\n(",format_number(id_table$`#quantifiable features`),")",sep=""))
+        show_id_table <- show_id_table %>% dplyr::mutate(`#identified features` = paste(`#identified features`,"\n(",sprintf("%.2f%%",100*id_table$`#identified features`),")",sep=""),
+                                                         `#quantifiable features` = paste(`#quantifiable features`,"\n(",sprintf("%.2f%%",100*id_table$`#quantifiable features`),")",sep=""))
     }
     y <- id_table$`#identified features`
     show_id_table$`#identified features` <- cell_spec(show_id_table$`#identified features`, bold = ifelse(y >= max(y), TRUE, FALSE),color = ifelse(y >= max(y), "red", "black"))
