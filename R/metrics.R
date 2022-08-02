@@ -703,8 +703,8 @@ calc_basic_metrics=function(x,class_color=NULL,out_dir="./",cpu=0){
     fres$datasets <- res
 
     ## distribution
-    data_dv <- calc_metrics_for_data_distribution(x,cpu=ncpu)
-    fres$quant_median_ks <- data_dv
+    data_dv <- calc_metrics_for_data_distribution_roc(x,cpu=ncpu)
+    fres$quant_median_metric <- data_dv
 
     return(fres)
 }
@@ -1528,6 +1528,38 @@ calc_metrics_for_data_distribution=function(x,cpu=0){
     return(a)
 }
 
+calc_metrics_for_data_distribution_roc=function(x,cpu=0){
+    # x is list of datasets
+    if(cpu==0){
+        cpu = detectCores()
+    }
+    a <- lapply(x, function(y){
+        # cat("Dataset:",y@ID,"\n")
+        dat <- y@peaksData %>% mutate(dataSet=y@ID,sample=as.character(sample)) %>%
+            as_tibble()
+        dat$value[dat$value<=0] <- NA
+
+        # log2 scale
+        dat$value <- log2(dat$value)
+        all_samples <- dat$sample %>% unique()
+        ss <- combn(all_samples,m=2)
+
+        cl <- makeCluster(getOption("cl.cores", cpu))
+        clusterExport(cl, c("get_ks_statistic"),envir=environment())
+        ksv <- parLapply(cl,1:ncol(ss),fun = get_two_sample_auroc,ss=ss,dat=dat)
+        stopCluster(cl)
+        ksv <- unlist(ksv)
+        ks <- median(ksv,na.rm = TRUE)
+        res <- data.frame(dataSet=y@ID,quant_median_metric=ks,n=length(ksv),stringsAsFactors = FALSE) %>%
+            as_tibble()
+        return(res)
+    }) %>% bind_rows()
+    #a$raw_quant_median_ks <- a$quant_median_ks
+    #a$quant_median_ks <- 1 - min_max_scale(a$quant_median_ks)
+    #a$quant_median_ks <- 1 - a$quant_median_ks/(a$quant_median_ks+1)
+    return(a)
+}
+
 
 
 get_ks_statistic = function(s,ss,dat){
@@ -1536,6 +1568,17 @@ get_ks_statistic = function(s,ss,dat){
     x2 <- dat$value[dat$sample==ii[2]]
     b <- ks.test(x1,x2)
     return(abs(b$statistic))
+}
+
+get_two_sample_auroc = function(s,ss,dat){
+    ii <- as.character(ss[,s])
+    x <- dat %>% dplyr::filter(sample %in% ii[1:2]) %>%
+        dplyr::filter(!is.na(value))
+    x$sample <- factor(x$sample,levels = ii[1:2])
+    roc.obj <- pROC::roc(x$sample,x$value,percent = FALSE)
+    auroc_value <- roc.obj$auc
+    metric <- 1-2*abs(auroc_value-0.5)
+    return(metric)
 }
 
 # generate overview table and overview radar figure
@@ -1560,29 +1603,30 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
         dplyr::bind_rows() %>%
         dplyr::rename(non_missing_value_ratio=ratio)
     dat <- merge(dat,missing_value_table %>% dplyr::select(dataSet,non_missing_value_ratio),by="dataSet")
-    show_dat <- merge(show_dat,missing_value_table %>% dplyr::select(dataSet,non_missing_value_ratio),by="dataSet") %>%
+    show_dat <- merge(show_dat,missing_value_table %>%
+                          dplyr::select(dataSet,non_missing_value_ratio),by="dataSet") %>%
         dplyr::mutate(non_missing_value_ratio=format_number(non_missing_value_ratio))
 
     ## data distribution metric
-    if(!("quant_median_ks" %in% names(x$basic_metrics)) && length(x$input_parameters$datasets) >= 2){
+    if(!("quant_median_metric" %in% names(x$basic_metrics)) && length(x$input_parameters$datasets) >= 2){
         ncpu <- ifelse("cpu" %in% names(x$input_parameters),x$input_parameters$cpu,0)
-        data_dv <- calc_metrics_for_data_distribution(x$input_parameters$datasets,cpu=ncpu)
+        data_dv <- calc_metrics_for_data_distribution_roc(x$input_parameters$datasets,cpu=ncpu)
         dat <- merge(dat,data_dv %>%
-                         dplyr::select(dataSet,quant_median_ks) %>%
-                         dplyr::rename(data_dist_similarity=quant_median_ks),by="dataSet")
+                         dplyr::select(dataSet,quant_median_metric) %>%
+                         dplyr::rename(data_dist_similarity=quant_median_metric),by="dataSet")
         show_dat <- merge(show_dat,data_dv %>%
-                         dplyr::select(dataSet,raw_quant_median_ks,quant_median_ks) %>%
-                         dplyr::mutate(data_dist_similarity=paste(format_number(raw_quant_median_ks),"\n(",format_number(quant_median_ks),")",sep = "")) %>%
-                         dplyr::select(-raw_quant_median_ks,-quant_median_ks),by="dataSet")
-    }else if("quant_median_ks" %in% names(x$basic_metrics)){
-        data_dv <- x$basic_metrics$quant_median_ks
+                         dplyr::select(dataSet,quant_median_metric) %>%
+                         dplyr::mutate(data_dist_similarity=format_number(quant_median_metric)) %>%
+                         dplyr::select(-quant_median_metric),by="dataSet")
+    }else if("quant_median_metric" %in% names(x$basic_metrics)){
+        data_dv <- x$basic_metrics$quant_median_metric
         dat <- merge(dat,data_dv %>%
-                         dplyr::select(dataSet,quant_median_ks) %>%
-                         dplyr::rename(data_dist_similarity=quant_median_ks),by="dataSet")
+                         dplyr::select(dataSet,quant_median_metric) %>%
+                         dplyr::rename(data_dist_similarity=quant_median_metric),by="dataSet")
         show_dat <- merge(show_dat,data_dv %>%
-                              dplyr::select(dataSet,raw_quant_median_ks,quant_median_ks) %>%
-                              dplyr::mutate(data_dist_similarity=paste(format_number(raw_quant_median_ks),"\n(",format_number(quant_median_ks),")",sep = "")) %>%
-                              dplyr::select(-raw_quant_median_ks,-quant_median_ks),by="dataSet")
+                              dplyr::select(dataSet,quant_median_metric) %>%
+                              dplyr::mutate(data_dist_similarity=format_number(quant_median_metric)) %>%
+                              dplyr::select(-quant_median_metric),by="dataSet")
     }
 
     if(!is.null(x$batch_effect_metrics)){
