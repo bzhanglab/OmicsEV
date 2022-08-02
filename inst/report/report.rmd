@@ -156,18 +156,6 @@ for(i in 1:length(figs)){
 
 The boxplots show the protein or gene expression distribution across samples. X axis is sample ordered by input order. Y axis is log2 transformed protein or gene expression. The samples from different classes are coded in different colors.
 
-```{r echo=FALSE}
-if("quant_median_metric" %in% names(final_res$basic_metrics)){
-    kable(final_res$basic_metrics$quant_median_metric %>%
-              dplyr::rename(data_dist_similarity=quant_median_metric) %>%
-              dplyr::rename(`data table`=dataSet),
-                     "html",escape = FALSE, digits = 4) %>%
-        kable_styling(bootstrap_options = "striped", full_width = F) %>%
-        row_spec(which.max(final_res$basic_metrics$quant_median_metric$quant_median_metric), bold = T, color = "red")
-}
-```
-
-
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "features_quant_distribution")
 figs <- get_full_path(figs)
@@ -177,6 +165,19 @@ for(i in 1:length(figs)){
   cat("![](",figs[i],")")
 }
 
+```
+
+To quantify the normalization effect, for each pair of sample, perform an AUROC test to quantify the ability of feature abundance to distinguish the two samples and then generate a score based on 1-2*abs(AUROC-0.5), which will be 0 to 1, higher the better (no systematic difference between the two samples). The final metric for each data table is the median of scores from all sample pairs.
+
+```{r echo=FALSE}
+if("quant_median_metric" %in% names(final_res$basic_metrics)){
+    kable(final_res$basic_metrics$quant_median_metric %>%
+              dplyr::rename(data_dist_similarity=quant_median_metric) %>%
+              dplyr::rename(`data table`=dataSet),
+                     "html",escape = FALSE, digits = 4) %>%
+        kable_styling(bootstrap_options = "striped", full_width = F) %>%
+        row_spec(which.max(final_res$basic_metrics$quant_median_metric$quant_median_metric), bold = T, color = "red")
+}
 ```
 
 ## Density plot
