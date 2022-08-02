@@ -1587,7 +1587,7 @@ get_two_sample_auroc = function(s,ss,dat){
 }
 
 # generate overview table and overview radar figure
-generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
+generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8,total_features=20386){
     ## generate an overview table which contains different metrics
     ## input: x =>
 
@@ -1596,8 +1596,8 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     dat <- get_identification_summary_table(x,format = FALSE)
     show_dat <- dat
     if("#identified features" %in% names(dat) && "#quantifiable features" %in% names(dat)){
-        dat <- dat %>% dplyr::mutate(`#identified features`=`#identified features`/max(`#identified features`),
-                          `#quantifiable features`=`#quantifiable features`/max(`#quantifiable features`))
+        dat <- dat %>% dplyr::mutate(`#identified features`=`#identified features`/total_features,
+                          `#quantifiable features`=`#quantifiable features`/total_features)
         show_dat <- show_dat %>% dplyr::mutate(`#identified features` = paste(`#identified features`,"\n(",format_number(dat$`#identified features`),")",sep=""),
                                    `#quantifiable features`=paste(`#quantifiable features`,"\n(",format_number(dat$`#quantifiable features`),")",sep=""))
     }
@@ -1717,16 +1717,16 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     if("QC" %in% cv_table$class){
         cv_table <- cv_table %>%
         dplyr::filter(class=="QC") %>%
-        dplyr::select(dataSet,median_cv) %>%
-        dplyr::rename(median_CV=median_cv) %>%
-        dplyr::mutate(scaled_median_CV=1-median_CV/max(median_CV))
+        dplyr::select(dataSet,cv30) %>%
+        dplyr::rename(CV30=cv30) # %>%
+        #dplyr::mutate(scaled_median_CV=1-median_CV/max(median_CV))
 
-        dat <- merge(dat,cv_table,by="dataSet") %>%
-            dplyr::select(-median_CV) %>%
-            dplyr::rename(median_CV=scaled_median_CV)
+        dat <- merge(dat,cv_table,by="dataSet") # %>%
+            #dplyr::select(-median_CV) %>%
+            #dplyr::rename(median_CV=scaled_median_CV)
         show_dat <- merge(show_dat,cv_table,by="dataSet") %>%
-            dplyr::mutate(median_CV=paste(format_number(median_CV),"\n(",format_number(scaled_median_CV),")",sep = "")) %>%
-            dplyr::select(-scaled_median_CV)
+            dplyr::mutate(CV30=format_number(CV30)) #%>%
+            #dplyr::select(-scaled_median_CV)
 
     }
 
@@ -1890,7 +1890,10 @@ get_cv=function(peaksData){
         dplyr::summarize(cv=sd(value,na.rm=TRUE)/mean(value,na.rm=TRUE)) %>%
         dplyr::ungroup() %>%
         dplyr::group_by(class) %>%
-        dplyr::summarize(median_cv=median(cv,na.rm=TRUE),mean_cv=mean(cv,na.rm=TRUE),n=n()) %>%
+        dplyr::summarize(median_cv=median(cv,na.rm=TRUE),
+                         mean_cv=mean(cv,na.rm=TRUE),
+                         n=n(),
+                         cv30=sum(cv<=0.3,na.rm = TRUE)/n()) %>%
         as.data.frame()
     return(cvstat)
 }

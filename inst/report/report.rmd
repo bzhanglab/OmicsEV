@@ -451,12 +451,12 @@ if("QC" %in% cv_table$class){
   cat("## Coefficient of variation distribution\n")
   cat("<p>Platform reproducibility is evaluated based on coefficient of variation distribution of QC samples.</p>\n")
   show_cv_table <- cv_table %>% dplyr::filter(class=="QC") %>% 
-      dplyr::select(dataSet,class,median_cv) %>%
+      dplyr::select(dataSet,class,median_cv,cv30) %>%
       dplyr::rename(`data table`=dataSet) %>% 
-      dplyr::rename(median_CV=median_cv)
+      dplyr::rename(median_CV=median_cv,CV30=cv30)
   kable(show_cv_table, "html",digits = 4) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
-    row_spec(which.min(show_cv_table$median_CV), bold = T, color = "red")
+    row_spec(which.max(show_cv_table$CV30), bold = T, color = "red")
 }
 
 ```
