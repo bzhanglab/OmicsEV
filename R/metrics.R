@@ -1941,3 +1941,20 @@ format_number=function(x,digit=4){
     return(y)
 }
 
+get_formated_id_table=function(final_res){
+    id_table <- get_identification_summary_table(final_res,format = FALSE) %>% dplyr::rename(`data table`=dataSet)
+    total_features <- final_res$input_parameters$total_features
+    show_id_table <- id_table
+    if("#identified features" %in% names(dat) && "#quantifiable features" %in% names(dat)){
+        id_table <- id_table %>% dplyr::mutate(`#identified features`=`#identified features`/total_features,
+                                               `#quantifiable features`=`#quantifiable features`/total_features)
+        show_id_table <- show_id_table %>% dplyr::mutate(`#identified features` = paste(`#identified features`,"\n(",format_number(id_table$`#identified features`),")",sep=""),
+                                                         `#quantifiable features` = paste(`#quantifiable features`,"\n(",format_number(id_table$`#quantifiable features`),")",sep=""))
+    }
+
+    show_id_table$`#identified features` <- cell_spec(show_id_table$`#identified features`, bold = ifelse(id_table$`#identified features` >= max(id_table$`#identified features`), TRUE, FALSE),color = ifelse(y >= max(y), "red", "black"))
+    show_id_table$`#quantifiable features` <- cell_spec(show_id_table$`#quantifiable features`, bold = ifelse(id_table$`#quantifiable features` >= max(id_table$`#quantifiable features`), TRUE, FALSE),color = ifelse(y >= max(y), "red", "black"))
+
+    return(list(id_table=id_table,show_id_table=show_id_table))
+}
+

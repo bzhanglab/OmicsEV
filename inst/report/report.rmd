@@ -96,14 +96,14 @@ if(ncol(ov_table) > 3){
 
 ## Study-wise
 
-The table below shows the number of identified proteins or genes for each data table. We take the proteins or genes filtered by 50% missing value as quantified proteins or genes.
+The table below shows the number of identified proteins or genes for each data table. We take the proteins or genes filtered by 50% missing value as quantified proteins or genes. The values in parentheses are the percentage of proteins or genes identified or quantified based on the total number of proteins or genes (`r final_res$input_parameters$total_features`) in the study species. 
 
 ```{r echo=FALSE}
 #save(final_res,file="a.rda")
-id_table <- get_identification_summary_table(final_res) %>% dplyr::rename(`data table`=dataSet)
-kable(id_table,"html",escape = FALSE) %>%
+id_tables <- get_formated_id_table(final_res)
+kable(id_tables$show_id_table,"html",escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) #%>%
-    #row_spec(which.max(id_table[,3]), bold = T, color = "red")
+    #row_spec(which.max(id_tables), bold = T, color = "red")
 ```
 
 ```{r results="asis"}
