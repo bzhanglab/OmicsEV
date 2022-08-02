@@ -116,7 +116,7 @@ if(!is.null(final_res$basic_metrics$datasets_id_overla)){
 
 ## Sample-wise
 
-The figures below show the number of proteins or genes identified in each sample. The samples from different batches are coded in different shapes and the samples from different classes are coded in different colors.
+The figures below show the number of proteins or genes identified in each sample. Only when the quantification value of a gene or protein is not "NA" in a sample, this gene or protein is considered as identified in the sample. The samples from different batches are coded in different shapes and the samples from different classes are coded in different colors.
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "features_number_distribution")
