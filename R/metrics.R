@@ -1951,9 +1951,10 @@ get_formated_id_table=function(final_res){
         show_id_table <- show_id_table %>% dplyr::mutate(`#identified features` = paste(`#identified features`,"\n(",format_number(id_table$`#identified features`),")",sep=""),
                                                          `#quantifiable features` = paste(`#quantifiable features`,"\n(",format_number(id_table$`#quantifiable features`),")",sep=""))
     }
-
-    show_id_table$`#identified features` <- cell_spec(show_id_table$`#identified features`, bold = ifelse(id_table$`#identified features` >= max(id_table$`#identified features`), TRUE, FALSE),color = ifelse(y >= max(y), "red", "black"))
-    show_id_table$`#quantifiable features` <- cell_spec(show_id_table$`#quantifiable features`, bold = ifelse(id_table$`#quantifiable features` >= max(id_table$`#quantifiable features`), TRUE, FALSE),color = ifelse(y >= max(y), "red", "black"))
+    y <- id_table$`#identified features`
+    show_id_table$`#identified features` <- cell_spec(show_id_table$`#identified features`, bold = ifelse(y >= max(y), TRUE, FALSE),color = ifelse(y >= max(y), "red", "black"))
+    y <- id_table$`#quantifiable features`
+    show_id_table$`#quantifiable features` <- cell_spec(show_id_table$`#quantifiable features`, bold = ifelse(y >= max(y), TRUE, FALSE),color = ifelse(y >= max(y), "red", "black"))
 
     return(list(id_table=id_table,show_id_table=show_id_table))
 }
