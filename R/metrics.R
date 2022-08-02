@@ -282,8 +282,13 @@ plot_network_cor=function(x, out_dir="./",prefix="test"){
     ks_res <- x %>% lapply(function(x){
         x1 <- unlist(x$network$cor)
         x2 <- unlist(x$rnd_network$cor)
-        rr <- ks.test(x1,x2)
-        rr$statistic
+        # rr <- ks.test(x1,x2)
+        # rr$statistic
+        roc_input <- dplyr::bind_rows(data.frame(class="network",cor=x1,stringsAsFactors = FALSE),
+                                      data.frame(class="rnd_network",cor=x2,stringsAsFactors = FALSE))
+        roc.obj <- pROC::roc(roc_input$class,roc_input$cor,percent = FALSE)
+        auroc_value <- roc.obj$auc
+        return(auroc_value)
     })
     res$ks <- ks_res
     #ks_file <- paste(out_dir,"/",prefix,"-ks.txt",sep="")
@@ -1545,7 +1550,7 @@ calc_metrics_for_data_distribution_roc=function(x,cpu=0){
         ss <- combn(all_samples,m=2)
 
         cl <- makeCluster(getOption("cl.cores", cpu))
-        clusterExport(cl, c("get_ks_statistic"),envir=environment())
+        clusterExport(cl, c("get_two_sample_auroc"),envir=environment())
         ksv <- parLapply(cl,1:ncol(ss),fun = get_two_sample_auroc,ss=ss,dat=dat)
         stopCluster(cl)
         ksv <- unlist(ksv)
@@ -1680,10 +1685,10 @@ generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     ## complex
     if(!is.null(x$network_table)){
         dat <- merge(dat,x$network_table$cor %>% dplyr::select(dataSet,ks) %>%
-                         dplyr::rename(complex_ks=ks))
+                         dplyr::rename(complex_auc=ks))
         show_dat <- merge(show_dat,x$network_table$cor %>% dplyr::select(dataSet,ks) %>%
-                         dplyr::rename(complex_ks=ks)) %>%
-            dplyr::mutate(complex_ks=format_number(complex_ks))
+                         dplyr::rename(complex_auc=ks)) %>%
+            dplyr::mutate(complex_auc=format_number(complex_auc))
 
     }
 

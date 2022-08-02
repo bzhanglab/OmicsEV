@@ -308,11 +308,11 @@ if(!is.null(final_res$network_table)){
 
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$network_table)){
-  cat("<p>The table showing below is a summary of the evaluation. 'diff' is Cor(intra) - Cor(inter). 'complex_ks' is the statistic value of Kolmogorov-Smirnov test.</p>\n")
-  final_res$network_table$cor <- final_res$network_table$cor %>% dplyr::rename(complex_ks=ks)    
+  cat("<p>The table showing below is a summary of the evaluation. 'diff' is Cor(intra) - Cor(inter). 'complex_auc' is the AUROC value based on correlation of protein pairs from different groups.</p>\n")
+  final_res$network_table$cor <- final_res$network_table$cor %>% dplyr::rename(complex_auc=ks)    
   kable(final_res$network_table$cor %>% dplyr::rename(`data table`=dataSet), "html",digits = 4) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
-    row_spec(which.max(final_res$network_table$cor$complex_ks), bold = T, color = "red")
+    row_spec(which.max(final_res$network_table$cor$complex_auc), bold = T, color = "red")
 }
 
 ```
