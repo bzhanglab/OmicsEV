@@ -63,6 +63,8 @@ dataset_names <- names(basic_metrics$datasets)
 
 # Overview
 
+The table below provides an overview about all the quantitative metrics generated in the evaluation. For each metric, the value of the best data table is highlighted. The detail of each metric can be found in corresponding section below.
+
 ```{r echo=FALSE}
 #save(final_res,file="a.rda")
 ov_table_list <- generate_overview_table(final_res)
@@ -71,6 +73,8 @@ kable(format_overview_table(ov_table_list), "html",digits = 4,escape = FALSE) %>
       kable_styling(bootstrap_options = "striped", full_width = F) %>%
       scroll_box(height = "400px",width = "100%")
 ```
+
+The radar plot showing below is generated based on the data in the above overview table. To generate the radar plot, a metric is converted to a scale in which the value range is between 0 and 1 in a way that higher value indicates better data quality if necessary. The converted values are in parentheses. 
 
 ```{r echo=FALSE, fig.align='center', warning=FALSE,message=FALSE}
 #save(final_res,file="a.rda")

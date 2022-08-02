@@ -50,7 +50,8 @@ run_omics_evaluation=function(data_dir=NULL,
                               species="human",
                               use_existing_data=FALSE,
                               snr_qc_sample=NULL,
-                              snr_bio_sample=NULL){
+                              snr_bio_sample=NULL,
+                              total_features=20386){
     cat("species:",species,"\n")
     res <- list()
 
@@ -67,6 +68,7 @@ run_omics_evaluation=function(data_dir=NULL,
     res$input_parameters$x2 <- x2
     res$input_parameters$cpu <- cpu
     res$input_parameters$do_fun_pred <- do_fun_pred
+    res$input_parameters$total_features <- total_features
 
     ## import data
     input_data_files <- list.files(path = data_dir,pattern = ".tsv",

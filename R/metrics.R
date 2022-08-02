@@ -1587,12 +1587,12 @@ get_two_sample_auroc = function(s,ss,dat){
 }
 
 # generate overview table and overview radar figure
-generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8,total_features=20386){
+generate_overview_table=function(x,highlight_top_n=3,min_auc=0.8){
     ## generate an overview table which contains different metrics
     ## input: x =>
 
     ## two data tables, one for radar plot real value, one for overview table
-
+    total_features <- x$input_parameters$total_features
     dat <- get_identification_summary_table(x,format = FALSE)
     show_dat <- dat
     if("#identified features" %in% names(dat) && "#quantifiable features" %in% names(dat)){
