@@ -1945,7 +1945,7 @@ get_formated_id_table=function(final_res){
     id_table <- get_identification_summary_table(final_res,format = FALSE) %>% dplyr::rename(`data table`=dataSet)
     total_features <- final_res$input_parameters$total_features
     show_id_table <- id_table
-    if("#identified features" %in% names(dat) && "#quantifiable features" %in% names(dat)){
+    if("#identified features" %in% names(id_table) && "#quantifiable features" %in% names(id_table)){
         id_table <- id_table %>% dplyr::mutate(`#identified features`=`#identified features`/total_features,
                                                `#quantifiable features`=`#quantifiable features`/total_features)
         show_id_table <- show_id_table %>% dplyr::mutate(`#identified features` = paste(`#identified features`,"\n(",format_number(id_table$`#identified features`),")",sep=""),
