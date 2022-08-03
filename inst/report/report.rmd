@@ -365,9 +365,10 @@ if(!is.null(final_res$fun_pred)){
 
 if(!is.null(final_res$ml)){
   cat("## Sample class prediction\n")
-  cat("<p>Build model for prediction:",paste(final_res$ml$class_group,collapse = ","),".</p>\n")
-  kable(final_res$ml$table, "html",digits = 3) %>%
-  kable_styling(bootstrap_options = "striped", full_width = F)
+  cat("<p>For each data table, machine learning models are built to predict sample class:",paste(final_res$ml$class_group,collapse = ","),". In OmicsEV, random forest models are built and the models are evaluated using repeated 5 fold cross validation. (",final_res$input_parameters$n_repeats_for_ml," times).</p>\n")
+  kable(final_res$ml$table, "html",digits = 4) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+      row_spec(which.max(final_res$ml$table$mean_ROC), bold = T, color = "red")
   
 }
 

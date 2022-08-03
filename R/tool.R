@@ -69,7 +69,6 @@ run_omics_evaluation=function(data_dir=NULL,
     res$input_parameters$cpu <- cpu
     res$input_parameters$do_fun_pred <- do_fun_pred
     res$input_parameters$total_features <- total_features
-    res$input_parameters$n_repeats_for_ml <- n_repeats_for_ml
 
     ## import data
     input_data_files <- list.files(path = data_dir,pattern = ".tsv",
@@ -125,7 +124,7 @@ run_omics_evaluation=function(data_dir=NULL,
         class_names <- res$input_parameters$sample_list$class %>% unique
         class_color_data <- data.frame(class = class_names, col=rainbow(length(class_names)))
         class_color <- paste(out_dir,"/class_color.tsv",sep="")
-        write_tsv(class_color_data,path=class_color)
+        write_tsv(class_color_data,class_color)
     }
 
     basic_metrics_res_file <- paste(out_dir,"/basic_metrics_res.rds",sep="")
