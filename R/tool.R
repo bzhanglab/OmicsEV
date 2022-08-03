@@ -69,6 +69,7 @@ run_omics_evaluation=function(data_dir=NULL,
     res$input_parameters$cpu <- cpu
     res$input_parameters$do_fun_pred <- do_fun_pred
     res$input_parameters$total_features <- total_features
+    res$input_parameters$n_repeats_for_ml <- n_repeats_for_ml
 
     ## import data
     input_data_files <- list.files(path = data_dir,pattern = ".tsv",
