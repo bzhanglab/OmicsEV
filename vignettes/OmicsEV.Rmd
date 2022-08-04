@@ -48,7 +48,7 @@ specific omics dataset remains a significant challenge. To address this
 challenge, we have developed an R package named `OmicsEV`, which is dedicated to 
 compare and evaluate different data matrices generated from the same omics 
 dataset using different tools, algorithms, or parameter settings. In `OmicsEV`,
-we have implemented more than 20 evaluation metrics and all the evaluation 
+we have implemented more than 15 evaluation metrics and all the evaluation 
 results are included in an HTML-report for intuitive browsing. OmicsEV is easy 
 to install and use. Only one function is needed to perform the whole evaluation 
 process. A GUI based on R shiny is also implemented.
@@ -116,34 +116,39 @@ the gene expression data in tsv format, and vice versa. If parameter **x2** is
 not NULL, sample wise and gene wise correlation analysis will be performed. See `?run_omics_evaluation` for a more in-depth description of all its arguments. 
 
 When the function is finished successfully, an HTML-based report that contains 
-different evaluation metrics will be generated. An example report is available 
+different evaluation metrics will be generated. Example reports are available 
 at https://github.com/bzhanglab/OmicsEV.
 
 
 # Evaluation metrics implemented in OmicsEV
 
-So far, more than 20 evaluation metrics have been implemented in `OmicsEV`.
+So far, more than 15 evaluation metrics have been implemented in `OmicsEV` and 
+the evaluation result is organized in the following structure:
 
-1. Identified proteins/genes;
-2. Quantified proteins/genes;
-3. Overlap genes/proteins of all datasets;
-4. Protein/gene number distribution across samples;
-5. Protein or gene expression distribution: boxplot;
-6. Protein or gene expression distribution: density plot;
-7. Sample correlation heatmap;
-8. Batch effect evaluation using kBET [@buttner2018test];
-9. Batch effect evaluation using silhouette width;
-10. Batch effect evaluation based on PCA regression;
-11. Batch effect evaluation using pca score plot
-12. Protein or gene coefficient of variation (CV) distribution;
-13. Missing value distribution;
-14. Unsupervised analysis of samples: PCA;
-15. Unsupervised analysis of samples: cluster analysis;
-16. Correlation based on complexes;
-17. Correlation between mRNA and protein: gene wise;
-18. Correlation between mRNA and protein: sample wise;
-19. Phenotype prediction;
-20. Co-expression network based function prediction.
+1. Introduction
+2. Overview
+3. Data depth
+   a. Study-wise (#identified features, #quantifiable features)
+   b. Sample-wise
+   c. Missing value distribution (Non-missing value percentage in the data table)
+4. Data normalization
+   a. Boxplot (Data distribution similarity)
+   b. Density plot
+5. Batch effect
+   a. Silhouette width (silhouette width)
+   b. PCA with batch annotation (pcRegscale)
+   c. Correlation heatmap
+6. Biological signal
+   a. Correlation among protein complex members (complex_ks)
+   b. Gene function prediction (func_auc)
+   c. Sample class prediction (class_auc)
+   d. PCA with sample class annotation
+   e. Unsupervised clustering
+7. Platform reproducibility (optional with QC sample)
+   a. Coefficient of variation distribution (median CV)
+8. Multi-omics concordance (optional with two omics)
+   a. Gene-wise mRNA-protein correlation (gene wise cor)
+   b. Sample-wise mRNA-protein correlation (sample wise cor)
 
 # OmicsEV evaluation report
 
