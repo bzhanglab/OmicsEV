@@ -73,5 +73,9 @@ The HTML report generated using above code is available at [OmicsEV report](http
 This example takes about one hour on a Linux system with 64 CPUs and 256G memory.
 
 
-
-
+## Applications in publications
+1. Cao, L., et al. [**Proteogenomic characterization of pancreatic ductal adenocarcinoma**](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8654574/). *Cell* 2021;184(19):5031-5052 e5026.
+2. Dou, Y., et al. [**Proteogenomic Characterization of Endometrial Carcinoma**](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7233456/). *Cell* 2020;180(4):729-748 e726.
+3. Gao, Q., et al. [**Integrated Proteogenomic Characterization of HBV-Related Hepatocellular Carcinoma**](https://pubmed.ncbi.nlm.nih.gov/31585088/). *Cell* 2019;179(2):561-577 e522.
+4. Huang, C., et al. [**Proteogenomic insights into the biology and treatment of HPV-negative head and neck squamous cell carcinoma**](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7946781/). *Cancer Cell* 2021;39(3):361-379 e316.
+5. Satpathy, S., et al. [**Microscaled proteogenomic methods for precision oncology**](https://www.nature.com/articles/s41467-020-14381-2). *Nat Commun* 2020;11(1):532.
