@@ -45,7 +45,21 @@ run_omics_evaluation(data_dir = "datasets/",
                      data_type="gene",
                      class_for_ml="sample_ml.tsv")
 ```
-Please download the input files for above code at [RNA_seq_6_datasets.tar.gz](https://github.com/bzhanglab/OmicsEV/raw/gh-pages/data/RNA_seq_6_datasets.tar.gz).
+Please download the input files for above code at [RNA_seq_6_datasets.tar.gz](https://github.com/bzhanglab/OmicsEV/raw/gh-pages/data/RNA_seq_6_datasets.tar.gz). It contains the following files:
+
+```shell
+├── datasets
+│   ├── d1.tsv
+│   ├── d2.tsv
+│   ├── d3.tsv
+│   ├── d4.tsv
+│   ├── d5.tsv
+│   └── d6.tsv
+├── protein.tsv
+├── run_OmicsEV.R
+├── sample_list.tsv
+└── sample_ml.tsv
+```
 
 The HTML report generated using above code is available at [OmicsEV report](https://bzhanglab.github.io/OmicsEV/data/rna-seq-example_report.html).
 
@@ -66,11 +80,52 @@ run_omics_evaluation(data_dir = "datasets_75/",
                      data_type="gene",
                      class_for_ml="sample_ml.tsv")
 ```
-Please download the input files for above code at [proteomics_3_datasets.tar.gz](https://github.com/bzhanglab/OmicsEV/raw/gh-pages/data/proteomics_3_datasets.tar.gz).
+Please download the input files for above code at [proteomics_3_datasets.tar.gz](https://github.com/bzhanglab/OmicsEV/raw/gh-pages/data/proteomics_3_datasets.tar.gz). It contains the following files:
+
+```
+├── datasets_75
+│   ├── CDAP.tsv
+│   ├── MQ_ratio.tsv
+│   └── paper.tsv
+├── rna.tsv
+├── run_OmicsEV.R
+├── sample_list_v2.tsv
+└── sample_ml.tsv
+```
 
 The HTML report generated using above code is available at [OmicsEV report](https://bzhanglab.github.io/OmicsEV/data/proteomics-example_report.html).
 
 This example takes about one hour on a Linux system with 64 CPUs and 256G memory.
+
+
+### Example 3: evaluate the data quality of single data table
+
+The proteomics data is from CPTAC Breast project. A single data table was generated using one pipeline. An RNA-Seq data table is available and it was generated from the same samples. Below is the R code to run the evaluation using OmicsEV. 
+
+```r
+library(OmicsEV)
+run_omics_evaluation(data_dir = "datasets_75/",
+                     sample_list = "sample_list_v2.tsv",
+                     x2 = "rna.tsv",
+                     cpu=0,
+                     use_existing_data=TRUE,
+                     data_type="gene",
+                     class_for_ml="sample_ml.tsv")
+```
+Please download the input files for above code at [proteomics_1_dataset.tar.gz](https://github.com/bzhanglab/OmicsEV/raw/gh-pages/data/proteomics_1_dataset.tar.gz). It contains the following files:
+```
+├── datasets_75
+│   └── paper.tsv
+├── rna.tsv
+├── run_OmicsEV.R
+├── sample_list_v2.tsv
+└── sample_ml.tsv
+```
+
+The HTML report generated using above code is available at [OmicsEV report](https://bzhanglab.github.io/OmicsEV/data/proteomics-one_dataset-example_report.html).
+
+This example takes about one hour on a Linux system with 64 CPUs and 256G memory.
+
 
 
 ## Applications in publications
