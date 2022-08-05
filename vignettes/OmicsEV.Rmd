@@ -96,7 +96,10 @@ kable(example_data,digits = 3,caption="An example of input dataset") %>%
 
 * **sample_list**: a file in tsv format contains sample class, batch and order 
 information. This file must contain sample ID, sample class, batch and order 
-information. An example sample list file looks like below:
+information. An example sample list file looks like below. If there is no batch design 
+in the study, the batch for all samples can be set to 1. The order is typically
+the order of data generation for samples. It should start from 1 and the max number is the number of samples in the table. The order is only used for sorting samples in some plots. It is not used for any quantitative metrics calculation. So, if users don't know the data generation order, arbitrary order can be assigned to the samples. If there are QC samples in the data table, the class for these QC samples should be set as "QC". OmicsEV will generate metrics based on these QC samples. Please note QC samples are optional in the data tables. If there is no QC sample in the data table, QC-related metrics will not be generated.
+In the sample list file, each row is a sample with a unique sample ID. That means there shouldn't have samples in different rows with the same sample ID.
 
 ```{r eval=TRUE, echo=FALSE, results='asis'}
 example_data <- read.delim(system.file("extdata/example_sample_list.tsv",
@@ -109,7 +112,7 @@ kable(example_data,digits = 3,caption="An example of sample list") %>%
 * **data_type**: the quantification data type in folder data_dir: protein, 
 gene. Default is protein.
 
-All other parameters are optional. When input datasets for parameter 
+All other parameters are optional. When input data tables for parameter 
 **data_dir** are protein expression data and users also have gene expression 
 data for the same samples, users can set parameter **x2** as a file contains 
 the gene expression data in tsv format, and vice versa. If parameter **x2** is 
