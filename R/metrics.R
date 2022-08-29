@@ -609,7 +609,7 @@ plot_feature_wise_cor_cdf=function(x, out_dir="./",prefix="test"){
               legend.key = element_blank(),
               legend.background=element_blank())+
         ylab("CDF")+
-        xlab("Pearson correlation")
+        xlab("Correlation")
     print(gg)
     dev.off()
 
@@ -632,7 +632,7 @@ plot_feature_wise_cor_boxplot=function(x, out_dir="./",prefix="test"){
     png(fig,width = 800,height = 400,res=120)
     gg <- ggplot(x,aes(x=dataSet,y=cor))+
         geom_boxplot(width=0.5,outlier.size=0.2)+
-        ylab("Pearson correlation")+
+        ylab("Correlation")+
         theme(axis.text.x = element_text(angle = 90, hjust = 1))
     print(gg)
     dev.off()
