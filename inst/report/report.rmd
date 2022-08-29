@@ -143,7 +143,7 @@ kable(missing_value_table,"html",escape = FALSE, digits = 4) %>%
     row_spec(which.max(missing_value_table$non_missing_value_ratio), bold = T, color = "red")
 ```
 
-The following barplots show missing value distributions for each data table as number (Y axis)/percentage (number above bar) of proteins or genes with missing values in each bin. The proportion of samples with missing values are binned from 0.1 to 1 in increments of 0.1, where 0.1 indicates missing values in no more than 10% of the samples, and 1 indicates missing values in all samples. The column **n** shows the total number of sample pairs in the analysis.
+The following barplots show missing value distributions for each data table as number (Y axis)/percentage (number above bar) of proteins or genes with missing values in each bin. The proportion of samples with missing values are binned from 0.1 to 1 in increments of 0.1, where 0.1 indicates missing values in no more than 10% of the samples, and 1 indicates missing values in all samples.
 
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
@@ -173,7 +173,7 @@ for(i in 1:length(figs)){
 
 ```
 
-To quantify the normalization effect, we tested for how well the data in the feature set can distinguish between each pair of samples. If the distribution is similar for the two samples in a given pair, the overall feature abundance (levels for all features in one sample vs the other) should not be sufficient to predict which sample is which. Therefore, for each pair of samples, an AUROC test was performed to quantify the ability of feature abundance to distinguish the two samples, and then a **data_dist_similarity** score was generated: 1-2*abs(AUROC-0.5). This score ranges from 0 to 1, and the higher the score is the better the normalized data quality is (no systematic difference between the two samples). The final metric for each data table is the median of scores from all sample pairs.
+To quantify the normalization effect, we tested for how well the data in the feature set can distinguish between each pair of samples. If the distribution is similar for the two samples in a given pair, the overall feature abundance (levels for all features in one sample vs the other) should not be sufficient to predict which sample is which. Therefore, for each pair of samples, an AUROC test was performed to quantify the ability of feature abundance to distinguish the two samples, and then a **data_dist_similarity** score was generated: 1-2*abs(AUROC-0.5). This score ranges from 0 to 1, and the higher the score is the better the normalized data quality is (no systematic difference between the two samples). The final metric for each data table is the median of scores from all sample pairs. The column 'n' shows the total number of sample pairs in the analysis.
 
 ```{r echo=FALSE}
 if("quant_median_metric" %in% names(final_res$basic_metrics)){
