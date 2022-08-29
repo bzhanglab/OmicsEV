@@ -36,7 +36,7 @@ protein_rna <- final_res$protein_rna
 
 # Introduction
 
-In this evaluation, there are total **`r final_res$input_parameters$n_datasets`** data tables. We used the evaluation metrics implemented in **OmicsEV** package to evaluate these data tables. The sample and class information for each data table are shown in the table below.
+In this evaluation, there are a total of **`r final_res$input_parameters$n_datasets`** data tables. Evaluation metrics from the **OmicsEV** package for these data tables are included in this report, beginning with a summary of the data. The sample distribution by class for each data table is shown in the table below.
 
 ```{r echo=FALSE}
 class_samples_table <- get_sample_data(final_res$input_parameters$datasets)
@@ -45,7 +45,7 @@ kable(class_samples_table, "html") %>%
     
 ```
 
-The detailed sample information is shown below.
+Detailed information for each sample included in all data tables is shown below.
 
 ```{r echo=FALSE}
 kable(final_res$input_parameters$sample_list, "html") %>%
@@ -63,7 +63,7 @@ dataset_names <- names(basic_metrics$datasets)
 
 # Overview
 
-The table below provides an overview about all the quantitative metrics generated in the evaluation. For each metric, the value of the best data table is highlighted. The detail of each metric can be found in corresponding section below.
+The table below provides an overview about all the quantitative metrics generated in the evaluation. For each metric, the value of the best data table is highlighted in bold. The details for each metric can be found in the corresponding sections below.
 
 ```{r echo=FALSE}
 #save(final_res,file="a.rda")
@@ -74,7 +74,7 @@ kable(format_overview_table(ov_table_list), "html",digits = 4,escape = FALSE) %>
       scroll_box(height = "400px",width = "100%")
 ```
 
-The radar plot showing below is generated based on the data in the above overview table. To generate the radar plot, a metric is converted to a scale in which the value range is between 0 and 1 in a way that higher value indicates better data quality if necessary. The converted values are in parentheses. 
+The radar plot below summarizes results from the overview table above. To generate the radar plot, each metric is scaled from 0 to 1 such that higher values indicate better data quality if necessary. Scaled values are in parentheses. 
 
 ```{r echo=FALSE, fig.align='center', warning=FALSE,message=FALSE}
 #save(final_res,file="a.rda")
@@ -96,7 +96,7 @@ if(ncol(ov_table) > 3){
 
 ## Study-wise
 
-The table below shows the number of identified proteins or genes for each data table. We take the proteins or genes filtered by 50% missing value as quantified proteins or genes. The values in parentheses are the percentage of proteins or genes identified or quantified based on the total number of proteins or genes (`r sprintf("%d",final_res$input_parameters$total_features)`) in the study species. 
+The table below shows the number of identified proteins or genes for each data table. Identified proteins or genes are those with a measurement in any sample in a data table whereas quantified proteins or genes are those that remain after filtering out those with missing values in more than 50% of the samples in a data table. The values in parentheses are the percentage of proteins or genes identified or quantified based on the total number of proteins or genes (`r sprintf("%d",final_res$input_parameters$total_features)`) in the study species. 
 
 ```{r echo=FALSE}
 #save(final_res,file="a.rda")
@@ -108,7 +108,7 @@ kable(id_tables$show_id_table,"html",escape = FALSE) %>%
 
 ```{r results="asis"}
 if(!is.null(final_res$basic_metrics$datasets_id_overla)){
-  cat("Upset chart below showing overlap in proteins or genes identified in each data table. Numbers of identified proteins or genes shared between different data tables are indicated in the top bar chart and the specific data tables in each set are indicated with solid points below the bar chart. Total identifications for each data table are indicated on the left as ‘Set size’.\n")
+  cat("Upset chart below showing overlap between proteins or genes identified in each data table. Numbers of identified proteins or genes shared between different combination of data tables are indicated in the top bar chart, and the specific combinations of data tables in containing those proteins or genes are indicated with solid points below the bar chart. Total identifications for each data table are indicated on the right as ‘Set size’.\n")
   knitr::include_graphics(final_res$basic_metrics$datasets_id_overlap %>% normalizePath)
 }
 ```
@@ -116,7 +116,7 @@ if(!is.null(final_res$basic_metrics$datasets_id_overla)){
 
 ## Sample-wise
 
-The figures below show the number of proteins or genes identified in each sample. Only when the quantification value of a gene or protein is not "NA" in a sample, this gene or protein is considered as identified in the sample. The samples from different batches are coded in different shapes and the samples from different classes are coded in different colors.
+The figures below show the number of proteins or genes identified/quantified (non-missing values) in each sample. Samples from different batches are coded with different shapes, and samples from different classes are coded with different colors. A separate figure is shown for each data table.
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "features_number_distribution")
@@ -130,7 +130,9 @@ for(i in 1:length(figs)){
 
 ## Missing value distribution
 
-The missing value distribution can give an overview of the percent of missing values of all proteins or genes in both the QC and experiment samples.
+The missing value distribution provides an overview of the completeness of the data. The table below shows the percent of missing values for all samples in each data table.
+
+The following barplots show missing value distributions for each data table as number (Y axis)/percentage (number above bar) of genes with missing values in each bin. The proportion of samples with missing values are binned from 0.1 to 1 in increments of 0.1, where 0.1 indicates missing values in no more than 10% of the samples, and 1 indicates missing values in all samples. 
 
 
 ```{r echo=FALSE}
@@ -158,7 +160,7 @@ for(i in 1:length(figs)){
 
 ## Boxplot
 
-The boxplots show the protein or gene expression distribution across samples. X axis is sample ordered by input order. Y axis is log2 transformed protein or gene expression. The samples from different classes are coded in different colors.
+Normalized data is expected to be centered around a similar value and show similar distributions in all samples. Boxplots show the protein or gene expression measurement distribution across samples in each data table, allowing for qualitative assessment of the normalized data. Samples in input order are indicated on the X axis. The Y axis shows log2 transformed protein or gene values. Samples from different classes are coded with different colors.
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "features_quant_distribution")
@@ -171,7 +173,7 @@ for(i in 1:length(figs)){
 
 ```
 
-To quantify the normalization effect, for each pair of samples, perform an AUROC test to quantify the ability of feature abundance to distinguish the two samples and then generate a score based on 1-2*abs(AUROC-0.5), which will be 0 to 1, higher the better (no systematic difference between the two samples). The final metric for each data table is the median of scores from all sample pairs.
+To quantify the normalization effect, we tested for how well the data in the feature set can distinguish between each pair of samples. If the distribution is similar for the two samples in a given pair, the overall feature abundance (levels for all features in one sample vs the other) should not be sufficient to predict which sample is which. Therefore, for each pair of samples, an AUROC test was performed to quantify the ability of feature abundance to distinguish the two samples, and then a **data_dist_similarity** score was generated: 1-2*abs(AUROC-0.5). This score ranges from 0 to 1, and the higher the score is the better the normalized data quality is (no systematic difference between the two samples). The final metric for each data table is the median of scores from all sample pairs.
 
 ```{r echo=FALSE}
 if("quant_median_metric" %in% names(final_res$basic_metrics)){
@@ -186,14 +188,12 @@ if("quant_median_metric" %in% names(final_res$basic_metrics)){
 
 ## Density plot
 
-The density plots show the protein or gene expression distribution across samples. X axis is log2 transformed protein or gene expression. Y axis is density.
+Density plots also show the expression distributions for all samples (separate line) in each data table. The Y axis shows the density over the range of log2 transformed protein or gene expression values (X axis).
+
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 knitr::include_graphics(final_res$basic_metrics$density_plot %>% normalizePath)
 ```
-
-
-
 
 
 # Batch effect
@@ -218,7 +218,7 @@ if(n_batch >= 2){
   cat("<p>The silhouette width s(i) ranges from –1 to 1, with s(i) -> 1 if two clusters
 are separate and s(i) -> −1 if two clusters overlap but have dissimilar variance.
 If s(i) -> 0, both clusters have roughly the same structure. Thus, we use the
-absolute value |s| as an indicator for the presence or absence of batch effects.</p>\n")
+absolute value |s| as an indicator for the presence or absence of batch effects (the greater |s| is, the higher the batch effect is).</p>\n")
   sil_res <- final_res$batch_effect_metrics$sil
   show_sil <- data.frame(dataSet=names(sil_res),silhouette_width=sil_res) %>%
       dplyr::rename(`data table`=dataSet)
@@ -233,11 +233,11 @@ absolute value |s| as an indicator for the presence or absence of batch effects.
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
   cat("## PCA with batch annotation\n\n")
-  cat("<p>For each PC, we calculate Pearson's correlation coefficient with batch covariate b:</p>\n")
+  cat("<p>For each principal component (PC) from PCA, we calculate the Pearson's correlation coefficient for that PC with batch covariate b:</p>\n")
   cat("<p style='text-align: center;'>r<sub>i</sub> =corr(PC<sub>i</sub>,b)</p>\n")
-  cat("<p>In a linear model with a single dependent, as is the case here for the PCs correlated to batch covariate, the coefficient of determination R<sup>2</sup> is the squared Pearson's correlation coefficient:</p>\n")
+  cat("<p>In a linear model with a single dependent, as is the case here for correlation of a given PC to a batch covariate, the coefficient of determination for batch b on PC<sub>i</sub>, R<sup>2</sup>, is the squared Pearson's correlation coefficient:</p>\n")
   cat("<p style='text-align: center;'>R<sup>2</sup>(PC<sub>i</sub>,b) = r<sub>i</sub><sup>2</sup></p>\n")
-  cat("<p>Then we estimate the significance of the correlation coefficient either with a t-test or a one-way ANOVA. The R<sup>2</sup> value highlighted with red is significant (p-value <= 0.05).</p>\n")
+  cat("<p>The table below shows correlation coefficients for each PC for the first 10 PCs in each data table. The significance of the correlation coefficient was estimated either with a t-test or a one-way ANOVA. R<sup>2</sup> values highlighted with red indicate significant correlation (p-value <= 0.05) between batch and the corresponding PC.</p>\n")
   pcr_res <- final_res$batch_effect_metrics$pcr
   kable(pcr_res$table, "html",digits = 4,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
@@ -247,7 +247,7 @@ if(n_batch >= 2){
 
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
-  cat("<p>The fraction of variance explained for each PC:</p>\n")
+  cat("<p>The percentage of variance explained for each PC is shown in the table below:</p>\n")
   kable(pcr_res$explained_var, "html",escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
   }
@@ -255,7 +255,7 @@ if(n_batch >= 2){
 
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
-  cat("<p>'Scaled PC regression', i.e. total variance of PCs which correlate significantly with batch covariate (FDR<0.05) scaled by the total variance of",pcr_res$top_pc,"PCs:</p>\n")
+  cat("<p>Greater batch effect is more likely to be present when a PC that explains a higher percentage of variance shows significant correlation with the batch covariate. Therefore, we use the 'Scaled PC regression' metric (pcRegscale), i.e. the total variance of PCs which correlate significantly with batch covariate (FDR<0.05) scaled by the total variance of",pcr_res$top_pc,"PCs, to quantify the batch effect:</p>\n")
   kable(pcr_res$pcRegscale %>% dplyr::rename(`data table`=dataSet), "html",escape = FALSE, digits = 4) %>%
       kable_styling(bootstrap_options = "striped", full_width = F) %>%
       row_spec(which.min(pcr_res$pcRegscale$pcRegscale), bold = T, color = "red")
@@ -265,7 +265,7 @@ if(n_batch >= 2){
 ```{r results="asis",fig.align='center'}
 if(n_batch >= 2){
   #cat("## Batch effect evaluation using pca score plot\n\n")
-  cat("In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.\n")
+  cat("The figures below show the PCA score plots for the top three PCs for each data table. Samples from different batches are coded with different colors in the plots.\n")
   fig <- final_res$pca_batch_plot$fig
 knitr::include_graphics(fig %>% normalizePath)
   
@@ -285,7 +285,8 @@ if(n_batch >= 2){
 
 ## Correlation heatmap
 
-In these figures, each column is a sample, each row is also a sample. The color indicates the correlation between samples. The samples are ordered by batches.
+Another way to qualitatively assess batch effect is to visualize the correlations for measurements between samples from the same batch to those in samples from different batches using heatmaps. The following figures show Pearson correlation heatmaps for all pairs of samples (all samples included in both rows and columns) for each data table. The color indicates the correlation between samples. The samples are ordered by batches. Concentration of high correlation values (red color) for pairs of samples from the same batch block compared to other batches indicates the presence of batch effect.
+
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "sample_wise_cor_heatmap")
@@ -305,6 +306,7 @@ for(i in 1:length(figs)){
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$network_table)){
   cat("## Correlation among protein complex members\n")
+  cat("<p>Members of the same protein complex often show greater correlation in gene and protein expression (IntraComplex correlation) than genes or proteins that are in different complexes (InterComplex correlation). Thus, one way to evaluate the quality of the biological signal present in a data table is to compare IntraComplex correlation to IntraComplex correlation. Furthermore, because of the need to preserve stoichiometry between protein complex members, the difference between IntraComplex correlation and InterComplex correlation is often greater at the protein level than at the RNA data. If both RNA and protein data tables are available, observing that this difference is more pronounced in the protein data table than the RNA data table serves as an indicator for the quality of the protein data.\nThe boxplots below show the distributions and ranges for pairwise correlations between genes or proteins form the same complex and for genes and proteins from different complexes for each data table.</p>\n")
   include_graphics(final_res$network_table$network_boxplot %>% normalizePath)
 }
 
@@ -312,7 +314,7 @@ if(!is.null(final_res$network_table)){
 
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$network_table)){
-  cat("<p>The table showing below is a summary of the evaluation. 'diff' is Cor(intra) - Cor(inter). 'complex_auc' is the AUROC value based on correlation of protein pairs from different groups.</p>\n")
+  cat("<p>The table below shows a summary of the evaluation. 'diff' is Cor(intra) - Cor(inter). 'complex_auc' is the AUROC value based on correlation of protein pairs from different groups.</p>\n")
   final_res$network_table$cor <- final_res$network_table$cor %>% dplyr::rename(complex_auc=ks)    
   kable(final_res$network_table$cor %>% dplyr::rename(`data table`=dataSet), "html",digits = 4) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)%>%
@@ -326,7 +328,8 @@ if(!is.null(final_res$network_table)){
 
 if(!is.null(final_res$fun_pred)){
   cat("## Gene function prediction\n")
-  cat("<p>In this evaluation, each data table was used to build co-expression network. For a selected network and a selected function term (such as GO or KEGG), proteins/genes annotated to the term and also included in the network were defined as a positive protein/gene set and other proteins/genes in the network constituted the negative protein/gene set for the term. For a selected function term, we use some of the proteins/genes as the seed protein/gene, then we use random walk algorithm to calculate scores for other proteins/genes. A higher score of a protein/gene represents a closer relationship between the protein/gene and the seed proteins/genes. Finally, for each selected function term, we calculate an AUROC to evaluate the prediction performance.</p>\n")
+  cat("<p>Previous studies have shown that expression correlation is often higher for functionally related genes or proteins than for unrelated genes or proteins and that this correlation is greater when considering protein data than when considering RNA data. Therefore, we can also evaluate the biological signal present in a data table by evaluating functional category predictions made using co-expression generated from the data table.</p>\n")
+  cat("<p>In this evaluation, each data table was used to build a co-expression network. For a selected network and a selected functional category (such as a selected category from GO or KEGG), proteins/genes annotated to the category and also included in the network were defined as a positive protein/gene set and other proteins/genes in the network constituted the negative protein/gene set for the category. For a selected functional category, a subset of the proteins/genes were used as seed proteins/genes for random walk through the network to calculate scores for other proteins/genes. A higher score of a protein/gene represents a closer relationship between the protein/gene and the seed proteins/genes. The table below shows AUROCs of the prediction performance using this score for each selected functional category.</p>\n")
   kable(final_res$fun_pred$table, "html",digits = 3,escape = FALSE) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) %>%
   scroll_box(height = "400px",width = "100%")
@@ -335,9 +338,10 @@ if(!is.null(final_res$fun_pred)){
 ```
 
 
-```{r, echo=FALSE}
+```{r results="asis",fig.align='center'}
 if(!is.null(final_res$fun_pred)){
   if(!is.null(final_res$fun_pred$fig)){
+    cat("<p>The rank boxplots below summarize the relative performance of the data tables in the functional prediction analysis. For each functional category, a rank is assigned to each data table based on its AUROC compared to the other data tables, where the best functional prediction rank is 1 and the poorest rank is the number of data tables.</p>\n")
     include_graphics(final_res$fun_pred$fig %>% normalizePath)
   }
 }
@@ -348,6 +352,7 @@ if(!is.null(final_res$fun_pred)){
 if(!is.null(final_res$fun_pred)){
   
   if(!is.null(final_res$fun_pred$two_group_fig)){
+    cat("<p>Comparison of each protein data table to a designated RNA data table is also summarized in the scatter plots below. For each point, the AUROC for a given category in the RNA data is plotted on the X-axis whereas the corresponding AUROC in the protein data table is plotted on the Y-axis. The number of categories for which the protein data table outperforms the RNA data table (AUROC(protein) > 1.1 * AUROC (RNA); red dots) and vice versa (AUROC(RNA) > 1.1 * AUROC (protein); blue dots) are also shown.</p>\n")
     figs <- sapply(final_res$fun_pred$two_group_fig, function(x){x})
     figs <- get_full_path(figs)
     for(i in 1:length(figs)){
@@ -365,7 +370,7 @@ if(!is.null(final_res$fun_pred)){
 
 if(!is.null(final_res$ml)){
   cat("## Sample class prediction\n")
-  cat("<p>For each data table, machine learning models are built to predict sample class:",paste(final_res$ml$class_group,collapse = ","),". In OmicsEV, random forest models are built and the models are evaluated using repeated 5 fold cross validation (",final_res$input_parameters$n_repeats_for_ml," times).</p>\n",sep = "")
+  cat("<p>OmicsEV also allows for assessment of how well each data table can predict a user specified class for each sample. For each data table, machine learning models are built to predict sample class:",paste(final_res$ml$class_group,collapse = ","),". In OmicsEV, random forest models are built and the models are evaluated using repeated 5 fold cross validation (",final_res$input_parameters$n_repeats_for_ml," times). Please note, depending on the class specified, this metric may or may not provide an indication of data quality. The results of AUROC analysis performed using the models are summarized in the table and boxplots below.</p>\n",sep = "")
   kable(final_res$ml$table, "html",digits = 4) %>%
   kable_styling(bootstrap_options = "striped", full_width = F) %>%
       row_spec(which.max(final_res$ml$table$mean_ROC), bold = T, color = "red")
@@ -389,6 +394,8 @@ if(!is.null(final_res$ml)){
 
 ## PCA with sample class annotation
 
+Another approach for assessing how well each data table can distinguish between classes is to determine how well each class can be separated by principal component analysis (PCA). In PCA score plots for each data table below, each point is a sample that is colored by class and that has a shape reflecting the batch. For a given sample, the PC2 score is plotted on the Y-axis whereas the PC1 score is plotted on the X-axis. Ellipses highlighting clusters of samples in each class are colored by corresponding class, and the separation between these ellipses indicates how well the variances captured by the first two PCs can distinguish between samples from different classes.
+
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "pca_with_batch")
 figs <- get_full_path(figs)
@@ -400,6 +407,8 @@ for(i in 1:length(figs)){
 ```
 
 ## Unsupervised clustering
+
+Unsupervised hierarchical clustering can reveal patterns in the data (clusters of genes or samples that behave more similarly to each other than to other genes or samples). Each heatmap below shows the results of hierarchical clustering for a given data table using ComplexHeatmap. Genes/proteins are in rows, while samples are in columns and labeled with corresponding class to visualize any potential associations between classes and clusters.
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 figs <- get_metrics(final_res$basic_metrics$datasets, metric = "cluster_heatmap")
@@ -484,9 +493,12 @@ if("QC" %in% cv_table$class){
 
 # Multi-omics concordance
 
+When a RNA data table is available for comparison with protein data tables, the concordance between the protein data and RNA data can be used to assess data quality. Here, we evaluate gene- and sample-wise correlations between the protein and RNA data tables.
+
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$input_parameters$x2)){
   cat("## Gene-wise mRNA-protein correlation\n")
+  cat("<p>The table below shows the number of genes with measurements (n) in each data table as well as the median Spearman correlation at gene wise between mRNA and protein. The columns n5, n6, n7 and n8 show the number of genes with correlation greater than 0.5, 0.6, 0.7 and 0.8, respectively.</p>\n")
   fw_table <- final_res$protein_rna$feature_wise_cor_table %>% 
       dplyr::rename(gene_wise_cor=median_cor,`data table`=dataSet)
   kable(fw_table, "html",digits = 4) %>%
@@ -496,9 +508,12 @@ if(!is.null(final_res$input_parameters$x2)){
 }
 ```  
 
+
+
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$input_parameters$x2)){
   if(!is.null(final_res$protein_rna$gene_wise_cor_boxplot_fig)){
+    cat("<p>Spearman correlation results are also shown for each gene/protein in the boxplot below.</p>\n")
     include_graphics(final_res$protein_rna$gene_wise_cor_boxplot_fig %>% normalizePath)
   }
 }
@@ -507,6 +522,7 @@ if(!is.null(final_res$input_parameters$x2)){
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$input_parameters$x2)){
   if(!is.null(final_res$protein_rna$gene_wise_cor_cdf_fig)){
+    cat("<p>Another way to visualize the differences between the distributions of all gene-wise RNA-protein correlations is with the cumulative distribution function (CDF) plot shown below. Here each line shows the cumulative distribution for the gene-wise correlations. The further the distribution function is shifted to the right, the more highly correlated the RNA-protein data is.</p>\n")
     include_graphics(final_res$protein_rna$gene_wise_cor_cdf_fig %>% normalizePath)
   }
 }
@@ -514,6 +530,7 @@ if(!is.null(final_res$input_parameters$x2)){
 
 ```{r, echo=FALSE, fig.align='center', results='asis'}
 if(!is.null(final_res$input_parameters$x2)){
+  cat("<p>The histograms below provide another way to visualize the distribution of correlations for each protein data table with the RNA data. Here the bars showing binned frequencies of positive correlations are in red, while negative correlations are shown in the blue bins, and summary statistics are also provided.</p>\n")
   figs <- get_metrics(final_res$protein_rna$data, metric = "hist_fig")
   figs <- get_full_path(figs)
   for(i in 1:length(figs)){
@@ -529,6 +546,7 @@ if(!is.null(final_res$input_parameters$x2)){
 ```{r results="asis",fig.align='center'}
 if(!is.null(final_res$input_parameters$x2)){
   cat("## Sample-wise mRNA-protein correlation\n")
+  cat("<p>RNA-protein correlations at sample-wise are summarized in the table below, which shows the median Spearman correlation of all samples with paired protein and RNA data for each data table, while the violin plots below show the distributions of these correlations for each data table.</p>\n")
   gw_table <- final_res$protein_rna$sample_wise_cor_table %>% 
       dplyr::rename(sample_wise_cor=median_cor,`data table`=dataSet)
   kable(gw_table, "html",digits = 4) %>%
