@@ -19,6 +19,8 @@ Use OmicsEV in docker:
 docker run -it -v /your_data_path/:/opt/ -u $(id -u):$(id -g) proteomics/omicsev
 ```
 
+It requires a basic understanding of docker to use OmicsEV inside docker: https://www.docker.com/get-started/. 
+
 #### Method 2:
 
 Follow the instruction at https://github.com/bzhanglab/OmicsEV/wiki/OmicsEV-package-installation to install OmicsEV.
