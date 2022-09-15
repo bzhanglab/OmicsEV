@@ -112,7 +112,7 @@ run_omics_evaluation(data_dir = "datasets_75/",
                      cpu=0,
                      use_existing_data=TRUE,
                      data_type="gene",
-                     class_for_ml="sample_ml.tsv")
+                     class_for_ml=c("LumA","LumB"))
 ```
 Please download the input files for above code at [proteomics_1_dataset.tar.gz](https://github.com/bzhanglab/OmicsEV/raw/gh-pages/data/proteomics_1_dataset.tar.gz). It contains the following files:
 ```
