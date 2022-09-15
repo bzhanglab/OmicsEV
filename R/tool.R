@@ -19,7 +19,7 @@
 ##' prediction. A charactar vector.
 ##' @param class_for_ml The classes of samples (two classes) which will be used for phenotype
 ##' prediction. 
-##' A sample list file or a charactar vector. If this is a sample list file, it must have the same format with the parameter "sample_list". 
+##' A sample list file or a charactar vector such as class_for_ml=c("Tumor","Normal"). If this is a sample list file, it must have the same format with the parameter "sample_list". 
 ##' This is useful when the class users want to predict is different from the one in the file for parameter "sample_list". 
 ##' OmicsEV uses an R S3 data class object to store data table and sample annotation data so it also needs to have batch and order as this is format requirement although order and batch are not used in class prediction. 
 ##' This file can be modified from the file for parameter "sample_list" by only updating the class to what users want for class prediction. 
