@@ -18,7 +18,12 @@
 ##' @param class_for_fun The class of samples which will be used for function
 ##' prediction. A charactar vector.
 ##' @param class_for_ml The classes of samples (two classes) which will be used for phenotype
-##' prediction. A sample list file or a charactar vector.
+##' prediction. 
+##' A sample list file or a charactar vector. If this is a sample list file, it must have the same format with the parameter "sample_list". 
+##' This is useful when the class users want to predict is different from the one in the file for parameter "sample_list". 
+##' OmicsEV uses an R S3 data class object to store data table and sample annotation data so it also needs to have batch and order as this is format requirement although order and batch are not used in class prediction. 
+##' This file can be modified from the file for parameter "sample_list" by only updating the class to what users want for class prediction. 
+##' If users want to predict the class present in the file for parameter "sample_list", then only a charactar vector to specify the class name is needed. 
 ##' @para method_for_fun The method used for gene function prediction ("co" or "xgboost"). Default is "co" which is
 ##' co-expression network-based method.
 ##' @param use_common_features_for_func_pred whether or not to use common
