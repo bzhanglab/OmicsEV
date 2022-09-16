@@ -1,5 +1,5 @@
 ---
-title: "OmicsEV: A tool for large scale omics datasets evaluation"
+title: "OmicsEV: A tool for large scale omics data tables evaluation"
 author: "Bo Wen"
 date: "`r Sys.Date()`"
 bibliography: OmicsEV.bib
@@ -55,14 +55,15 @@ process. A GUI based on R shiny is also implemented.
 
 # Example data
 
-An example data can be downloaded at https://github.com/bzhanglab/OmicsEV. This
-example contains 6 data matrices generated from the same proteomics dataset 
-using different normalization methods. In addition, an RNA-Seq data matrix and a
-sample list are also included.
+A few examples can be downloaded at https://github.com/bzhanglab/OmicsEV. One of the examples contains 6 data matrices generated from the same RNA dataset 
+using different normalization methods. In addition, a proteomics data matrix and a
+sample list are also included. How to run this example is shown below.
 
 # Running OmicsEV
 
 ### Preparing inputs
+
+The two major inputs files are the omics data tables and a sample annotation file. More details can be found below.
 
 ### Running evaluation process
 
@@ -81,10 +82,10 @@ run_omics_evaluation(data_dir = "datasets/",
 
 In general, only a few parameters have to be set:
 
-* **data_dir**: a folder contains the datasets in tsv format to be evaluated. All 
+* **data_dir**: a folder contains the datasets (data tables) in tsv format to be evaluated. All 
 datasets must be the same format. In these files, the first column must be gene
 ID or protein ID. The expression value of gene or protein must be in non-log 
-scale. An example input dataset looks like below:
+scale. Missing values must be present as "NA". If there is only one data table, it must also be put in a folder. An example input dataset looks like below:
 
 ```{r eval=TRUE, echo=FALSE, results='asis'}
 example_data <- read.delim(system.file("extdata/example_input_datasets.tsv",
@@ -117,6 +118,9 @@ All other parameters are optional. When input data tables for parameter
 data for the same samples, users can set parameter **x2** as a file contains 
 the gene expression data in tsv format, and vice versa. If parameter **x2** is 
 not NULL, sample wise and gene wise correlation analysis will be performed. See `?run_omics_evaluation` for a more in-depth description of all its arguments. 
+
+The parameter **class_for_ml** is also set in above example. This parameter is used to specify the class information for class prediction. A sample list file or a character vector such as class_for_ml=c("T","C") is supported. If this is a sample list file, it must have the same format with the parameter "sample_list". This is useful when the class users want to predict is different from the one in the file for parameter "sample_list". OmicsEV uses an R S3 data class object to store data table and sample annotation data so it also needs to have batch and order as this is format requirement although order and batch are not used in class prediction. This file can be modified from the file for parameter "sample_list" by only updating the class to what users want for class prediction. If users want to predict the class present in the file for parameter "sample_list", then only a character vector to specify the class name is needed, such as class_for_ml=c("T","C"). If sample class prediction is not needed, then don't set anything to the parameter **class_for_ml**.
+
 
 When the function is finished successfully, an HTML-based report that contains 
 different evaluation metrics will be generated. Example reports are available 
