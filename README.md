@@ -136,3 +136,4 @@ This example takes about one hour on a Linux system with 64 CPUs and 256G memory
 3. Gao, Q., et al. [**Integrated Proteogenomic Characterization of HBV-Related Hepatocellular Carcinoma**](https://pubmed.ncbi.nlm.nih.gov/31585088/). *Cell* 2019;179(2):561-577 e522.
 4. Huang, C., et al. [**Proteogenomic insights into the biology and treatment of HPV-negative head and neck squamous cell carcinoma**](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7946781/). *Cancer Cell* 2021;39(3):361-379 e316.
 5. Satpathy, S., et al. [**Microscaled proteogenomic methods for precision oncology**](https://www.nature.com/articles/s41467-020-14381-2). *Nat Commun* 2020;11(1):532.
+6. Anurag, M., et al. [**Proteogenomic markers of chemotherapy resistance and response in triple negative breast cancer**](https://doi.org/10.1158/2159-8290.CD-22-0200). *Cancer Discovery* 2022; CD-22.
