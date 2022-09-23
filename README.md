@@ -7,23 +7,24 @@ A tool for large scale omics data tables evaluation
 
 ## Installation
 
-#### Method 1 (recommended):
 Install OmicsEV using Docker:
 ```sh
 docker pull proteomics/omicsev
 ```
 
+If [Docker Engine](https://docs.docker.com/engine/) is not installed, please first install Docker Engine following the instruction at https://docs.docker.com/engine/install/. If [Docker Engine](https://docs.docker.com/engine/) is already installed, the OmicsEV docker can be installed using the above command line.
+
 Use OmicsEV in docker:
 ```sh
 # change the path your_data_path to a real path
 docker run -it -v /your_data_path/:/opt/ -u $(id -u):$(id -g) proteomics/omicsev
+# then lauch R 
+R
 ```
 
-It requires a basic understanding of docker to use OmicsEV inside docker: https://www.docker.com/get-started/. 
+Please put all the input data files for OmicsEV under a folder (for example: /your_data_path/, this can be any folder with write permission) and use parameter -v to map this folder to the Docker container directory "/opt/" (-v /your_data_path/:/opt/, don't change /opt/ part) so that all the input data files can be accessed inside OmicsEV docker. After lauching R in OmicsEV docker using above code, users can then use the OmicsEV functions to perform analysis. A few examples can be found below.
 
-#### Method 2:
-
-Follow the instruction at https://github.com/bzhanglab/OmicsEV/wiki/OmicsEV-package-installation to install OmicsEV.
+It requires a basic understanding of docker to use OmicsEV inside docker: https://www.docker.com/get-started/.
 
 
 ## Usage
