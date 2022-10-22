@@ -130,6 +130,10 @@ The HTML report generated using above code is available at [OmicsEV report](http
 This example takes about one hour on a Linux system with 64 CPUs and 256G memory.
 
 
+## How to cite:
+
+Bo Wen, Eric J Jaehnig, Bing Zhang. [OmicsEV: a tool for comprehensive quality evaluation of omics data tables](https://doi.org/10.1093/bioinformatics/btac698). *Bioinformatics*, btac698, 2022.
+
 
 ## Applications in publications
 1. Cao, L., et al. [**Proteogenomic characterization of pancreatic ductal adenocarcinoma**](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8654574/). *Cell* 2021;184(19):5031-5052 e5026.
