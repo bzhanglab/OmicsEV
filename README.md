@@ -3,7 +3,7 @@
 
 A tool for large scale omics data tables evaluation
 
-[<img src="https://github.com/bzhanglab/OmicsEV/blob/gh-pages/data/OmicsEV_overview.png" width=500 class="center">](https://bzhanglab.github.io/OmicsEV/)
+[<img src="https://github.com/bzhanglab/OmicsEV/blob/gh-pages/data/OmicsEV_overview.jpeg" width=1000 class="center">](https://bzhanglab.github.io/OmicsEV/)
 
 ## Installation
 
