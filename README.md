@@ -1,9 +1,9 @@
-## OmicsEV
+## [OmicsEV](https://doi.org/10.1093/bioinformatics/btac698)
 
 
 A tool for large scale omics data tables evaluation
 
-[<img src="https://github.com/bzhanglab/OmicsEV/blob/gh-pages/data/OmicsEV_overview.jpeg" width=1000 class="center">](https://bzhanglab.github.io/OmicsEV/)
+[<img src="https://github.com/bzhanglab/OmicsEV/blob/gh-pages/data/OmicsEV_overview.jpeg" width=1000 class="center">](https://doi.org/10.1093/bioinformatics/btac698)
 
 ## Installation
 
