@@ -658,6 +658,10 @@ plot_func_point=function(x,out_dir="./",prefix="test"){
     png(fig,width = 650,height = 650,res=150)
     print(gg)
     dev.off()
+	pdf_fig <- paste(out_dir,"/",prefix,"-func-scatterplot.pdf",sep = "")
+	pdf(pdf_fig,width=4.5,height=4.5)
+	print(gg)
+	dev.off()
     return(fig)
 }
 
